@@ -11,6 +11,8 @@ config = rx.Config(
         "http://127.0.0.1:3000",
         "https://sceneforge-lime-wood.reflex.run",
         "https://00152787-d926-49c9-910f-975d1eae00ca.fly.dev",
+        "https://sceneforge-aqua-ocean.reflex.run",
+        "https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev",
     ],
     state_auto_setters=True,
     plugins=[

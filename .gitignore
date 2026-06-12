@@ -1,0 +1,15 @@
+.web
+*.py[cod]
+assets/external/
+.states
+venv/
+__pycache__/
+*.pyc
+.env
+uploads/
+.DS_Store
+*.log
+.pytest_cache/
+.vscode/
+*.db
+mem0/

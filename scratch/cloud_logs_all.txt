@@ -1,0 +1,1153 @@
+Info: {'timestamp': '2026-06-12T09:34:57.027044+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"addr":":8080","event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1
+e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"regi
+on":"sjc","zone":"a312"},"host":"a312","level":"warn","log":{"level":"info"},"lo
+gger":"http","msg":"HTTP/3 skipped because it requires 
+TLS","network":"tcp","ts":1781256897.018095}', 'details': None, 'log_level': 
+'warn'}
+Info: {'timestamp': '2026-06-12T09:34:57.027037+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"addr":":8080","event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1
+e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"regi
+on":"sjc","zone":"a312"},"host":"a312","level":"warn","log":{"level":"info"},"lo
+gger":"http","msg":"HTTP/2 skipped because it requires 
+TLS","network":"tcp","ts":1781256897.0180874}', 'details': None, 'log_level': 
+'warn'}
+Info: {'timestamp': '2026-06-12T09:34:57.003291+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"warn","log":{"level":"info"},"logger":"admin","
+msg":"admin endpoint disabled","ts":1781256896.9970207}', 'details': None, 
+'log_level': 'warn'}
+Info: {'timestamp': '2026-06-12T09:34:57.002887+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"adapter":"caddyfile","event":{"provider":"app"},"file":"/etc/caddy/Caddyfile"
+,"fly":{"app":{"instance":"e78451ddf1e798","name":"00152787-d926-49c9-910f-975d1
+eae00ca","process_group":"app"},"region":"sjc","zone":"a312"},"host":"a312","lev
+el":"warn","line":2,"log":{"level":"info"},"msg":"Caddyfile input is not 
+formatted; run \'caddy fmt --overwrite\' to fix 
+inconsistencies","ts":1781256896.9966786}', 'details': None, 'log_level': 
+'warn'}
+Info: {'timestamp': '2026-06-12T09:34:55.002080+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 'Machine created and started 
+in 11.576s', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:53.393358+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 'Configuring firecracker', 
+'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:52.428459+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 'Successfully prepared image 
+registry.fly.io/00152787-d926-49c9-910f-975d1eae00ca@sha256:cecc10a8bb54bf958665
+8cc3da5848800f65265a340f62cfbd8c50ed9c3a314f (8.844495087s)', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:43.583099+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 'Pulling container image 
+registry.fly.io/00152787-d926-49c9-910f-975d1eae00ca@sha256:cecc10a8bb54bf958665
+8cc3da5848800f65265a340f62cfbd8c50ed9c3a314f', 'details': None, 'log_level': 
+'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.358943+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026-06-12 09:34:57,352 INFO
+success: reflex entered RUNNING state, process has stayed up for > than 1 
+seconds (startsecs)', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.358934+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026-06-12 09:34:57,352 INFO
+success: redis entered RUNNING state, process has stayed up for > than 1 seconds
+(startsecs)', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.318404+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026-06-12 09:34:57,312 INFO
+success: caddy entered RUNNING state, process has stayed up for > than 1 seconds
+(startsecs)', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.030266+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"logger":"tls","ms
+g":"finished cleaning storage units","ts":1781256897.0250134}', 'details': None,
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.029864+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"logger":"tls","ms
+g":"cleaning storage 
+unit","storage":"FileStorage:/root/.local/share/caddy","ts":1781256897.0243108}'
+, 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.027990+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"msg":"serving 
+initial configuration","ts":1781256897.0217433}', 'details': None, 'log_level': 
+'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.027888+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"file":"/root/.config/caddy/autosave.json","fly":{"
+app":{"instance":"e78451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca",
+"process_group":"app"},"region":"sjc","zone":"a312"},"host":"a312","level":"info
+","log":{"level":"info"},"msg":"autosaved config (load with --resume 
+flag)","ts":1781256897.0217316}', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.027051+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"logger":"http.log
+","msg":"server 
+running","name":"srv0","protocols":["h1","h2","h3"],"ts":1781256897.0180984}', 
+'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.027024+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"cache":"0xc000538f00","event":{"provider":"app"},"fly":{"app":{"instance":"e7
+8451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app
+"},"region":"sjc","zone":"a312"},"host":"a312","level":"info","log":{"level":"in
+fo"},"logger":"tls.cache.maintenance","msg":"started background certificate 
+maintenance","ts":1781256897.01783}', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.003411+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"logger":"http.aut
+o_https","msg":"automatic HTTPS is completely disabled for 
+server","server_name":"srv0","ts":1781256896.9976883}', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:57.002739+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"adapter":"caddyfile","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"info","log":{"level":"inf
+o"},"msg":"adapted config to JSON","ts":1781256896.9966643}', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.995639+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"file":"/etc/caddy/Caddyfile","fly":{"app":{"instan
+ce":"e78451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_grou
+p":"app"},"region":"sjc","zone":"a312"},"host":"a312","level":"info","log":{"lev
+el":"info"},"msg":"using config from file","ts":1781256896.990461}', 'details': 
+None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.995628+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"GOMEMLIMIT":907971379,"event":{"provider":"app"},"fly":{"app":{"instance":"e7
+8451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app
+"},"region":"sjc","zone":"a312"},"host":"a312","level":"info","log":{"level":"in
+fo"},"msg":"GOMEMLIMIT is 
+updated","package":"github.com/KimMachineGun/automemlimit/memlimit","previous":9
+223372036854775807,"ts":1781256896.9887798}', 'details': None, 'log_level': 
+'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.995449+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"event":{"provider":"app"},"fly":{"app":{"instance":"e78451ddf1e798","name":"0
+0152787-d926-49c9-910f-975d1eae00ca","process_group":"app"},"region":"sjc","zone
+":"a312"},"host":"a312","level":"info","log":{"level":"info"},"msg":"maxprocs: 
+Leaving GOMAXPROCS=1: CPU quota undefined","ts":1781256896.9883895}', 'details':
+None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.566069+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:M 12 Jun 2026 
+09:34:56.560 * Ready to accept connections tcp', 'details': None, 'log_level': 
+'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.563513+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:M 12 Jun 2026 
+09:34:56.558 * Server initialized', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.559261+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:M 12 Jun 2026 
+09:34:56.554 * Running mode=standalone, port=6379.', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.558085+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:M 12 Jun 2026 
+09:34:56.551 * monotonic clock: POSIX clock_gettime', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.558074+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:C 12 Jun 2026 
+09:34:56.548 * Configuration loaded', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.558059+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:C 12 Jun 2026 
+09:34:56.548 * Redis version=8.0.2, bits=64, commit=00000000, modified=0, 
+pid=647, just started', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.557917+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '647:C 12 Jun 2026 
+09:34:56.548 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo', 'details': None, 
+'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.552807+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': "647:C 12 Jun 2026 
+09:34:56.546 # WARNING Memory overcommit must be enabled! Without it, a 
+background save or replication may fail under low memory condition. Being 
+disabled, it can also cause failures without low memory condition, see 
+https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 
+'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the 
+command 'sysctl vm.overcommit_memory=1' for this to take effect.", 'details': 
+None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.421493+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '/bin/bash: warning: 
+setlocale: LC_ALL: cannot change locale (en_US.UTF-8): No such file or 
+directory', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.332937+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': "2026-06-12 09:34:56,324 INFO
+spawned: 'reflex' with pid 648", 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.325629+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': "2026-06-12 09:34:56,320 INFO
+spawned: 'redis' with pid 647", 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:56.325442+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': "2026-06-12 09:34:56,318 INFO
+spawned: 'caddy' with pid 646", 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:55.338096+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026-06-12 09:34:55,309 INFO
+supervisord started with pid 636', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:55.325231+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026-06-12 09:34:55,306 INFO
+Set uid to user 0 succeeded', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:55.094100+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '2026/06/12 09:34:55 INFO SSH
+listening listen_address=:22', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:54.785892+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '\x1b[32m INFO\x1b[0m  
+listening at /.fly/api', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:54.720294+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '\x1b[32m INFO\x1b[0m 
+Preparing to run: `/usr/bin/supervisord -c 
+/etc/supervisor/conf.d/supervisord.conf` as root', 'details': None, 'log_level':
+'info'}
+Info: {'timestamp': '2026-06-12T09:34:54.645473+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': '\x1b[32m INFO\x1b[0m 
+Starting init (commit: ea887ee)...', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:53.891778+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'2026-06-12T09:34:53.841468930 [01KTXJY2P5V3P566F9658AB3SK:main] Listening on 
+API socket ("/fc.sock").', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:53.889028+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'2026-06-12T09:34:53.841296229 [01KTXJY2P5V3P566F9658AB3SK:main] Running 
+Firecracker v1.14.4', 'details': None, 'log_level': 'info'}
+Info: {'timestamp': '2026-06-12T09:34:55.246126+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': "Health check 'httpget' on 
+port 8080 has failed. Your app is not responding properly.", 'details': None, 
+'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.853739+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00022627,"err_id":"dbqtiavss","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36252","uri":"/ping"},"status":502,"ts":17812568
+99.8456142}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.807500+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00023201,"err_id":"3ebqbmx6a","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36238","uri":"/_health"},"status":502,"ts":17812
+56899.8015373}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.748882+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00023037,"err_id":"5rv2mdq4r","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36234","uri":"/ping"},"status":502,"ts":17812568
+99.7428803}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.704383+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00037063,"err_id":"m3q242twp","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36232","uri":"/_health"},"status":502,"ts":17812
+56899.6981528}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.646505+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020793,"err_id":"915xz1pwp","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36220","uri":"/ping"},"status":502,"ts":17812568
+99.6402645}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.601730+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00027342,"err_id":"3a46pmcpa","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36204","uri":"/_health"},"status":502,"ts":17812
+56899.5954142}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.542649+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021476,"err_id":"4xv8zxnwk","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36194","uri":"/ping"},"status":502,"ts":17812568
+99.5364904}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.497194+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00049878,"err_id":"2bg9sb13h","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36192","uri":"/_health"},"status":502,"ts":17812
+56899.491234}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.439164+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000300331,"err_id":"1152swh3s","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36190","uri":"/ping"},"status":502,"ts":17812568
+99.4331849}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.394798+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00022194,"err_id":"3ksb6w59c","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36182","uri":"/_health"},"status":502,"ts":17812
+56899.388322}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.337440+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020685,"err_id":"8swidu2ez","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36166","uri":"/ping"},"status":502,"ts":17812568
+99.3306074}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.287898+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020468,"err_id":"h8d51q3jt","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36164","uri":"/_health"},"status":502,"ts":17812
+56899.282141}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.229059+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020706,"err_id":"idyj2w9gy","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36158","uri":"/ping"},"status":502,"ts":17812568
+99.2230575}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.190027+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000886851,"err_id":"cmx46rnz8","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36152","uri":"/_health"},"status":502,"ts":17812
+56899.1797783}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.126654+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00046027,"err_id":"7v8nt3hhk","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36144","uri":"/ping"},"status":502,"ts":17812568
+99.120361}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.078692+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00049717,"err_id":"h2sijze37","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36138","uri":"/_health"},"status":502,"ts":17812
+56899.0727017}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:59.022195+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00044052,"err_id":"1txe8bzsj","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36126","uri":"/ping"},"status":502,"ts":17812568
+99.0158718}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.974891+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00024428,"err_id":"emp0sd81k","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36114","uri":"/_health"},"status":502,"ts":17812
+56898.967816}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.919397+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021135,"err_id":"kpdhey6sy","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36108","uri":"/ping"},"status":502,"ts":17812568
+98.9129653}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.870617+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020847,"err_id":"p26pyzc7n","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36104","uri":"/_health"},"status":502,"ts":17812
+56898.8642955}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.816754+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021488,"err_id":"ipe9pjh99","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36102","uri":"/ping"},"status":502,"ts":17812568
+98.8109138}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.791861+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021524,"err_id":"e3rjkgic2","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36086","uri":"/_health"},"status":502,"ts":17812
+56898.7564452}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.714908+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00024757,"err_id":"auq22yc2n","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36084","uri":"/ping"},"status":502,"ts":17812568
+98.708331}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.659651+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020769,"err_id":"ymd89j1k0","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36070","uri":"/_health"},"status":502,"ts":17812
+56898.6536176}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.610399+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.0002191,"err_id":"gy9h15e6t","err_trace":"reverseproxy.statusErro
+r 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36060","uri":"/ping"},"status":502,"ts":17812568
+98.6042852}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.557506+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000212811,"err_id":"yh8gsahvb","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36054","uri":"/_health"},"status":502,"ts":17812
+56898.5509355}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.505725+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00022746,"err_id":"du484u12z","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36044","uri":"/ping"},"status":502,"ts":17812568
+98.499448}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.454366+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000202841,"err_id":"yjquzhjr3","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36040","uri":"/_health"},"status":502,"ts":17812
+56898.44855}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.401982+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.0002207,"err_id":"ys884pzxa","err_trace":"reverseproxy.statusErro
+r 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36024","uri":"/ping"},"status":502,"ts":17812568
+98.3962932}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.354048+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020752,"err_id":"u2u9up35c","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36022","uri":"/_health"},"status":502,"ts":17812
+56898.3456988}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.297624+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021267,"err_id":"shmpwybba","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36020","uri":"/ping"},"status":502,"ts":17812568
+98.2916274}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.248933+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000222671,"err_id":"xbe7jb4hv","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36012","uri":"/_health"},"status":502,"ts":17812
+56898.2427692}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.193647+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.0002067,"err_id":"fbq0ctase","err_trace":"reverseproxy.statusErro
+r 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36010","uri":"/ping"},"status":502,"ts":17812568
+98.1874342}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.146724+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00065862,"err_id":"taw5hwtcz","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"36002","uri":"/_health"},"status":502,"ts":17812
+56898.1401231}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.091800+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00024293,"err_id":"f47vti6sy","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35988","uri":"/ping"},"status":502,"ts":17812568
+98.0852723}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:58.043327+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00027558,"err_id":"dajwr87ip","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35984","uri":"/_health"},"status":502,"ts":17812
+56898.0370915}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.987028+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00038659,"err_id":"wf3jfvkca","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35982","uri":"/ping"},"status":502,"ts":17812568
+97.98098}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.940597+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000206931,"err_id":"h8u0f645t","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35966","uri":"/_health"},"status":502,"ts":17812
+56897.93444}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.914328+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021121,"err_id":"d0m1yde2z","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"20.28.251.175","headers":{"Accept":["*/*"],"Acc
+ept-Encoding":["gzip, 
+deflate"],"Fly-Client-Ip":["20.28.251.175"],"Fly-Forwarded-Port":["443"],"Fly-Fo
+rwarded-Proto":["https"],"Fly-Forwarded-Ssl":["on"],"Fly-Region":["sin"],"Fly-Re
+quest-Id":["01KTXJYH8P6BB2CDZXK2WR26GW-sin"],"Traceparent":["00-5a8c5030f38abc41
+63b62a2183fe8e40-d278995852d55ed7-01"],"User-Agent":["Python/3.13 
+aiohttp/3.14.0"],"Via":["1.1 fly.io, 1.1 
+fly.io"],"X-Forwarded-For":["20.28.251.175, 
+66.241.124.5"],"X-Forwarded-Port":["443"],"X-Forwarded-Proto":["https"],"X-Forwa
+rded-Ssl":["on"],"X-Request-Start":["t=1781256897814294"]},"host":"00152787-d926
+-49c9-910f-975d1eae00ca.fly.dev","method":"GET","proto":"HTTP/1.1","remote_ip":"
+172.16.9.146","remote_port":"46174","uri":"/ping"},"status":502,"ts":1781256897.
+9078496}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.882967+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00018793,"err_id":"ux49w3bgx","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35962","uri":"/ping"},"status":502,"ts":17812568
+97.875384}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.877592+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000571311,"err_id":"4zrfnx61c","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"103.100.223.52","headers":{"Accept":["*/*"],"Ac
+cept-Encoding":["gzip, deflate, 
+br"],"Accept-Language":["en-IN,en-GB;q=0.9,en;q=0.8"],"Cache-Control":["no-cache
+"],"Connection":["Upgrade"],"Fly-Client-Ip":["103.100.223.52"],"Fly-Forwarded-Po
+rt":["443"],"Fly-Forwarded-Proto":["https"],"Fly-Forwarded-Ssl":["on"],"Fly-Regi
+on":["bom"],"Fly-Request-Id":["01KTXJYGWE287QWZY1HDJ21PCN-bom"],"Origin":["http:
+//localhost:3000"],"Pragma":["no-cache"],"Priority":["u=3, 
+i"],"Sec-Fetch-Dest":["websocket"],"Sec-Fetch-Mode":["websocket"],"Sec-Fetch-Sit
+e":["cross-site"],"Sec-Websocket-Extensions":["permessage-deflate"],"Sec-Websock
+et-Key":["aMWQLcHkOf59NM8HqjBL9Q=="],"Sec-Websocket-Protocol":["0.9.5.post2"],"S
+ec-Websocket-Version":["13"],"Upgrade":["websocket"],"User-Agent":["Mozilla/5.0 
+(Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) 
+Version/18.6 Safari/605.1.15"],"Via":["1.1 fly.io, 1.1 
+fly.io"],"X-Forwarded-For":["103.100.223.52, 
+66.241.124.5"],"X-Forwarded-Port":["443"],"X-Forwarded-Proto":["https"],"X-Forwa
+rded-Ssl":["on"],"X-Request-Start":["t=1781256897422320"]},"host":"00152787-d926
+-49c9-910f-975d1eae00ca.fly.dev","method":"GET","proto":"HTTP/1.1","remote_ip":"
+172.16.9.146","remote_port":"46168","uri":"/_event/?token=927e6c0e-ad94-452d-9d8
+f-2f28c2524b06&EIO=4&transport=websocket"},"status":502,"ts":1781256897.8688478}
+', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.838425+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000248081,"err_id":"ft56vyfw6","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35960","uri":"/_health"},"status":502,"ts":17812
+56897.8321114}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.789186+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00042499,"err_id":"0kfqjb102","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35946","uri":"/ping"},"status":502,"ts":17812568
+97.770959}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.734481+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000205811,"err_id":"h7nja7vi5","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35936","uri":"/_health"},"status":502,"ts":17812
+56897.7283022}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.673791+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00023885,"err_id":"qnse7a2gf","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35928","uri":"/ping"},"status":502,"ts":17812568
+97.6663215}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.628205+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020409,"err_id":"m7q696816","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35922","uri":"/_health"},"status":502,"ts":17812
+56897.621051}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.572141+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021005,"err_id":"iepty6cnc","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35918","uri":"/ping"},"status":502,"ts":17812568
+97.563876}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.523581+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000644021,"err_id":"wr8x1ymw9","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35908","uri":"/_health"},"status":502,"ts":17812
+56897.5176542}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.461759+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.0002387,"err_id":"hvpztuhnc","err_trace":"reverseproxy.statusErro
+r 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35894","uri":"/ping"},"status":502,"ts":17812568
+97.455439}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.420861+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000242911,"err_id":"r3r5jxzep","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35882","uri":"/_health"},"status":502,"ts":17812
+56897.4150264}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.358787+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020262,"err_id":"kb05ramqc","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35870","uri":"/ping"},"status":502,"ts":17812568
+97.3522673}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.318281+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00021105,"err_id":"ghhsjua8a","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35856","uri":"/_health"},"status":502,"ts":17812
+56897.3121543}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.253404+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.000203841,"err_id":"89fu2z6gh","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35840","uri":"/ping"},"status":502,"ts":17812568
+97.2436266}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.213861+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00020615,"err_id":"wzn5z90eu","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35828","uri":"/_health"},"status":502,"ts":17812
+56897.207811}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.145793+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00031716,"err_id":"zpsvarimr","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35826","uri":"/ping"},"status":502,"ts":17812568
+97.1398456}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.110444+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.00022084,"err_id":"sekfegn4b","err_trace":"reverseproxy.statusErr
+or 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35814","uri":"/_health"},"status":502,"ts":17812
+56897.1042898}', 'details': None, 'log_level': 'error'}
+Info: {'timestamp': '2026-06-12T09:34:57.043482+00:00', 'name': 
+'00152787-d926-49c9-910f-975d1eae00ca', 'message': 
+'{"duration":0.004039913,"err_id":"1zwz9kzij","err_trace":"reverseproxy.statusEr
+ror 
+(reverseproxy.go:1390)","event":{"provider":"app"},"fly":{"app":{"instance":"e78
+451ddf1e798","name":"00152787-d926-49c9-910f-975d1eae00ca","process_group":"app"
+},"region":"sjc","zone":"a312"},"host":"a312","level":"error","log":{"level":"in
+fo"},"logger":"http.log.error","msg":"dial tcp 127.0.0.1:8000: connect: 
+connection 
+refused","request":{"client_ip":"172.19.9.145","headers":{"Accept":["text/plain,
+text/*, 
+*/*"],"Accept-Encoding":["gzip"],"Connection":["close"],"User-Agent":["Consul 
+Health 
+Check"]},"host":"172.19.9.146:8080","method":"GET","proto":"HTTP/1.1","remote_ip
+":"172.19.9.145","remote_port":"35792","uri":"/ping"},"status":502,"ts":17812568
+97.0376008}', 'details': None, 'log_level': 'error'}

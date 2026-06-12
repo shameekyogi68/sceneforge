@@ -137,11 +137,33 @@ class AuthState(State):
         self.error_message = ""
         self.success_message = ""
         try:
-            parsed = urlsplit(self.router.url)
-            redirect_url = f"{parsed.scheme}://{parsed.netloc}/auth/v1/callback"
+            # 1. Try to get origin from request headers (most reliable for websockets)
+            origin = self.router.headers.get("origin") or self.router.headers.get("Origin") or ""
+            
+            # 2. If origin not found in headers, check router.url
+            if not origin and self.router.url:
+                parsed = urlsplit(self.router.url)
+                if parsed.netloc:
+                    origin = f"{parsed.scheme}://{parsed.netloc}"
+            
+            # 3. Fallback to hardcoded hosts if parsing fails
+            if not origin:
+                # If we are local, default to localhost:3000
+                if "localhost" in str(self.router.url) or "127.0.0.1" in str(self.router.url):
+                    origin = "http://localhost:3000"
+                else:
+                    origin = "https://sceneforge-aqua-ocean.reflex.run"
+            
+            # Ensure origin ends without trailing slash
+            origin = origin.rstrip("/")
+            
+            redirect_url = f"{origin}/auth/v1/callback"
             auth_url = f"{config.SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to={redirect_url}"
+            
+            logger.info("Redirecting to Supabase OAuth: %s", auth_url)
             return rx.redirect(auth_url)
         except Exception as e:
+            logger.exception("Failed to initiate Google sign-in")
             self.error_message = f"Failed to initiate Google sign-in: {e}"
 
     def handle_callback_load(self):

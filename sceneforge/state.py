@@ -131,6 +131,73 @@ class AuthState(State):
         finally:
             self.is_loading = False
 
+    def login_with_google(self):
+        """Redirect to Supabase Google Auth URL."""
+        from urllib.parse import urlsplit
+        self.error_message = ""
+        self.success_message = ""
+        try:
+            parsed = urlsplit(self.router.url)
+            redirect_url = f"{parsed.scheme}://{parsed.netloc}/auth/v1/callback"
+            auth_url = f"{config.SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to={redirect_url}"
+            return rx.redirect(auth_url)
+        except Exception as e:
+            self.error_message = f"Failed to initiate Google sign-in: {e}"
+
+    def handle_callback_load(self):
+        """Get the url hash fragment on callback page load."""
+        return rx.call_script("window.location.hash", callback=AuthState.process_callback_hash)
+
+    def process_callback_hash(self, hash_str: str):
+        """Parse token from hash, set session cookies, and redirect to dashboard."""
+        import urllib.parse
+        from datetime import date
+        
+        self.error_message = ""
+        self.success_message = ""
+
+        if not hash_str:
+            # If no hash (direct visit), redirect to login
+            return rx.redirect("/login")
+
+        if hash_str.startswith("#"):
+            hash_str = hash_str[1:]
+            
+        params = urllib.parse.parse_qs(hash_str)
+        access_token = params.get("access_token", [None])[0]
+        
+        if not access_token:
+            # Check if there was an error in redirect
+            error_desc = params.get("error_description", [None])[0]
+            self.error_message = error_desc or "Google authentication failed."
+            return rx.redirect("/login")
+
+        try:
+            # Validate token and retrieve user details
+            user = get_current_user(access_token)
+            self.token = access_token
+            self.user_id = str(user.id)
+            
+            # Best-effort profiles upsert
+            try:
+                db = get_db(access_token)
+                db.table("profiles").upsert({
+                    "id": str(user.id),
+                    "email": user.email,
+                    "questions_today": 0,
+                    "last_question_date": date.today().isoformat()
+                }).execute()
+            except Exception as e:
+                logger.warning("Could not upsert profile in callback: %s", e)
+
+            self.success_message = "Successfully logged in with Google!"
+            return rx.redirect("/dashboard")
+            
+        except Exception as e:
+            logger.exception("Failed to complete Google sign-in callback")
+            self.error_message = f"Authentication session verification failed: {e}"
+            return rx.redirect("/login")
+
 
 class DashboardState(State):
     """State for the user projects dashboard."""

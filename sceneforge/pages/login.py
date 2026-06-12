@@ -94,79 +94,7 @@ def login_page() -> rx.Component:
             
             rx.divider(border_color="rgba(255, 255, 255, 0.06)", margin_y="24px"),
             
-            # Auth Form (Email/Password)
-            rx.form(
-                rx.vstack(
-                    rx.vstack(
-                        rx.text("Email Address", font_size="0.82rem", color="#a1a1aa", font_weight="600", text_transform="uppercase", letter_spacing="0.05em", width="100%"),
-                        rx.input(
-                            placeholder="you@example.com",
-                            type="email",
-                            value=AuthState.email,
-                            on_change=AuthState.set_email,
-                            required=True,
-                            width="100%",
-                            background="rgba(255, 255, 255, 0.03)",
-                            border="1px solid rgba(255, 255, 255, 0.08)",
-                            border_radius="12px",
-                            padding="12px 16px",
-                            color="#f4f4f5",
-                            _focus={"border_color": "rgba(99, 102, 241, 0.5)", "background": "rgba(255, 255, 255, 0.05)"}
-                        ),
-                        width="100%",
-                        align_items="start",
-                    ),
-                    rx.vstack(
-                        rx.text("Password", font_size="0.82rem", color="#a1a1aa", font_weight="600", text_transform="uppercase", letter_spacing="0.05em", width="100%"),
-                        rx.input(
-                            placeholder="••••••••",
-                            type="password",
-                            value=AuthState.password,
-                            on_change=AuthState.set_password,
-                            required=True,
-                            min_length=6,
-                            width="100%",
-                            background="rgba(255, 255, 255, 0.03)",
-                            border="1px solid rgba(255, 255, 255, 0.08)",
-                            border_radius="12px",
-                            padding="12px 16px",
-                            color="#f4f4f5",
-                            _focus={"border_color": "rgba(99, 102, 241, 0.5)", "background": "rgba(255, 255, 255, 0.05)"}
-                        ),
-                        width="100%",
-                        align_items="start",
-                    ),
-                    rx.button(
-                        rx.cond(AuthState.is_signup, "Sign Up", "Sign In"),
-                        type="submit",
-                        width="100%",
-                        padding_y="22px",
-                        background="linear-gradient(135deg, #6366f1, #4f46e5)",
-                        color="#ffffff",
-                        border_radius="12px",
-                        font_size="0.98rem",
-                        font_weight="700",
-                        cursor="pointer",
-                        _hover={"box_shadow": "0 6px 20px rgba(99, 102, 241, 0.4)", "opacity": "0.95"},
-                    ),
-                    spacing="4",
-                    width="100%",
-                ),
-                on_submit=AuthState.handle_auth,
-                width="100%",
-            ),
-
-            # Or Divider
-            rx.hstack(
-                rx.box(height="1px", flex="1", background_color="rgba(255, 255, 255, 0.06)"),
-                rx.text("or", font_size="0.78rem", color="#71717a", text_transform="uppercase", letter_spacing="0.05em"),
-                rx.box(height="1px", flex="1", background_color="rgba(255, 255, 255, 0.06)"),
-                width="100%",
-                align="center",
-                margin_y="20px",
-            ),
-            
-            # Google Sign In (Note: Requires dashboard configuration)
+            # Google Sign In
             rx.button(
                 google_icon(),
                 rx.text("Continue with Google", font_size="0.98rem", font_weight="600"),
@@ -178,22 +106,7 @@ def login_page() -> rx.Component:
                 padding_y="22px",
                 cursor="pointer",
                 _hover={"background_color": "#27272a", "border_color": "rgba(99, 102, 241, 0.4)", "box_shadow": "0 8px 24px rgba(99, 102, 241, 0.15)"},
-                # For demo, Google login triggers toast or error if not configured
-                on_click=lambda: rx.toast.info("Google OAuth is not configured on this workspace. Please use Email/Password sign-in.")
-            ),
-
-            # Toggle Sign In / Sign Up
-            rx.hstack(
-                rx.text(rx.cond(AuthState.is_signup, "Already have an account?", "Don't have an account?"), color="#a1a1aa", font_size="0.88rem"),
-                rx.link(
-                    rx.cond(AuthState.is_signup, "Sign In", "Sign Up"),
-                    on_click=AuthState.toggle_mode,
-                    color="#818cf8",
-                    font_weight="600",
-                    text_decoration="none",
-                    _hover={"color": "#a5b4fc"},
-                ),
-                margin_top="24px",
+                on_click=AuthState.login_with_google,
             ),
 
             # Error Alert

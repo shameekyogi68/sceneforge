@@ -592,7 +592,7 @@ class ProjectState(State):
             await self.load_documents()
             yield ProjectState.start_document_polling
 
-    @rx.background
+    @rx.event(background=True)
     async def start_document_polling(self):
         """Background task to poll document processing status until all are completed."""
         while True:

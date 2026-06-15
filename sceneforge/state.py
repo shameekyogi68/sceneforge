@@ -338,7 +338,8 @@ class DashboardState(State):
                 self.projects = []
         except Exception as e:
             logger.exception("Failed to load projects")
-            return self.logout()
+            yield self.logout()
+            return
         finally:
             self.is_loading = False
             yield

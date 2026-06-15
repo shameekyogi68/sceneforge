@@ -12,7 +12,6 @@ import logging
 from typing import Dict, List, Optional, Tuple
 
 import fitz  # PyMuPDF
-import google.generativeai as genai
 from supabase import create_client
 
 import backend.config as config
@@ -20,29 +19,25 @@ import backend.config as config
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# One-time SDK + client initialisation
+# Lazy Google GenAI Client Initialization
 # ---------------------------------------------------------------------------
-genai.configure(api_key=config.GEMINI_API_KEY)
 
-_supabase = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+_client = None
 
-# Reuse a single GenerativeModel instance — avoid re-init on every call
-_gen_model = genai.GenerativeModel(config.GEMINI_MODEL)
-
-# Generation config: no thinking tokens (saves ~50 % quota on RAG answers)
-_gen_config = genai.GenerationConfig(
-    temperature=0.2,          # low temp = more factual / grounded
-    max_output_tokens=2048,
-)
-
+def _get_genai_client():
+    """Retrieve or build the Google GenAI client lazily."""
+    global _client
+    if _client is None:
+        from google import genai
+        _client = genai.Client(api_key=config.GEMINI_API_KEY)
+    return _client
 
 def _get_client(token: Optional[str] = None):
     """Return a JWT-authenticated Supabase client, or the module-level anon client."""
+    from backend.auth import get_authenticated_client, get_anon_client
     if token:
-        client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
-        client.postgrest.auth(token)
-        return client
-    return _supabase
+        return get_authenticated_client(token)
+    return get_anon_client()
 
 
 # ---------------------------------------------------------------------------
@@ -104,24 +99,24 @@ def _embed_batch(texts: List[str], task_type: str) -> List[List[float]]:
 
     Gemini batch embed returns one embedding per input text in the same order.
     """
+    from google.genai import types
+    client = _get_genai_client()
+
     results: List[List[float]] = []
     for i in range(0, len(texts), config.EMBED_BATCH_SIZE):
         batch = texts[i : i + config.EMBED_BATCH_SIZE]
-        response = genai.embed_content(
+        response = client.models.embed_content(
             model=config.EMBEDDING_MODEL,
-            content=batch,
-            task_type=task_type,
-            output_dimensionality=config.EMBEDDING_DIMENSION,
+            contents=batch,
+            config=types.EmbedContentConfig(
+                task_type=task_type,
+                output_dimensionality=config.EMBEDDING_DIMENSION,
+            )
         )
-        # batch response returns a list of embeddings
-        embeddings = response.get("embedding", [])
+        embeddings = response.embeddings
         if not embeddings:
             raise RuntimeError("Gemini returned no embeddings.")
-        if isinstance(embeddings[0], float):
-            # single text was passed — wrap
-            results.append(embeddings)
-        else:
-            results.extend(embeddings)
+        results.extend([e.values for e in embeddings])
     if len(results) != len(texts):
         raise RuntimeError(
             f"Gemini returned {len(results)} embeddings for {len(texts)} texts."
@@ -288,9 +283,15 @@ def answer_with_sources(
 
     prompt = build_prompt(question, chunks, project_memory)
 
-    response = _gen_model.generate_content(
-        prompt,
-        generation_config=_gen_config,
+    from google.genai import types
+    client = _get_genai_client()
+    response = client.models.generate_content(
+        model=config.GEMINI_MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.2,
+            max_output_tokens=2048,
+        ),
     )
     answer_text = response.text
 

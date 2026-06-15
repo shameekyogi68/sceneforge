@@ -35,9 +35,6 @@ CREATE TABLE IF NOT EXISTS document_chunks (
     created_at  TIMESTAMP DEFAULT NOW()
 );
 
--- Existing installs: add document-scoped chunks without rebuilding the table.
-ALTER TABLE document_chunks
-    ADD COLUMN IF NOT EXISTS document_id UUID REFERENCES documents(id) ON DELETE CASCADE;
 
 -- 5. Create Profiles table (used for tracking daily user rate limits)
 CREATE TABLE IF NOT EXISTS profiles (

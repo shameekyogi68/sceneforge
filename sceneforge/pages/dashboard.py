@@ -37,6 +37,10 @@ DASH_KEYFRAMES = """
   40%  { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+@keyframes skeletonShimmer {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.7; }
+}
 """
 
 body_style = {
@@ -190,7 +194,7 @@ def render_project_card(proj: Any) -> rx.Component:
                 "box_shadow": "0 4px 12px rgba(239,68,68,0.35)",
             },
             _active={"transform": "scale(0.95)"},
-            on_click=lambda: DashboardState.delete_project(proj["id"], proj["name"]),
+            on_click=lambda: DashboardState.confirm_delete_project(proj["id"], proj["name"]),
         ),
 
         # Card content
@@ -250,6 +254,38 @@ def render_project_card(proj: Any) -> rx.Component:
         _active={"transform": "translateY(-2px)"},
         on_click=lambda: rx.redirect(f"/project?project_id={proj['id']}"),
         style={"animation": "cardEntrance 0.5s cubic-bezier(0.16,1,0.3,1) both"},
+    )
+
+
+def project_skeleton_card() -> rx.Component:
+    return rx.box(
+        rx.vstack(
+            rx.box(
+                width="44px",
+                height="44px",
+                border_radius="12px",
+                background="rgba(255,255,255,0.03)",
+            ),
+            rx.box(
+                width="70%",
+                height="16px",
+                border_radius="4px",
+                background="rgba(255,255,255,0.03)",
+            ),
+            rx.box(
+                width="40%",
+                height="12px",
+                border_radius="4px",
+                background="rgba(255,255,255,0.02)",
+            ),
+            spacing="3",
+            align_items="start",
+        ),
+        background="rgba(20,20,28,0.3)",
+        border="1px solid rgba(255,255,255,0.03)",
+        border_radius="20px",
+        padding="28px 26px",
+        style={"animation": "skeletonShimmer 1.5s ease-in-out infinite"},
     )
 
 
@@ -361,78 +397,89 @@ def dashboard_page() -> rx.Component:
                 style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s both"},
             ),
 
-            # Projects grid or empty state
+            # Projects loading skeleton, grid or empty state
             rx.cond(
-                DashboardState.filtered_projects.length() > 0,
+                DashboardState.is_loading,
                 rx.grid(
-                    rx.foreach(DashboardState.filtered_projects, render_project_card),
+                    project_skeleton_card(),
+                    project_skeleton_card(),
+                    project_skeleton_card(),
                     columns=rx.breakpoints(initial="1", sm="2", md="3"),
                     spacing="5",
                     width="100%",
-                    style={"animation": "fadeIn 0.4s ease 0.3s both"},
                 ),
-                # Empty state
-                rx.vstack(
-                    rx.box(
-                        rx.html("""<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
-                            <line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/>
-                            <line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
-                        </svg>"""),
-                        width="72px", height="72px",
-                        border_radius="20px",
-                        background="rgba(99,102,241,0.08)",
-                        border="1px solid rgba(99,102,241,0.15)",
-                        color="#818cf8",
-                        display="flex",
-                        align_items="center",
-                        justify_content="center",
-                        margin_bottom="24px",
+                rx.cond(
+                    DashboardState.filtered_projects.length() > 0,
+                    rx.grid(
+                        rx.foreach(DashboardState.filtered_projects, render_project_card),
+                        columns=rx.breakpoints(initial="1", sm="2", md="3"),
+                        spacing="5",
+                        width="100%",
+                        style={"animation": "fadeIn 0.4s ease 0.3s both"},
                     ),
-                    rx.heading(
-                        "No projects yet",
-                        size="5",
-                        color="#e4e4e7",
-                        font_weight="700",
-                        letter_spacing="-0.02em",
+                    # Empty state
+                    rx.vstack(
+                        rx.box(
+                            rx.html("""<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
+                                <line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/>
+                                <line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
+                            </svg>"""),
+                            width="72px", height="72px",
+                            border_radius="20px",
+                            background="rgba(99,102,241,0.08)",
+                            border="1px solid rgba(99,102,241,0.15)",
+                            color="#818cf8",
+                            display="flex",
+                            align_items="center",
+                            justify_content="center",
+                            margin_bottom="24px",
+                        ),
+                        rx.heading(
+                            "No projects yet",
+                            size="5",
+                            color="#e4e4e7",
+                            font_weight="700",
+                            letter_spacing="-0.02em",
+                        ),
+                        rx.text(
+                            "Create your first project to start uploading research documents and asking questions.",
+                            color="rgba(113,113,122,0.8)",
+                            font_size="0.9rem",
+                            text_align="center",
+                            max_width="340px",
+                            line_height="1.6",
+                        ),
+                        rx.button(
+                            rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
+                            rx.text("Create Project", font_size="0.875rem", font_weight="600"),
+                            background="rgba(255,255,255,0.04)",
+                            border="1px solid rgba(255,255,255,0.1)",
+                            color="#e4e4e7",
+                            padding="10px 22px",
+                            border_radius="12px",
+                            cursor="pointer",
+                            gap="7px",
+                            margin_top="8px",
+                            transition="all 0.2s ease",
+                            _hover={
+                                "background": "rgba(99,102,241,0.08)",
+                                "border_color": "rgba(99,102,241,0.4)",
+                                "color": "white",
+                                "transform": "translateY(-1px)",
+                                "box_shadow": "0 4px 16px rgba(99,102,241,0.15)",
+                            },
+                            on_click=DashboardState.open_modal,
+                        ),
+                        padding="80px 24px",
+                        background="rgba(16,16,24,0.3)",
+                        border="1px dashed rgba(255,255,255,0.07)",
+                        border_radius="24px",
+                        width="100%",
+                        align="center",
+                        spacing="3",
+                        style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s both"},
                     ),
-                    rx.text(
-                        "Create your first project to start uploading research documents and asking questions.",
-                        color="rgba(113,113,122,0.8)",
-                        font_size="0.9rem",
-                        text_align="center",
-                        max_width="340px",
-                        line_height="1.6",
-                    ),
-                    rx.button(
-                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
-                        rx.text("Create Project", font_size="0.875rem", font_weight="600"),
-                        background="rgba(255,255,255,0.04)",
-                        border="1px solid rgba(255,255,255,0.1)",
-                        color="#e4e4e7",
-                        padding="10px 22px",
-                        border_radius="12px",
-                        cursor="pointer",
-                        gap="7px",
-                        margin_top="8px",
-                        transition="all 0.2s ease",
-                        _hover={
-                            "background": "rgba(99,102,241,0.08)",
-                            "border_color": "rgba(99,102,241,0.4)",
-                            "color": "white",
-                            "transform": "translateY(-1px)",
-                            "box_shadow": "0 4px 16px rgba(99,102,241,0.15)",
-                        },
-                        on_click=DashboardState.open_modal,
-                    ),
-                    padding="80px 24px",
-                    background="rgba(16,16,24,0.3)",
-                    border="1px dashed rgba(255,255,255,0.07)",
-                    border_radius="24px",
-                    width="100%",
-                    align="center",
-                    spacing="3",
-                    style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s both"},
                 ),
             ),
 
@@ -562,6 +609,68 @@ def dashboard_page() -> rx.Component:
             ),
             open=DashboardState.is_modal_open,
             on_open_change=lambda open: DashboardState.set_is_modal_open(open),
+        ),
+
+        # ── Delete Confirmation Modal ─────────────────────────────────
+        rx.dialog.root(
+            rx.dialog.content(
+                # Header
+                rx.vstack(
+                    rx.heading(
+                        "Delete Project?",
+                        font_size="1.3rem",
+                        font_weight="800",
+                        color="#fca5a5",
+                        letter_spacing="-0.03em",
+                    ),
+                    rx.text(
+                        f"Are you sure you want to permanently delete '{DashboardState.project_to_delete_name}'? This will delete all documents, chunks, and messages, and cannot be undone.",
+                        font_size="0.86rem",
+                        color="rgba(161,161,170,0.8)",
+                        line_height="1.5",
+                    ),
+                    spacing="2",
+                    align_items="start",
+                    margin_bottom="24px",
+                ),
+                # Buttons
+                rx.hstack(
+                    rx.button(
+                        "Cancel",
+                        background="rgba(255,255,255,0.03)",
+                        border="1px solid rgba(255,255,255,0.08)",
+                        color="rgba(161,161,170,0.8)",
+                        border_radius="10px",
+                        padding="10px 20px",
+                        font_size="0.875rem",
+                        cursor="pointer",
+                        on_click=DashboardState.close_delete_confirm,
+                    ),
+                    rx.button(
+                        "Delete Project",
+                        background="linear-gradient(135deg, #ef4444, #dc2626)",
+                        color="white",
+                        border_radius="10px",
+                        padding="10px 22px",
+                        font_size="0.875rem",
+                        font_weight="700",
+                        cursor="pointer",
+                        box_shadow="0 4px 14px rgba(239,68,68,0.25)",
+                        on_click=DashboardState.execute_delete_project,
+                    ),
+                    spacing="3",
+                    justify="end",
+                ),
+                background="rgba(14,14,20,0.95)",
+                backdrop_filter="blur(32px)",
+                border="1px solid rgba(239,68,68,0.2)",
+                border_radius="24px",
+                padding="36px",
+                max_width="440px",
+                box_shadow="0 32px 80px -16px rgba(0,0,0,0.8)",
+            ),
+            open=DashboardState.is_delete_confirm_open,
+            on_open_change=lambda open: DashboardState.set_is_delete_confirm_open(open),
         ),
 
         style=body_style,

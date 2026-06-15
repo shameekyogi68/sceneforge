@@ -205,13 +205,92 @@ def login_page() -> rx.Component:
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
             ),
 
+            # ── Email/Password Form ───────────────────────────────────
+            rx.vstack(
+                rx.input(
+                    placeholder="Email Address",
+                    value=AuthState.email,
+                    on_change=AuthState.set_email,
+                    background="rgba(255,255,255,0.02)",
+                    border="1px solid rgba(255,255,255,0.08)",
+                    border_radius="12px",
+                    padding="12px 16px",
+                    color="#f4f4f5",
+                    width="100%",
+                    _placeholder={"color": "rgba(113,113,122,0.6)"},
+                    _focus={
+                        "border_color": "rgba(99,102,241,0.5)",
+                        "background": "rgba(99,102,241,0.04)",
+                        "box_shadow": "0 0 0 3px rgba(99,102,241,0.1)",
+                        "outline": "none",
+                    }
+                ),
+                rx.input(
+                    placeholder="Password",
+                    type="password",
+                    value=AuthState.password,
+                    on_change=AuthState.set_password,
+                    background="rgba(255,255,255,0.02)",
+                    border="1px solid rgba(255,255,255,0.08)",
+                    border_radius="12px",
+                    padding="12px 16px",
+                    color="#f4f4f5",
+                    width="100%",
+                    _placeholder={"color": "rgba(113,113,122,0.6)"},
+                    _focus={
+                        "border_color": "rgba(99,102,241,0.5)",
+                        "background": "rgba(99,102,241,0.04)",
+                        "box_shadow": "0 0 0 3px rgba(99,102,241,0.1)",
+                        "outline": "none",
+                    }
+                ),
+                rx.button(
+                    rx.cond(
+                        AuthState.is_loading,
+                        rx.spinner(size="1", color="indigo"),
+                        rx.text(rx.cond(AuthState.is_signup, "Create Account", "Sign In"), font_weight="700"),
+                    ),
+                    background="linear-gradient(135deg, #6366f1, #4f46e5)",
+                    color="white",
+                    border_radius="12px",
+                    padding="12px 20px",
+                    width="100%",
+                    cursor="pointer",
+                    box_shadow="0 4px 14px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+                    _hover={
+                        "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
+                        "transform": "translateY(-1px)",
+                    },
+                    _active={"transform": "translateY(1px)", "box_shadow": "none"},
+                    disabled=AuthState.is_loading,
+                    on_click=AuthState.handle_auth,
+                ),
+                rx.box(
+                    rx.text(
+                        rx.cond(AuthState.is_signup, "Already have an account? Sign in", "Don't have an account? Sign up"),
+                        color="rgba(161,161,170,0.8)",
+                        font_size="0.84rem",
+                        cursor="pointer",
+                        transition="color 0.2s ease",
+                        _hover={"color": "#a5b4fc"},
+                        on_click=AuthState.toggle_mode,
+                    ),
+                    margin_top="6px",
+                    text_align="center",
+                    width="100%",
+                ),
+                width="100%",
+                spacing="3",
+                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both"},
+            ),
+
             # ── Divider ───────────────────────────────────────────────
             rx.box(
                 height="1px",
                 width="100%",
                 background="linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 30%, rgba(99,102,241,0.3) 50%, rgba(255,255,255,0.1) 70%, transparent 100%)",
-                margin_y="28px",
-                style={"animation": "fadeIn 0.5s ease 0.4s both"},
+                margin_y="20px",
+                style={"animation": "fadeIn 0.5s ease 0.3s both"},
             ),
 
             # ── Google CTA ────────────────────────────────────────────
@@ -219,17 +298,17 @@ def login_page() -> rx.Component:
                 rx.button(
                     google_icon(),
                     rx.text("Continue with Google", font_size="0.96rem", font_weight="600", letter_spacing="0.01em"),
-                    background="rgba(255,255,255,0.04)",
+                    background="rgba(255,255,255,0.03)",
                     color="#f4f4f5",
-                    border="1px solid rgba(255,255,255,0.1)",
-                    border_radius="14px",
+                    border="1px solid rgba(255,255,255,0.08)",
+                    border_radius="12px",
                     width="100%",
-                    padding_y="20px",
+                    padding_y="12px",
                     cursor="pointer",
                     gap="10px",
                     transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
                     _hover={
-                        "background": "rgba(255,255,255,0.08)",
+                        "background": "rgba(255,255,255,0.06)",
                         "border_color": "rgba(99,102,241,0.5)",
                         "box_shadow": "0 8px 32px rgba(99,102,241,0.18), 0 0 0 1px rgba(99,102,241,0.15)",
                         "transform": "translateY(-1px)",
@@ -239,7 +318,7 @@ def login_page() -> rx.Component:
                     style={"position": "relative", "overflow": "hidden"},
                 ),
                 width="100%",
-                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both"},
+                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both"},
             ),
 
             # ── Feature badges ────────────────────────────────────────
@@ -307,13 +386,18 @@ def login_page() -> rx.Component:
             ),
 
             # ── Footer ────────────────────────────────────────────────
-            rx.text(
-                "By signing in you agree to SceneForge's terms of service.",
-                color="rgba(113,113,122,0.55)",
-                font_size="0.72rem",
-                text_align="center",
-                line_height="1.7",
-                margin_top="8px",
+            rx.box(
+                rx.hstack(
+                    rx.text("By signing in you agree to SceneForge's ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
+                    rx.link("Terms", href="/terms", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),
+                    rx.text(" & ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
+                    rx.link("Privacy Policy", href="/privacy", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),
+                    spacing="1",
+                    justify="center",
+                    wrap="wrap",
+                    margin_top="8px",
+                ),
+                width="100%",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both"},
             ),
 

@@ -7,12 +7,10 @@ config = rx.Config(
     app_name="sceneforge",
     api_url=api_url,
     cors_allowed_origins=[
+        origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if origin.strip()
+    ] or [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://sceneforge-lime-wood.reflex.run",
-        "https://00152787-d926-49c9-910f-975d1eae00ca.fly.dev",
-        "https://sceneforge-aqua-ocean.reflex.run",
-        "https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev",
     ],
     state_auto_setters=True,
     plugins=[

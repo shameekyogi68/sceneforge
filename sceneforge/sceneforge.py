@@ -3,6 +3,7 @@ from sceneforge.pages.login import login_page
 from sceneforge.pages.dashboard import dashboard_page
 from sceneforge.pages.project import project_page
 from sceneforge.pages.callback import callback_page
+from sceneforge.pages.legal import terms_page, privacy_page
 from sceneforge.state import State, AuthState
 
 # Global style overrides injected on every page via the app's style param
@@ -76,14 +77,16 @@ app = rx.App(
 # (Reflex 0.9.x: use add_page + inject html style tag in root component)
 
 # Register pages
-app.add_page(login_page, route="/login")
+app.add_page(login_page, route="/login", on_load=State.check_auth_login)
 app.add_page(dashboard_page, route="/dashboard", on_load=State.check_auth)
 app.add_page(project_page, route="/project")
 app.add_page(callback_page, route="/auth/v1/callback", on_load=AuthState.handle_callback_load)
+app.add_page(terms_page, route="/terms")
+app.add_page(privacy_page, route="/privacy")
 
 
 # Index page redirects dynamically based on session status
-@rx.page(route="/", on_load=State.check_auth)
+@rx.page(route="/", on_load=State.check_auth_index)
 def index():
     return rx.center(
         rx.html(f"<style>{GLOBAL_CSS}</style>"),

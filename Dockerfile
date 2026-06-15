@@ -13,7 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 COPY sceneforge/ ./sceneforge/
 COPY rxconfig.py .
-COPY .env .
 
 # Create persistent folders
 RUN mkdir -p uploads mem0

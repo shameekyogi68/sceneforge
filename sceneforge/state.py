@@ -4,6 +4,7 @@ import os
 import sys
 import uuid
 import logging
+import asyncio
 from datetime import date
 from pathlib import Path
 from supabase import create_client
@@ -25,9 +26,7 @@ class ChatMessage:
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import backend.config as config
-from backend.auth import login as auth_login, signup as auth_signup, get_current_user, check_rate_limit
-from backend.memory import get_project_memory, save_conversation_memory, clear_project_memory
-from backend.rag import answer_with_sources, process_and_store_pdf
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +34,14 @@ logger = logging.getLogger(__name__)
 UPLOADS_DIR = Path("uploads")
 UPLOADS_DIR.mkdir(exist_ok=True)
 
-
-def get_db(token: str):
-    client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
-    client.postgrest.auth(token)
-    return client
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
 
 class State(rx.State):
     """Global base state containing user authentication tokens in cookies."""
-    token: str = rx.Cookie("", name="token")
-    user_id: str = rx.Cookie("", name="user_id")
+    token: str = rx.Cookie("", name="token", secure=True, same_site="strict")
+    user_id: str = rx.Cookie("", name="user_id", secure=True, same_site="strict")
+    refresh_token: str = rx.Cookie("", name="refresh_token", secure=True, same_site="strict")
     user_email: str = ""
 
     @rx.var
@@ -53,22 +49,102 @@ class State(rx.State):
         """Returns the first uppercase character of the user's email."""
         return self.user_email[0].upper() if self.user_email else "U"
 
+    async def _api_request(
+        self,
+        method: str,
+        path: str,
+        json: Optional[dict] = None,
+        params: Optional[dict] = None,
+        headers: Optional[dict] = None,
+        auth: bool = True,
+        files: Optional[dict] = None,
+        data: Optional[dict] = None,
+    ) -> httpx.Response:
+        """Helper to perform HTTP requests to the FastAPI backend, handling auth and auto token refresh."""
+        url = f"{BACKEND_URL}{path}"
+        req_headers = headers.copy() if headers else {}
+        if auth and self.token:
+            req_headers["Authorization"] = f"Bearer {self.token}"
 
-    def check_auth(self) -> Optional[rx.event.EventSpec]:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            try:
+                response = await client.request(
+                    method, url, json=json, params=params, headers=req_headers, files=files, data=data
+                )
+            except httpx.RequestError as exc:
+                logger.exception("HTTP Request to backend failed: %s", url)
+                raise RuntimeError("Cannot connect to SceneForge backend service.") from exc
+
+            # If 401 and refresh_token exists, try refreshing
+            if response.status_code == 401 and auth and self.refresh_token:
+                logger.info("Access token expired, attempting refresh...")
+                try:
+                    refresh_resp = await client.post(
+                        f"{BACKEND_URL}/auth/refresh",
+                        json={"refresh_token": self.refresh_token}
+                    )
+                    if refresh_resp.status_code == 200:
+                        refresh_data = refresh_resp.json()
+                        self.token = refresh_data["access_token"]
+                        self.refresh_token = refresh_data["refresh_token"]
+                        
+                        # Retry the request with the new access token
+                        req_headers["Authorization"] = f"Bearer {self.token}"
+                        response = await client.request(
+                            method, url, json=json, params=params, headers=req_headers, files=files, data=data
+                        )
+                    else:
+                        logger.warning("Token refresh failed with status %d", refresh_resp.status_code)
+                        self.logout()
+                except Exception as exc:
+                    logger.exception("Token refresh failed with exception")
+                    self.logout()
+
+            return response
+
+    async def check_auth(self) -> Optional[rx.event.EventSpec]:
         """Redirect to login page if token is missing, otherwise retrieve user email."""
         if not self.token:
             return rx.redirect("/login")
         try:
-            user = get_current_user(self.token)
-            self.user_email = user.email
+            response = await self._api_request("GET", "/auth/me")
+            if response.status_code == 200:
+                self.user_email = response.json().get("email", "")
+            else:
+                return self.logout()
         except Exception:
-            # Token expired or invalid
             return self.logout()
+
+    async def check_auth_index(self) -> Optional[rx.event.EventSpec]:
+        """Redirect to dashboard if already logged in, otherwise redirect to login."""
+        if not self.token:
+            return rx.redirect("/login")
+        try:
+            response = await self._api_request("GET", "/auth/me")
+            if response.status_code == 200:
+                self.user_email = response.json().get("email", "")
+                return rx.redirect("/dashboard")
+            else:
+                return self.logout()
+        except Exception:
+            return self.logout()
+
+    async def check_auth_login(self) -> Optional[rx.event.EventSpec]:
+        """Redirect to dashboard if already logged in."""
+        if self.token:
+            try:
+                response = await self._api_request("GET", "/auth/me")
+                if response.status_code == 200:
+                    self.user_email = response.json().get("email", "")
+                    return rx.redirect("/dashboard")
+            except Exception:
+                pass
 
     def logout(self) -> rx.event.EventSpec:
         """Clear tokens and redirect to login."""
         self.token = ""
         self.user_id = ""
+        self.refresh_token = ""
         self.user_email = ""
         return rx.redirect("/login")
 
@@ -88,7 +164,7 @@ class AuthState(State):
         self.error_message = ""
         self.success_message = ""
 
-    def handle_auth(self):
+    async def handle_auth(self):
         """Submit the login or signup form."""
         self.is_loading = True
         self.error_message = ""
@@ -103,63 +179,71 @@ class AuthState(State):
             return
 
         try:
-            if self.is_signup:
-                # Sign up
-                result = auth_signup(email_clean, password_clean)
-                session = result.session
-                if not session:
-                    self.success_message = "Check your email to confirm your account before signing in."
-                    self.is_loading = False
-                    return
+            path = "/auth/signup" if self.is_signup else "/auth/login"
+            response = await self._api_request(
+                "POST",
+                path,
+                params={"email": email_clean, "password": password_clean},
+                auth=False
+            )
+            
+            if response.status_code != 200:
+                detail = response.json().get("detail", "Authentication failed.")
+                raise Exception(detail)
                 
-                self.token = session.access_token
-                self.user_id = str(result.user.id)
-            else:
-                # Login
-                result = auth_login(email_clean, password_clean)
-                self.token = result.session.access_token
-                self.user_id = str(result.user.id)
+            res_data = response.json()
+            
+            # Sign up might require email confirmation, session is empty
+            if self.is_signup and not res_data.get("access_token"):
+                self.success_message = "Check your email to confirm your account before signing in."
+                return
+                
+            self.token = res_data["access_token"]
+            self.refresh_token = res_data["refresh_token"]
+            self.user_id = res_data["user_id"]
 
             self.success_message = "Authenticated successfully! Redirecting..."
             return rx.redirect("/dashboard")
         except Exception as e:
+            logger.exception("Form authentication failed")
             err_msg = str(e)
-            if "Invalid credentials" in err_msg or "401" in err_msg:
+            if "Invalid email or password" in err_msg or "401" in err_msg or "Invalid credentials" in err_msg:
                 self.error_message = "Invalid email or password."
             else:
-                self.error_message = err_msg.replace("HTTPException:", "")
+                self.error_message = err_msg.replace("Exception:", "").strip()
         finally:
             self.is_loading = False
 
     def login_with_google(self):
         """Redirect to Supabase Google Auth URL."""
-        from urllib.parse import urlsplit
         self.error_message = ""
         self.success_message = ""
         try:
-            # 1. Try to get origin from request headers (most reliable for websockets)
-            origin = self.router.headers.get("origin") or self.router.headers.get("Origin") or ""
-            
-            # 2. If origin not found in headers, check router.url
-            if not origin and self.router.url:
-                parsed = urlsplit(self.router.url)
-                if parsed.netloc:
-                    origin = f"{parsed.scheme}://{parsed.netloc}"
-            
-            # 3. Fallback to hardcoded hosts if parsing fails
-            if not origin:
-                # If we are local, default to localhost:3000
-                if "localhost" in str(self.router.url) or "127.0.0.1" in str(self.router.url):
-                    origin = "http://localhost:3000"
-                else:
-                    origin = "https://sceneforge-aqua-ocean.reflex.run"
-            
-            # Ensure origin ends without trailing slash
-            origin = origin.rstrip("/")
-            
-            redirect_url = f"{origin}/auth/v1/callback"
-            auth_url = f"{config.SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to={redirect_url}"
-            
+            import os
+
+            # Determine base URL
+            site_url = os.environ.get("SITE_URL", "").rstrip("/")
+
+            if not site_url:
+                try:
+                    page_host = str(self.router.page.host or "")
+                    if page_host:
+                        if "localhost" in page_host or "127.0.0.1" in page_host:
+                            site_url = f"http://{page_host}"
+                        else:
+                            site_url = f"https://{page_host}"
+                except Exception:
+                    pass
+
+            if not site_url:
+                site_url = "https://sceneforge-aqua-ocean.reflex.run"
+
+            redirect_url = f"{site_url}/auth/v1/callback"
+            auth_url = (
+                f"{config.SUPABASE_URL}/auth/v1/authorize"
+                f"?provider=google&redirect_to={redirect_url}"
+            )
+
             logger.info("Redirecting to Supabase OAuth: %s", auth_url)
             return rx.redirect(auth_url)
         except Exception as e:
@@ -170,10 +254,9 @@ class AuthState(State):
         """Get the url hash fragment on callback page load."""
         return rx.call_script("window.location.hash", callback=AuthState.process_callback_hash)
 
-    def process_callback_hash(self, hash_str: str):
+    async def process_callback_hash(self, hash_str: str):
         """Parse token from hash, set session cookies, and redirect to dashboard."""
         import urllib.parse
-        from datetime import date
         
         self.error_message = ""
         self.success_message = ""
@@ -187,6 +270,7 @@ class AuthState(State):
             
         params = urllib.parse.parse_qs(hash_str)
         access_token = params.get("access_token", [None])[0]
+        ref_token = params.get("refresh_token", [None])[0]
         
         if not access_token:
             # Check if there was an error in redirect
@@ -195,22 +279,19 @@ class AuthState(State):
             return rx.redirect("/login")
 
         try:
-            # Validate token and retrieve user details
-            user = get_current_user(access_token)
-            self.token = access_token
-            self.user_id = str(user.id)
+            # Validate token and retrieve user details by calling FastAPI GET /auth/me
+            headers = {"Authorization": f"Bearer {access_token}"}
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(f"{BACKEND_URL}/auth/me", headers=headers)
+                if res.status_code != 200:
+                    raise Exception("Verification with SceneForge backend failed.")
+                user_data = res.json()
             
-            # Best-effort profiles upsert
-            try:
-                db = get_db(access_token)
-                db.table("profiles").upsert({
-                    "id": str(user.id),
-                    "email": user.email,
-                    "questions_today": 0,
-                    "last_question_date": date.today().isoformat()
-                }).execute()
-            except Exception as e:
-                logger.warning("Could not upsert profile in callback: %s", e)
+            self.token = access_token
+            if ref_token:
+                self.refresh_token = ref_token
+            self.user_id = user_data["id"]
+            self.user_email = user_data["email"]
 
             self.success_message = "Successfully logged in with Google!"
             return rx.redirect("/dashboard")
@@ -227,6 +308,12 @@ class DashboardState(State):
     new_project_name: str = ""
     search_query: str = ""
     is_modal_open: bool = False
+    is_loading: bool = False
+    
+    # Deletion confirmation dialog state
+    project_to_delete_id: str = ""
+    project_to_delete_name: str = ""
+    is_delete_confirm_open: bool = False
 
     def open_modal(self):
         self.new_project_name = ""
@@ -235,25 +322,27 @@ class DashboardState(State):
     def close_modal(self):
         self.is_modal_open = False
 
-    def load_projects(self):
-        """Fetch all projects owned by the user."""
+    async def load_projects(self):
+        """Fetch all projects owned by the user from backend."""
         if not self.token or not self.user_id:
             return
+        self.is_loading = True
+        yield
         try:
-            db = get_db(self.token)
-            res = db.table("projects").select("*").eq("user_id", self.user_id).execute()
-            data = res.data or []
-            for p in data:
-                created = p.get("created_at", "")
-                p["created_date"] = created.split("T")[0] if "T" in created else created
-            self.projects = data
+            response = await self._api_request("GET", "/projects")
+            if response.status_code == 200:
+                self.projects = response.json()
+            else:
+                self.projects = []
         except Exception as e:
             logger.exception("Failed to load projects")
-            # If token is invalid/expired, log out
             return self.logout()
+        finally:
+            self.is_loading = False
+            yield
 
-    def create_project(self):
-        """Insert a new project and reload dashboard."""
+    async def create_project(self):
+        """Insert a new project via API and reload dashboard."""
         name = self.new_project_name.strip()
         if not name:
             return rx.toast.error("Project name cannot be empty.")
@@ -261,31 +350,50 @@ class DashboardState(State):
             return rx.toast.error("Project name must be 120 characters or fewer.")
 
         try:
-            db = get_db(self.token)
-            db.table("projects").insert({
-                "id": str(uuid.uuid4()),
-                "name": name,
-                "user_id": self.user_id,
-            }).execute()
-            self.is_modal_open = False
-            self.new_project_name = ""
-            self.load_projects()
-            rx.toast.success(f"Project '{name}' created!")
+            response = await self._api_request("POST", "/projects", json={"name": name})
+            if response.status_code == 200:
+                self.is_modal_open = False
+                self.new_project_name = ""
+                rx.toast.success(f"Project '{name}' created!")
+                await self.load_projects()
+            else:
+                detail = response.json().get("detail", "Failed to create project")
+                rx.toast.error(f"Failed to create project: {detail}")
         except Exception as e:
             logger.exception("Failed to create project")
-            rx.toast.error(f"Failed to create project: {e}")
+            rx.toast.error("An internal error occurred while creating project.")
 
-    def delete_project(self, project_id: str, project_name: str):
-        """Delete a project (with DB cascade) and clear memory."""
+    def confirm_delete_project(self, project_id: str, project_name: str):
+        """Open delete confirmation modal and store project info."""
+        self.project_to_delete_id = project_id
+        self.project_to_delete_name = project_name
+        self.is_delete_confirm_open = True
+
+    def close_delete_confirm(self):
+        """Close delete confirmation modal."""
+        self.is_delete_confirm_open = False
+        self.project_to_delete_id = ""
+        self.project_to_delete_name = ""
+
+    async def execute_delete_project(self):
+        """Perform project deletion via backend API."""
+        project_id = self.project_to_delete_id
+        project_name = self.project_to_delete_name
+        if not project_id:
+            return
+
         try:
-            db = get_db(self.token)
-            db.table("projects").delete().eq("id", project_id).eq("user_id", self.user_id).execute()
-            clear_project_memory(project_id)
-            self.load_projects()
-            rx.toast.success(f"Project '{project_name}' deleted.")
+            response = await self._api_request("DELETE", f"/projects/{project_id}")
+            if response.status_code == 200:
+                rx.toast.success(f"Project '{project_name}' deleted.")
+                self.close_delete_confirm()
+                await self.load_projects()
+            else:
+                detail = response.json().get("detail", "Failed to delete project")
+                rx.toast.error(f"Failed to delete project: {detail}")
         except Exception as e:
             logger.exception("Failed to delete project")
-            rx.toast.error(f"Failed to delete project: {e}")
+            rx.toast.error("An internal error occurred while deleting project.")
 
     @rx.var
     def filtered_projects(self) -> List[Dict[str, Any]]:
@@ -307,50 +415,40 @@ class ProjectState(State):
     is_sending: bool = False
     conversation_id: str = ""
 
-    def on_load_project(self):
-        """Check authentication and load project data using project_id from router."""
-        auth_res = self.check_auth()
-        if auth_res:
-            return auth_res
-
-        router_params = self.router.page.params
-        pid = router_params.get("project_id", "")
-        if not pid:
-            return rx.redirect("/dashboard")
-
-        self.project_id = pid
-        self.load_project_details()
-
-    def load_project_details(self):
-        """Query project details, document list, and chat logs from Supabase."""
+    async def load_documents(self):
+        """Load document list for sidebar."""
         try:
-            db = get_db(self.token)
-            # 1. Fetch project metadata
-            proj_res = db.table("projects").select("name").eq("id", self.project_id).eq("user_id", self.user_id).execute()
-            if not proj_res.data:
-                # Unauthorized or project not found
-                return rx.redirect("/dashboard")
-            self.project_name = proj_res.data[0]["name"]
+            response = await self._api_request("GET", f"/documents/{self.project_id}")
+            if response.status_code == 200:
+                self.documents = response.json()
+            else:
+                self.documents = []
+        except Exception:
+            logger.exception("Failed to load documents")
+            self.documents = []
 
-            # 2. Fetch document list
-            docs_res = db.table("documents").select("*").eq("project_id", self.project_id).order("created_at", desc=True).execute()
-            self.documents = docs_res.data or []
-
-            # 3. Fetch remaining question limit
-            profile_res = db.table("profiles").select("questions_today").eq("id", self.user_id).execute()
-            if profile_res.data:
-                today_count = profile_res.data[0]["questions_today"]
+    async def load_profile(self):
+        """Load rate limit information."""
+        try:
+            response = await self._api_request("GET", "/auth/me")
+            if response.status_code == 200:
+                today_count = response.json().get("questions_today", 0)
                 self.remaining_questions = f"{max(0, 100 - today_count)} questions remaining today"
             else:
                 self.remaining_questions = "100 questions remaining today"
+        except Exception:
+            logger.exception("Failed to load profile details")
+            self.remaining_questions = "100 questions remaining today"
 
-            # 4. Fetch last active conversation and messages
-            conv_res = db.table("conversations").select("id").eq("project_id", self.project_id).order("created_at", desc=True).limit(1).execute()
-            if conv_res.data:
-                self.conversation_id = conv_res.data[0]["id"]
-                msg_res = db.table("messages").select("role, content, sources").eq("conversation_id", self.conversation_id).order("created_at", asc=True).execute()
-                self.chat_history = []
-                for m in (msg_res.data or []):
+    async def load_chat_history(self):
+        """Load messages for the last active conversation."""
+        try:
+            response = await self._api_request("GET", f"/projects/{self.project_id}/messages")
+            if response.status_code == 200:
+                data = response.json()
+                self.conversation_id = data.get("conversation_id", "")
+                chat_history = []
+                for m in (data.get("messages", []) or []):
                     srcs = []
                     raw_srcs = m.get("sources")
                     if raw_srcs and isinstance(raw_srcs, list):
@@ -363,96 +461,147 @@ class ProjectState(State):
                                         text_preview=s.get("text_preview", "")
                                     )
                                 )
-                    self.chat_history.append(
+                    chat_history.append(
                         ChatMessage(
-                            role=m.get("role", ""),
-                            content=m.get("content", ""),
-                            sources=srcs
+                           role=m.get("role", ""),
+                           content=m.get("content", ""),
+                           sources=srcs
                         )
                     )
+                self.chat_history = chat_history
             else:
                 self.conversation_id = ""
                 self.chat_history = []
+        except Exception:
+            logger.exception("Failed to load chat history")
+            self.conversation_id = ""
+            self.chat_history = []
+
+    async def on_load_project(self):
+        """Check authentication and load project data using project_id from router."""
+        auth_res = await self.check_auth()
+        if auth_res:
+            return auth_res
+
+        router_params = self.router.page.params
+        pid = router_params.get("project_id", "")
+        if not pid:
+            return rx.redirect("/dashboard")
+
+        self.project_id = pid
+        await self.load_project_details()
+        
+        # Check if any documents are in 'processing' state on load and start background polling
+        any_processing = any(d["status"] == "processing" for d in self.documents)
+        if any_processing:
+            return ProjectState.start_document_polling
+
+    async def load_project_details(self):
+        """Query project details, document list, and chat logs from backend API."""
+        try:
+            # Verify project details/ownership by listing projects
+            response = await self._api_request("GET", "/projects")
+            if response.status_code != 200:
+                return rx.redirect("/dashboard")
+                
+            projects = response.json()
+            matching = [p for p in projects if p["id"] == self.project_id]
+            if not matching:
+                # Unauthorized or project not found
+                return rx.redirect("/dashboard")
+            self.project_name = matching[0]["name"]
+
+            # Load project dependencies
+            await self.load_documents()
+            await self.load_profile()
+            await self.load_chat_history()
 
         except Exception as e:
             logger.exception("Failed to load project details")
             rx.toast.error("Failed to load project details.")
 
-    def delete_document(self, doc_id: str, filename: str):
+    async def delete_document(self, doc_id: str, filename: str):
         """Delete document from database and cascade chunks."""
         try:
-            db = get_db(self.token)
-            db.table("document_chunks").delete().eq("document_id", doc_id).execute()
-            db.table("documents").delete().eq("id", doc_id).execute()
-            self.load_project_details()
-            rx.toast.success(f"Document '{filename}' deleted.")
+            response = await self._api_request("DELETE", f"/documents/{doc_id}")
+            if response.status_code == 200:
+                await self.load_documents()
+                rx.toast.success(f"Document '{filename}' deleted.")
+            else:
+                detail = response.json().get("detail", "Failed to delete document")
+                rx.toast.error(f"Failed to delete document: {detail}")
         except Exception as e:
             logger.exception("Failed to delete document")
-            rx.toast.error(f"Failed to delete document: {e}")
+            rx.toast.error("An internal error occurred while deleting document.")
 
     async def handle_upload(self, files: List[rx.UploadFile]):
-        """Accept PDF files from rx.upload, process them in backend and save chunk vectors."""
-        db = get_db(self.token)
-        
+        """Accept PDF files from rx.upload, validate, and send to backend API."""
         # Verify document limit
         existing_docs_count = len(self.documents)
         if existing_docs_count + len(files) > config.MAX_FILES_PER_PROJECT:
             rx.toast.error(f"Projects can contain at most {config.MAX_FILES_PER_PROJECT} documents.")
             return
 
+        has_uploaded_any = False
+
         for file in files:
+            # 1. Extension check
             if not file.filename.lower().endswith(".pdf"):
                 rx.toast.error(f"File '{file.filename}' is not a PDF.")
                 continue
 
-            # Read file contents and validate size
+            # Read file contents
             contents = await file.read()
+            
+            # 2. Magic bytes check
+            if contents[:4] != b"%PDF":
+                rx.toast.error(f"File '{file.filename}' is not a valid PDF document.")
+                continue
+
+            # 3. Size check
             if len(contents) > config.MAX_FILE_SIZE_MB * 1024 * 1024:
                 rx.toast.error(f"File '{file.filename}' exceeds the {config.MAX_FILE_SIZE_MB} MB limit.")
                 continue
 
-            # Record document metadata as processing
+            # Call FastAPI /upload endpoint using multipart form-data
             try:
-                doc_res = db.table("documents").insert({
-                    "project_id": self.project_id,
-                    "filename": file.filename,
-                    "status": "processing",
-                }).execute()
+                files_payload = {"file": (file.filename, contents, "application/pdf")}
+                data_payload = {"project_id": self.project_id}
                 
-                doc_id = doc_res.data[0]["id"] if doc_res.data else None
-                
-                # Save temp file
-                temp_path = UPLOADS_DIR / f"{self.project_id}_{file.filename}"
-                temp_path.write_bytes(contents)
-
-                # Process PDF and store embeddings
-                chunk_count = process_and_store_pdf(
-                    str(temp_path),
-                    file.filename,
-                    self.project_id,
-                    document_id=doc_id,
-                    token=self.token,
+                response = await self._api_request(
+                    "POST",
+                    "/upload",
+                    files=files_payload,
+                    data=data_payload
                 )
-
-                # Update document status to ready
-                db.table("documents").update({"status": "ready"}).eq("id", doc_id).execute()
                 
-                # Cleanup temp file
-                temp_path.unlink(missing_ok=True)
-                
-                rx.toast.success(f"Processed {file.filename}! Created {chunk_count} chunks.")
-                
+                if response.status_code == 200:
+                    rx.toast.success(f"File '{file.filename}' uploaded. Processing in background...")
+                    has_uploaded_any = True
+                else:
+                    detail = response.json().get("detail", "Failed to process file")
+                    rx.toast.error(f"Failed to process '{file.filename}': {detail}")
             except Exception as e:
-                logger.exception("PDF upload processing failed")
-                if 'doc_id' in locals() and doc_id:
-                    db.table("documents").update({"status": "error"}).eq("id", doc_id).execute()
-                rx.toast.error(f"Failed to process '{file.filename}': {e}")
-        
-        # Reload details to update sidebar
-        self.load_project_details()
+                logger.exception("Upload failed")
+                rx.toast.error(f"Failed to process '{file.filename}': Server error.")
 
-    def send_message(self):
-        """Send message, perform vector similarity lookup, build prompt, run RAG, and save session memory."""
+        if has_uploaded_any:
+            await self.load_documents()
+            yield ProjectState.start_document_polling
+
+    @rx.background
+    async def start_document_polling(self):
+        """Background task to poll document processing status until all are completed."""
+        while True:
+            async with self:
+                await self.load_documents()
+                any_processing = any(d["status"] == "processing" for d in self.documents)
+                if not any_processing:
+                    break
+            await asyncio.sleep(2.0)
+
+    async def send_message(self):
+        """Send message to API, perform RAG, update UI with streamed answers, and refresh rate counts."""
         message = self.input_message.strip()
         if not message:
             return
@@ -465,10 +614,17 @@ class ProjectState(State):
         yield
 
         try:
-            db = get_db(self.token)
+            response = await self._api_request(
+                "POST",
+                "/ask",
+                json={
+                    "message": message,
+                    "project_id": self.project_id,
+                    "conversation_id": self.conversation_id or None
+                }
+            )
 
-            # Check rate limiting
-            if not check_rate_limit(self.user_id, self.token):
+            if response.status_code == 429:
                 self.chat_history.append(ChatMessage(
                     role="assistant", 
                     content="⚠️ Daily limit reached (100 questions). Come back tomorrow.",
@@ -477,45 +633,16 @@ class ProjectState(State):
                 self.is_sending = False
                 yield
                 return
+            elif response.status_code != 200:
+                detail = response.json().get("detail", "Error generating response.")
+                raise Exception(detail)
 
-            # Check / Create conversation
-            if not self.conversation_id:
-                conv_res = db.table("conversations").insert({
-                    "project_id": self.project_id,
-                    "title": message[:50]
-                }).execute()
-                if conv_res.data:
-                    self.conversation_id = conv_res.data[0]["id"]
-
-            # RAG Answer Generation
-            memory = get_project_memory(self.project_id)
-            answer, sources = answer_with_sources(message, self.project_id, memory, token=self.token)
-
-            # Save conversations to Mem0 (long-term memory)
-            save_conversation_memory(
-                [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": answer}
-                ],
-                user_id=self.project_id
-            )
-
-            # Insert messages into database
-            if self.conversation_id:
-                db.table("messages").insert([
-                    {
-                        "conversation_id": self.conversation_id,
-                        "role": "user",
-                        "content": message,
-                        "sources": None,
-                    },
-                    {
-                        "conversation_id": self.conversation_id,
-                        "role": "assistant",
-                        "content": answer,
-                        "sources": sources,
-                    }
-                ]).execute()
+            res_data = response.json()
+            self.conversation_id = res_data["conversation_id"]
+            answer = res_data["reply"]
+            sources = res_data["sources"]
+            remaining_count = res_data["remaining_questions"]
+            self.remaining_questions = f"{remaining_count} questions remaining today"
 
             # Add assistant message and sources to state
             source_items = []
@@ -534,18 +661,16 @@ class ProjectState(State):
                 sources=source_items
             ))
 
-            # Reload project details to refresh remaining questions count
-            self.load_project_details()
-
         except Exception as e:
             logger.exception("Failed to send chat message")
             self.chat_history.append(ChatMessage(
                 role="assistant",
-                content=f"❌ Error generating response: {e}",
+                content="❌ An internal error occurred while generating the response. Please try again later.",
                 sources=[]
             ))
         finally:
             self.is_sending = False
+            yield
 
     def use_example_question(self, text: str):
         """Set input message and send."""

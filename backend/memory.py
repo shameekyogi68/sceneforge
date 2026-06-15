@@ -59,7 +59,15 @@ def _build_memory():
         return _NoopMemory()
 
 
-_memory = _build_memory()
+_memory = None
+
+
+def _get_memory():
+    """Retrieve or build the Mem0 client lazily."""
+    global _memory
+    if _memory is None:
+        _memory = _build_memory()
+    return _memory
 
 
 # ---------------------------------------------------------------------------
@@ -69,7 +77,7 @@ _memory = _build_memory()
 def save_conversation_memory(messages: List[Dict], user_id: str) -> None:
     """Persist a conversation exchange. Silently ignores all errors."""
     try:
-        _memory.add(messages, user_id=user_id)
+        _get_memory().add(messages, user_id=user_id)
     except Exception:
         logger.debug("save_conversation_memory skipped for %s", user_id)
 
@@ -80,7 +88,7 @@ def get_project_memory(user_id: str) -> str:
     Returns at most 10 memory items to keep the prompt concise.
     """
     try:
-        result = _memory.get_all(user_id=user_id)
+        result = _get_memory().get_all(user_id=user_id)
         if not result:
             return ""
 
@@ -105,6 +113,6 @@ def get_project_memory(user_id: str) -> str:
 def clear_project_memory(user_id: str) -> None:
     """Delete all memories for a project. Silently ignores all errors."""
     try:
-        _memory.delete_all(user_id=user_id)
+        _get_memory().delete_all(user_id=user_id)
     except Exception:
         logger.debug("clear_project_memory skipped for %s", user_id)

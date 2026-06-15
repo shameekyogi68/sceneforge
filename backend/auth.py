@@ -19,7 +19,44 @@ import backend.config as config
 logger = logging.getLogger(__name__)
 
 # Single module-level client for auth (not RLS-protected operations)
-_anon_client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+_anon_client = None
+
+def get_anon_client():
+    """Retrieve or build the anonymous Supabase client lazily."""
+    global _anon_client
+    if _anon_client is None:
+        _anon_client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+    return _anon_client
+
+
+from collections import OrderedDict
+import threading
+
+class ClientCache:
+    """Thread-safe connection cache to reuse client instances per user token."""
+    def __init__(self, max_size: int = 100):
+        self.cache = OrderedDict()
+        self.max_size = max_size
+        self._lock = threading.Lock()
+
+    def get(self, token: str):
+        if not token:
+            return get_anon_client()
+        with self._lock:
+            if token in self.cache:
+                self.cache.move_to_end(token)
+                return self.cache[token]
+            client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+            client.postgrest.auth(token)
+            self.cache[token] = client
+            if len(self.cache) > self.max_size:
+                self.cache.popitem(last=False)
+            return client
+
+_client_cache = ClientCache()
+
+def get_authenticated_client(token: str):
+    return _client_cache.get(token)
 
 
 # ---------------------------------------------------------------------------
@@ -33,7 +70,7 @@ def signup(email: str, password: str) -> Any:
     Note: session may be None when email confirmation is required.
     """
     try:
-        result = _anon_client.auth.sign_up({"email": email, "password": password})
+        result = get_anon_client().auth.sign_up({"email": email, "password": password})
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -42,7 +79,7 @@ def signup(email: str, password: str) -> Any:
 
     # Best-effort profile insert (non-fatal if it already exists)
     try:
-        _anon_client.table("profiles").insert({
+        get_anon_client().table("profiles").insert({
             "id":                  str(result.user.id),
             "email":               email,
             "questions_today":     0,
@@ -64,7 +101,7 @@ def login(email: str, password: str) -> Any:
     Raises HTTPException(401) on invalid credentials.
     """
     try:
-        result = _anon_client.auth.sign_in_with_password({"email": email, "password": password})
+        result = get_anon_client().auth.sign_in_with_password({"email": email, "password": password})
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
@@ -75,7 +112,7 @@ def login(email: str, password: str) -> Any:
 
 
 # ---------------------------------------------------------------------------
-# Token validation
+# Token validation and refresh
 # ---------------------------------------------------------------------------
 
 def get_current_user(token: str) -> Any:
@@ -84,7 +121,7 @@ def get_current_user(token: str) -> Any:
     Raises HTTPException(401) on invalid/expired token.
     """
     try:
-        response = _anon_client.auth.get_user(token)
+        response = get_anon_client().auth.get_user(token)
         if not response.user:
             raise HTTPException(status_code=401, detail="Invalid token")
         return response.user
@@ -92,6 +129,20 @@ def get_current_user(token: str) -> Any:
         raise
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+def refresh_supabase_token(refresh_token: str) -> tuple[str, str]:
+    """
+    Refresh Supabase session using the refresh token.
+    Returns (new_access_token, new_refresh_token).
+    """
+    try:
+        res = get_anon_client().auth.refresh_session(refresh_token)
+        if not res.session:
+            raise HTTPException(status_code=401, detail="Refresh session failed — no session returned.")
+        return res.session.access_token, res.session.refresh_token
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token refresh failed: {str(e)}")
 
 
 # ---------------------------------------------------------------------------
@@ -112,9 +163,8 @@ def check_rate_limit(user_id: str, token: str) -> bool:
     Returns True (allow) / False (deny).
     """
     try:
-        # Use the authenticated client so RLS policies are satisfied
-        client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
-        client.postgrest.auth(token)
+        # Use the cached authenticated client so RLS policies are satisfied
+        client = get_authenticated_client(token)
 
         rows = client.table("profiles").select("questions_today, last_question_date") \
                      .eq("id", user_id).execute().data

@@ -205,146 +205,68 @@ def login_page() -> rx.Component:
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
             ),
 
-            # ── Email/Password Form ───────────────────────────────────
+            # ── Introduction & Security Info ──────────────────────────
             rx.vstack(
-                rx.input(
-                    placeholder="Email Address",
-                    value=AuthState.email,
-                    on_change=AuthState.set_email,
-                    background="rgba(255,255,255,0.02)",
-                    border="1px solid rgba(255,255,255,0.08)",
-                    border_radius="12px",
-                    padding="12px 16px",
-                    color="#f4f4f5",
-                    width="100%",
-                    _placeholder={"color": "rgba(113,113,122,0.6)"},
-                    _focus={
-                        "border_color": "rgba(99,102,241,0.5)",
-                        "background": "rgba(99,102,241,0.04)",
-                        "box_shadow": "0 0 0 3px rgba(99,102,241,0.1)",
-                        "outline": "none",
-                    }
-                ),
-                rx.input(
-                    placeholder="Password",
-                    type="password",
-                    value=AuthState.password,
-                    on_change=AuthState.set_password,
-                    background="rgba(255,255,255,0.02)",
-                    border="1px solid rgba(255,255,255,0.08)",
-                    border_radius="12px",
-                    padding="12px 16px",
-                    color="#f4f4f5",
-                    width="100%",
-                    _placeholder={"color": "rgba(113,113,122,0.6)"},
-                    _focus={
-                        "border_color": "rgba(99,102,241,0.5)",
-                        "background": "rgba(99,102,241,0.04)",
-                        "box_shadow": "0 0 0 3px rgba(99,102,241,0.1)",
-                        "outline": "none",
-                    }
-                ),
-                rx.button(
-                    rx.cond(
-                        AuthState.is_loading,
-                        rx.spinner(size="1", color="indigo"),
-                        rx.text(rx.cond(AuthState.is_signup, "Create Account", "Sign In"), font_weight="700"),
-                    ),
-                    background="linear-gradient(135deg, #6366f1, #4f46e5)",
-                    color="white",
-                    border_radius="12px",
-                    padding="12px 20px",
-                    width="100%",
-                    cursor="pointer",
-                    box_shadow="0 4px 14px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
-                    _hover={
-                        "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
-                        "transform": "translateY(-1px)",
-                    },
-                    _active={"transform": "translateY(1px)", "box_shadow": "none"},
-                    disabled=AuthState.is_loading,
-                    on_click=AuthState.handle_auth,
-                ),
-                rx.box(
-                    rx.text(
-                        rx.cond(AuthState.is_signup, "Already have an account? Sign in", "Don't have an account? Sign up"),
-                        color="rgba(161,161,170,0.8)",
-                        font_size="0.84rem",
-                        cursor="pointer",
-                        transition="color 0.2s ease",
-                        _hover={"color": "#a5b4fc"},
-                        on_click=AuthState.toggle_mode,
-                    ),
-                    margin_top="6px",
+                rx.text(
+                    "Sign in or register securely in one click. We verify your identity safely via Google OAuth with zero password requirements.",
+                    color="rgba(161,161,170,0.8)",
+                    font_size="0.84rem",
                     text_align="center",
-                    width="100%",
+                    line_height="1.6",
+                    margin_top="12px",
                 ),
                 width="100%",
-                spacing="3",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both"},
-            ),
-
-            # ── Divider ───────────────────────────────────────────────
-            rx.box(
-                height="1px",
-                width="100%",
-                background="linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 30%, rgba(99,102,241,0.3) 50%, rgba(255,255,255,0.1) 70%, transparent 100%)",
-                margin_y="20px",
-                style={"animation": "fadeIn 0.5s ease 0.3s both"},
             ),
 
             # ── Google CTA ────────────────────────────────────────────
             rx.box(
                 rx.button(
                     google_icon(),
-                    rx.text("Continue with Google", font_size="0.96rem", font_weight="600", letter_spacing="0.01em"),
-                    background="rgba(255,255,255,0.03)",
-                    color="#f4f4f5",
-                    border="1px solid rgba(255,255,255,0.08)",
-                    border_radius="12px",
+                    rx.text("Continue with Google", font_size="0.98rem", font_weight="700", letter_spacing="0.01em"),
+                    background="rgba(255, 255, 255, 0.95)",
+                    color="#09090b",
+                    border_radius="14px",
                     width="100%",
-                    padding_y="12px",
+                    padding_y="14px",
                     cursor="pointer",
-                    gap="10px",
+                    gap="12px",
+                    box_shadow="0 4px 14px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
                     transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
                     _hover={
-                        "background": "rgba(255,255,255,0.06)",
-                        "border_color": "rgba(99,102,241,0.5)",
-                        "box_shadow": "0 8px 32px rgba(99,102,241,0.18), 0 0 0 1px rgba(99,102,241,0.15)",
-                        "transform": "translateY(-1px)",
+                        "background": "#ffffff",
+                        "box_shadow": "0 8px 30px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.15)",
+                        "transform": "translateY(-2px)",
                     },
-                    _active={"transform": "translateY(1px)", "box_shadow": "none"},
+                    _active={"transform": "translateY(0)"},
                     on_click=AuthState.login_with_google,
                     style={"position": "relative", "overflow": "hidden"},
                 ),
                 width="100%",
-                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.35s both"},
+                margin_top="8px",
+                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both"},
             ),
 
-            # ── Feature badges ────────────────────────────────────────
-            rx.hstack(
-                rx.box(
-                    rx.html("""<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:rgba(161,161,170,0.7);font-weight:500;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(52,211,153,0.8)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        Source citations
-                    </div>"""),
+            # ── Trust & Security Badges ───────────────────────────────
+            rx.vstack(
+                rx.hstack(
+                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>"""),
+                    rx.text("Secured by Google OAuth", color="rgba(161,161,170,0.7)", font_size="0.75rem", font_weight="600"),
+                    spacing="1",
+                    align="center",
                 ),
-                rx.box(
-                    rx.html("""<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:rgba(161,161,170,0.7);font-weight:500;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(52,211,153,0.8)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        Zero hallucination
-                    </div>"""),
+                rx.hstack(
+                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>"""),
+                    rx.text("Automatic secure workspace setup", color="rgba(161,161,170,0.7)", font_size="0.75rem", font_weight="600"),
+                    spacing="1",
+                    align="center",
                 ),
-                rx.box(
-                    rx.html("""<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:rgba(161,161,170,0.7);font-weight:500;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(52,211,153,0.8)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        Free to use
-                    </div>"""),
-                ),
-                spacing="4",
-                justify="center",
-                wrap="wrap",
-                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.45s both"},
+                spacing="2",
+                align_items="center",
+                margin_top="12px",
+                margin_bottom="8px",
+                width="100%",
+                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both"},
             ),
 
             # ── Error / Success alerts ────────────────────────────────

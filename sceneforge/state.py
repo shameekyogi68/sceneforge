@@ -155,6 +155,8 @@ class AuthState(State):
     """State for email/password signup and login form."""
     email: str = ""
     password: str = ""
+    confirm_password: str = ""
+    show_password: bool = False
     is_signup: bool = False
     error_message: str = ""
     success_message: str = ""
@@ -163,8 +165,15 @@ class AuthState(State):
     def toggle_mode(self):
         """Toggle between login and signup mode."""
         self.is_signup = not self.is_signup
+        self.password = ""
+        self.confirm_password = ""
+        self.show_password = False
         self.error_message = ""
         self.success_message = ""
+
+    def toggle_password_visibility(self):
+        """Toggle password visibility mask."""
+        self.show_password = not self.show_password
 
     async def handle_auth(self):
         """Submit the login or signup form."""
@@ -179,6 +188,20 @@ class AuthState(State):
             self.error_message = "Email and password are required."
             self.is_loading = False
             return
+
+        if self.is_signup:
+            if not self.confirm_password:
+                self.error_message = "Please confirm your password."
+                self.is_loading = False
+                return
+            if password_clean != self.confirm_password:
+                self.error_message = "Passwords do not match."
+                self.is_loading = False
+                return
+            if len(password_clean) < 6:
+                self.error_message = "Password must be at least 6 characters."
+                self.is_loading = False
+                return
 
         try:
             path = "/auth/signup" if self.is_signup else "/auth/login"

@@ -61,18 +61,19 @@ class State(rx.State):
         data: Optional[dict] = None,
     ) -> httpx.Response:
         """Helper to perform HTTP requests to the FastAPI backend, handling auth and auto token refresh."""
-        url = f"{BACKEND_URL}{path}"
         req_headers = headers.copy() if headers else {}
         if auth and self.token:
             req_headers["Authorization"] = f"Bearer {self.token}"
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        from backend.main import app as fastapi_app
+
+        async with httpx.AsyncClient(app=fastapi_app, base_url="http://localhost", timeout=60.0) as client:
             try:
                 response = await client.request(
-                    method, url, json=json, params=params, headers=req_headers, files=files, data=data
+                    method, path, json=json, params=params, headers=req_headers, files=files, data=data
                 )
             except httpx.RequestError as exc:
-                logger.exception("HTTP Request to backend failed: %s", url)
+                logger.exception("HTTP Request to backend failed: %s", path)
                 raise RuntimeError("Cannot connect to SceneForge backend service.") from exc
 
             # If 401 and refresh_token exists, try refreshing
@@ -80,7 +81,7 @@ class State(rx.State):
                 logger.info("Access token expired, attempting refresh...")
                 try:
                     refresh_resp = await client.post(
-                        f"{BACKEND_URL}/auth/refresh",
+                        "/auth/refresh",
                         json={"refresh_token": self.refresh_token}
                     )
                     if refresh_resp.status_code == 200:
@@ -91,7 +92,7 @@ class State(rx.State):
                         # Retry the request with the new access token
                         req_headers["Authorization"] = f"Bearer {self.token}"
                         response = await client.request(
-                            method, url, json=json, params=params, headers=req_headers, files=files, data=data
+                            method, path, json=json, params=params, headers=req_headers, files=files, data=data
                         )
                     else:
                         logger.warning("Token refresh failed with status %d", refresh_resp.status_code)
@@ -101,6 +102,7 @@ class State(rx.State):
                     self.logout()
 
             return response
+
 
     async def check_auth(self) -> Optional[rx.event.EventSpec]:
         """Redirect to login page if token is missing, otherwise retrieve user email."""

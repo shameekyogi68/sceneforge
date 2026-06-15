@@ -64,6 +64,8 @@ button, input, textarea, a {
 }
 """
 
+from backend.main import app as fastapi_app
+
 app = rx.App(
     style={
         "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
@@ -71,6 +73,7 @@ app = rx.App(
     stylesheets=[
         # Inlined via a data URI approach — we inject via html component in each page
     ],
+    api_transformer=fastapi_app,
 )
 
 # Inject global CSS into every page via the app's head

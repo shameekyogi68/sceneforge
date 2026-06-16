@@ -304,10 +304,12 @@ class AuthState(State):
             return rx.redirect("/login")
 
         try:
-            # Validate token and retrieve user details by calling FastAPI GET /auth/me
-            headers = {"Authorization": f"Bearer {access_token}"}
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.get(f"{BACKEND_URL}/auth/me", headers=headers)
+            # Validate token and retrieve user details using in-process transport
+            # (avoids dependency on BACKEND_URL which defaults to localhost and breaks in production)
+            from backend.main import app as fastapi_app
+            req_headers = {"Authorization": f"Bearer {access_token}"}
+            async with httpx.AsyncClient(app=fastapi_app, base_url="http://localhost", timeout=10.0) as client:
+                res = await client.get("/auth/me", headers=req_headers)
                 if res.status_code != 200:
                     raise Exception("Verification with SceneForge backend failed.")
                 user_data = res.json()
@@ -334,11 +336,24 @@ class DashboardState(State):
     search_query: str = ""
     is_modal_open: bool = False
     is_loading: bool = False
-    
+
     # Deletion confirmation dialog state
     project_to_delete_id: str = ""
     project_to_delete_name: str = ""
     is_delete_confirm_open: bool = False
+
+    # Explicit setters (replacing deprecated state_auto_setters)
+    def set_search_query(self, value: str):
+        self.search_query = value
+
+    def set_new_project_name(self, value: str):
+        self.new_project_name = value
+
+    def set_is_modal_open(self, value: bool):
+        self.is_modal_open = value
+
+    def set_is_delete_confirm_open(self, value: bool):
+        self.is_delete_confirm_open = value
 
     def open_modal(self):
         self.new_project_name = ""
@@ -440,6 +455,10 @@ class ProjectState(State):
     remaining_questions: str = "100 questions remaining today"
     is_sending: bool = False
     conversation_id: str = ""
+
+    # Explicit setter (replacing deprecated state_auto_setters)
+    def set_input_message(self, value: str):
+        self.input_message = value
 
     async def load_documents(self):
         """Load document list for sidebar."""

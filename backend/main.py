@@ -38,7 +38,8 @@ cors_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
-    "http://127.0.0.1:8000"
+    "http://127.0.0.1:8000",
+    "https://sceneforge-aqua-ocean.reflex.run",
 ]
 
 app.add_middleware(

@@ -21,7 +21,12 @@ RUN mkdir -p uploads mem0
 EXPOSE 3000
 EXPOSE 8000
 
-# Pre-compile the app to speed up container startup
+# Pre-compile the frontend with the correct production API URL so env.json
+# bakes in the right WebSocket/HTTP backend host instead of localhost.
+# Without this, the browser gets a stale or localhost URL and the WebSocket
+# connection is rejected with a 403.
+ARG API_URL=https://sceneforge-aqua-ocean.reflex.run
+ENV API_URL=${API_URL}
 RUN reflex export --frontend-only || true
 
 CMD ["reflex", "run", "--env", "prod"]

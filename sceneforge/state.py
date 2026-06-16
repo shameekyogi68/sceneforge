@@ -67,7 +67,7 @@ class State(rx.State):
 
         from backend.main import app as fastapi_app
 
-        async with httpx.AsyncClient(app=fastapi_app, base_url="http://localhost", timeout=60.0) as client:
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fastapi_app), base_url="http://localhost", timeout=60.0) as client:
             try:
                 response = await client.request(
                     method, path, json=json, params=params, headers=req_headers, files=files, data=data
@@ -308,7 +308,7 @@ class AuthState(State):
             # (avoids dependency on BACKEND_URL which defaults to localhost and breaks in production)
             from backend.main import app as fastapi_app
             req_headers = {"Authorization": f"Bearer {access_token}"}
-            async with httpx.AsyncClient(app=fastapi_app, base_url="http://localhost", timeout=10.0) as client:
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fastapi_app), base_url="http://localhost", timeout=10.0) as client:
                 res = await client.get("/auth/me", headers=req_headers)
                 if res.status_code != 200:
                     raise Exception("Verification with SceneForge backend failed.")

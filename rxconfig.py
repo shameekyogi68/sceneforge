@@ -1,5 +1,6 @@
 import os
 import reflex as rx
+from reflex.plugins import RadixThemesPlugin
 from reflex_base.plugins.sitemap import SitemapPlugin
 
 # In production (Reflex Cloud), API_URL must point to the same origin as the
@@ -18,5 +19,5 @@ config = rx.Config(
         "http://127.0.0.1:3000",
         "https://sceneforge-aqua-ocean.reflex.run",
     ],
-    plugins=[SitemapPlugin()],
+    plugins=[RadixThemesPlugin(), SitemapPlugin()],
 )

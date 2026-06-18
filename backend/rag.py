@@ -116,7 +116,7 @@ def _embed_batch(texts: List[str], task_type: str) -> List[List[float]]:
         embeddings = response.embeddings
         if not embeddings:
             raise RuntimeError("Gemini returned no embeddings.")
-        results.extend([cast(List[float], e.values) for e in embeddings if e.values is not None])
+        results.extend([e.values for e in embeddings if e.values is not None])
     if len(results) != len(texts):
         raise RuntimeError(
             f"Gemini returned {len(results)} embeddings for {len(texts)} texts."

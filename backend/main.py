@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import sys
@@ -408,7 +409,7 @@ async def upload_document_endpoint(
 # ---------------------------------------------------------------------------
 
 @app.post("/ask", response_model=ChatResponse)
-def ask_endpoint(
+async def ask_endpoint(
     req: ChatRequest,
     background_tasks: BackgroundTasks,
     token: str = Depends(get_token),
@@ -420,62 +421,63 @@ def ask_endpoint(
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
 
     db = get_authenticated_client(token)
+    user_id_str = str(user.id)
 
-    # 1. Verify project ownership
-    proj_res = db.table("projects").select("id").eq("id", req.project_id).eq("user_id", str(user.id)).execute()
+    # 1. Verify project ownership + fetch memory in parallel
+    proj_fut = asyncio.to_thread(
+        lambda: db.table("projects").select("id")
+            .eq("id", req.project_id).eq("user_id", user_id_str).execute()
+    )
+    memory_fut = asyncio.to_thread(get_project_memory, req.project_id)
+
+    proj_res, memory = await asyncio.gather(proj_fut, memory_fut)
+
     if not proj_res.data:
         raise HTTPException(status_code=403, detail="Access denied to this project")
 
     # 2. Check rate limits
-    if not check_rate_limit(str(user.id), token):
+    if not check_rate_limit(user_id_str, token):
         raise HTTPException(status_code=429, detail="Daily limit reached (100 questions). Come back tomorrow.")
 
     try:
         # 3. Resolve or Create Conversation
         conv_id = req.conversation_id
         if not conv_id:
-            conv_res = db.table("conversations").insert({
-                "project_id": req.project_id,
-                "title": message[:50]
-            }).execute()
+            conv_res = await asyncio.to_thread(
+                lambda: db.table("conversations").insert({
+                    "project_id": req.project_id,
+                    "title": message[:50]
+                }).execute()
+            )
             if conv_res.data:
                 conv_id = conv_res.data[0]["id"]
             else:
                 raise HTTPException(status_code=500, detail="Failed to create chat conversation.")
 
-        # 4. Run RAG Pipeline
-        memory = get_project_memory(req.project_id)
-        answer, sources = answer_with_sources(message, req.project_id, memory, token=token)
-
-        # 5. Save exchange to Mem0 memory (in background)
-        background_tasks.add_task(
-            save_conversation_memory,
-            [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": answer}
-            ],
-            user_id=req.project_id
+        # 4. Run RAG Pipeline (memory already fetched in parallel above)
+        answer, sources = await asyncio.to_thread(
+            answer_with_sources, message, req.project_id, memory, token
         )
 
-        # 6. Save message history to DB
-        db.table("messages").insert([
-            {
-                "conversation_id": conv_id,
-                "role": "user",
-                "content": message,
-                "sources": None,
-            },
-            {
-                "conversation_id": conv_id,
-                "role": "assistant",
-                "content": answer,
-                "sources": sources,
-            }
-        ]).execute()
+        # 5. Save memory + messages in background (do NOT block the response)
+        background_tasks.add_task(
+            save_conversation_memory,
+            [{"role": "user", "content": message}, {"role": "assistant", "content": answer}],
+            user_id=req.project_id
+        )
+        background_tasks.add_task(
+            _save_messages_bg, db, conv_id, message, answer, sources
+        )
 
-        # 7. Get remaining question count
-        profile_res = db.table("profiles").select("questions_today").eq("id", str(user.id)).execute()
-        today_count = profile_res.data[0]["questions_today"] if profile_res.data else 0
+        # 6. Compute remaining from rate-limit data already in DB (avoid extra query)
+        try:
+            profile_res = await asyncio.to_thread(
+                lambda: db.table("profiles").select("questions_today")
+                    .eq("id", user_id_str).execute()
+            )
+            today_count = profile_res.data[0]["questions_today"] if profile_res.data else 0
+        except Exception:
+            today_count = 0
         remaining = max(0, config.DAILY_QUESTION_LIMIT - today_count)
 
         return {
@@ -488,6 +490,18 @@ def ask_endpoint(
     except Exception as e:
         logger.exception("Ask endpoint error")
         raise HTTPException(status_code=500, detail=f"Chat generation failure: {str(e)}")
+
+
+def _save_messages_bg(db, conv_id: str, message: str, answer: str, sources: list) -> None:
+    """Background task: persist user + assistant messages to the DB."""
+    try:
+        db.table("messages").insert([
+            {"conversation_id": conv_id, "role": "user",      "content": message, "sources": None},
+            {"conversation_id": conv_id, "role": "assistant", "content": answer,  "sources": sources},
+        ]).execute()
+    except Exception:
+        logger.exception("Background message save failed for conversation %s", conv_id)
+
 
 @app.get("/projects/{project_id}/messages")
 def get_project_messages(project_id: str, limit: int = 50, token: str = Depends(get_token), user: Any = Depends(get_user)):

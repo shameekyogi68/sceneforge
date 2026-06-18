@@ -62,7 +62,7 @@ def get_authenticated_client(token: str):
 
 class UserCache:
     """Thread-safe cache for verified Supabase users to avoid round-trip get_user calls."""
-    def __init__(self, ttl: float = 60.0, max_size: int = 100):
+    def __init__(self, ttl: float = 300.0, max_size: int = 100):
         self.cache = {}
         self.ttl = ttl
         self.max_size = max_size

@@ -36,6 +36,29 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
 
+# ---------------------------------------------------------------------------
+# Module-level persistent HTTP client — avoids TCP handshake on every call.
+# Created lazily on first use so the FastAPI ASGI app is fully ready.
+# ---------------------------------------------------------------------------
+_http_client: Optional[httpx.AsyncClient] = None
+
+def _get_http_client() -> httpx.AsyncClient:
+    """Return (or create) the shared async HTTP client with connection pooling."""
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        from backend.main import app as fastapi_app
+        _http_client = httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=fastapi_app),
+            base_url="http://localhost",
+            timeout=60.0,
+            limits=httpx.Limits(
+                max_keepalive_connections=20,
+                max_connections=50,
+                keepalive_expiry=30,
+            ),
+        )
+    return _http_client
+
 
 class State(rx.State):
     """Global base state containing user authentication tokens in cookies."""
@@ -61,48 +84,48 @@ class State(rx.State):
         files: Optional[dict] = None,
         data: Optional[dict] = None,
     ) -> httpx.Response:
-        """Helper to perform HTTP requests to the FastAPI backend, handling auth and auto token refresh."""
+        """Helper to perform HTTP requests to the FastAPI backend, handling auth and auto token refresh.
+        Uses a module-level persistent client with connection pooling — no TCP handshake per call.
+        """
         req_headers = headers.copy() if headers else {}
         if auth and self.token:
             req_headers["Authorization"] = f"Bearer {self.token}"
 
-        from backend.main import app as fastapi_app
+        client = _get_http_client()
+        try:
+            response = await client.request(
+                method, path, json=json, params=params, headers=req_headers, files=files, data=data
+            )
+        except httpx.RequestError as exc:
+            logger.exception("HTTP Request to backend failed: %s", path)
+            raise RuntimeError("Cannot connect to SceneForge backend service.") from exc
 
-        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fastapi_app), base_url="http://localhost", timeout=60.0) as client:
+        # If 401 and refresh_token exists, try refreshing
+        if response.status_code == 401 and auth and self.refresh_token:
+            logger.info("Access token expired, attempting refresh...")
             try:
-                response = await client.request(
-                    method, path, json=json, params=params, headers=req_headers, files=files, data=data
+                refresh_resp = await client.post(
+                    "/auth/refresh",
+                    json={"refresh_token": self.refresh_token}
                 )
-            except httpx.RequestError as exc:
-                logger.exception("HTTP Request to backend failed: %s", path)
-                raise RuntimeError("Cannot connect to SceneForge backend service.") from exc
+                if refresh_resp.status_code == 200:
+                    refresh_data = refresh_resp.json()
+                    self.token = refresh_data["access_token"]
+                    self.refresh_token = refresh_data["refresh_token"]
 
-            # If 401 and refresh_token exists, try refreshing
-            if response.status_code == 401 and auth and self.refresh_token:
-                logger.info("Access token expired, attempting refresh...")
-                try:
-                    refresh_resp = await client.post(
-                        "/auth/refresh",
-                        json={"refresh_token": self.refresh_token}
+                    # Retry the request with the new access token
+                    req_headers["Authorization"] = f"Bearer {self.token}"
+                    response = await client.request(
+                        method, path, json=json, params=params, headers=req_headers, files=files, data=data
                     )
-                    if refresh_resp.status_code == 200:
-                        refresh_data = refresh_resp.json()
-                        self.token = refresh_data["access_token"]
-                        self.refresh_token = refresh_data["refresh_token"]
-                        
-                        # Retry the request with the new access token
-                        req_headers["Authorization"] = f"Bearer {self.token}"
-                        response = await client.request(
-                            method, path, json=json, params=params, headers=req_headers, files=files, data=data
-                        )
-                    else:
-                        logger.warning("Token refresh failed with status %d", refresh_resp.status_code)
-                        self.logout()
-                except Exception as exc:
-                    logger.exception("Token refresh failed with exception")
+                else:
+                    logger.warning("Token refresh failed with status %d", refresh_resp.status_code)
                     self.logout()
+            except Exception as exc:
+                logger.exception("Token refresh failed with exception")
+                self.logout()
 
-            return response
+        return response
 
 
     async def check_auth(self) -> Optional[rx.event.EventSpec]:

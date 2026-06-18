@@ -67,9 +67,9 @@ class TestRag(unittest.TestCase):
         prompt = build_prompt(question, chunks)
         
         self.assertIn("Question: What is the secret?", prompt)
-        self.assertIn("[SOURCE 1: doc1.pdf, page 5]", prompt)
+        self.assertIn("[DOCUMENT: doc1.pdf, PAGE: 5]", prompt)
         self.assertIn("The secret is chocolate.", prompt)
-        self.assertIn("[SOURCE 2: doc2.pdf, page 12]", prompt)
+        self.assertIn("[DOCUMENT: doc2.pdf, PAGE: 12]", prompt)
         self.assertIn("Chocolate is good.", prompt)
 
     def test_build_prompt_with_memory(self):
@@ -84,7 +84,7 @@ class TestRag(unittest.TestCase):
 
     def test_build_prompt_no_hallucination_instruction(self):
         prompt = build_prompt("any", [])
-        self.assertIn("Answer ONLY from the numbered source documents", prompt)
+        self.assertIn("Answer ONLY from the source documents", prompt)
         self.assertIn("Do NOT add outside knowledge", prompt)
 
     @patch("backend.rag.get_embedding")

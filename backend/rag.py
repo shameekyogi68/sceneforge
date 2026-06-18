@@ -290,8 +290,8 @@ def build_prompt(
     parts: List[str] = [
         "You are SceneForge, a film-research assistant.\n"
         "Rules:\n"
-        "1. Answer ONLY from the numbered source documents below.\n"
-        "2. Cite every fact with [SOURCE N] inline.\n"
+        "1. Answer ONLY from the source documents below.\n"
+        "2. Cite every fact with [filename, p. page_num] inline (e.g. [c.pdf, p. 4]).\n"
         "3. If the answer is not in the sources, reply: "
         '"I cannot find this information in the uploaded documents."\n'
         "4. Do NOT add outside knowledge.\n",
@@ -302,9 +302,9 @@ def build_prompt(
             f"=== PREVIOUS SESSION FACTS ===\n{project_memory}\n=== END FACTS ===\n"
         )
 
-    for i, chunk in enumerate(chunks, start=1):
+    for chunk in chunks:
         parts.append(
-            f"[SOURCE {i}: {chunk['filename']}, page {chunk['page_num']}]\n"
+            f"[DOCUMENT: {chunk['filename']}, PAGE: {chunk['page_num']}]\n"
             f"{chunk['chunk_text']}\n"
         )
 

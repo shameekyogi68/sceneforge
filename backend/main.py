@@ -285,6 +285,48 @@ def list_documents_endpoint(project_id: str, token: str = Depends(get_token), us
         logger.exception("List documents failed")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+@app.get("/documents/{project_id}/page-text")
+def get_document_page_text_endpoint(
+    project_id: str,
+    filename: str,
+    page_num: int,
+    token: str = Depends(get_token),
+    user: Any = Depends(get_user)
+):
+    """Retrieve full text of a specific page from document chunks."""
+    try:
+        db = get_authenticated_client(token)
+        
+        # Verify project ownership
+        proj_res = db.table("projects").select("id").eq("id", project_id).eq("user_id", str(user.id)).execute()
+        if not proj_res.data:
+            raise HTTPException(status_code=403, detail="Access denied to this project")
+            
+        # Retrieve chunks for this document and page
+        res = (
+            db.table("document_chunks")
+            .select("chunk_text, id")
+            .eq("project_id", project_id)
+            .eq("filename", filename)
+            .eq("page_num", page_num)
+            .order("id")
+            .execute()
+        )
+        chunks = res.data or []
+        if not chunks:
+            raise HTTPException(status_code=404, detail="No text chunks found for this page")
+        text_list = []
+        for c in chunks:
+            if isinstance(c, dict):
+                text_list.append(str(c.get("chunk_text") or ""))
+        full_text = " ".join(text_list)
+        return {"filename": filename, "page_num": page_num, "text": full_text}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.exception("Retrieve page text failed")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 @app.delete("/documents/{document_id}")
 def delete_document_endpoint(document_id: str, token: str = Depends(get_token), user: Any = Depends(get_user)):
     """Delete a single document and cascade delete its chunks."""

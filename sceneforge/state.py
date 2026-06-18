@@ -483,6 +483,13 @@ class ProjectState(State):
     conversation_id: str = ""
     doc_steps: Dict[str, int] = {}
 
+    # Preview/Inspector state
+    selected_preview_filename: str = ""
+    selected_preview_page: int = 1
+    selected_preview_text: str = ""
+    is_preview_modal_open: bool = False
+    is_preview_loading: bool = False
+
     # Explicit setter (replacing deprecated state_auto_setters)
     def set_input_message(self, value: str):
         self.input_message = value
@@ -771,3 +778,38 @@ class ProjectState(State):
         """Handle key down event and trigger send message on Enter without Shift."""
         if key == "Enter" and not key_info.get("shift_key", False):
             return self.send_message()
+
+    def set_is_preview_modal_open(self, val: bool):
+        self.is_preview_modal_open = val
+
+    def close_preview_modal(self):
+        self.is_preview_modal_open = False
+        self.selected_preview_filename = ""
+        self.selected_preview_text = ""
+
+    async def open_document_preview(self, filename: str, page_num: int):
+        """Fetch and display preview of a specific document page."""
+        self.selected_preview_filename = filename
+        self.selected_preview_page = page_num
+        self.is_preview_loading = True
+        self.selected_preview_text = "Fetching document page text..."
+        self.is_preview_modal_open = True
+        yield
+
+        try:
+            response = await self._api_request(
+                "GET",
+                f"/documents/{self.project_id}/page-text",
+                params={"filename": filename, "page_num": page_num}
+            )
+            if response.status_code == 200:
+                self.selected_preview_text = response.json().get("text", "")
+            else:
+                detail = response.json().get("detail", "Failed to load document text.")
+                self.selected_preview_text = f"Error: {detail}"
+        except Exception as e:
+            logger.exception("Failed to open document preview")
+            self.selected_preview_text = "An error occurred while loading page text."
+        finally:
+            self.is_preview_loading = False
+            yield

@@ -326,5 +326,34 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 429)
         self.assertIn("Daily limit reached", response.json()["detail"])
 
+    @patch("backend.main.get_current_user")
+    @patch("backend.main.get_authenticated_client")
+    def test_get_document_page_text_success(self, mock_get_db, mock_get_user):
+        mock_get_user.return_value = self.dummy_user
+        mock_db = MagicMock()
+        mock_get_db.return_value = mock_db
+
+        # Project ownership mock
+        mock_proj_res = MagicMock()
+        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
+
+        # Chunks query mock
+        mock_chunks_res = MagicMock()
+        mock_chunks_res.data = [
+            {"chunk_text": "First chunk on page 4.", "id": 10},
+            {"chunk_text": "Second chunk on page 4.", "id": 11}
+        ]
+        # Chunks select query chain
+        mock_db.table().select().eq().eq().eq().order().execute.return_value = mock_chunks_res
+
+        headers = {"Authorization": "Bearer dummy-token"}
+        response = self.client.get("/documents/proj-1/page-text?filename=c.pdf&page_num=4", headers=headers)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["filename"], "c.pdf")
+        self.assertEqual(data["page_num"], 4)
+        self.assertEqual(data["text"], "First chunk on page 4. Second chunk on page 4.")
+
 if __name__ == "__main__":
     unittest.main()

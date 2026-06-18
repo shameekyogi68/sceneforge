@@ -248,11 +248,22 @@ def render_doc_item(doc: Any) -> rx.Component:
                     doc["filename"],
                     font_size="0.8rem",
                     font_weight="600",
-                    color="#e4e4e7",
+                    color=rx.cond(doc["status"] == "ready", "#a5b4fc", "#e4e4e7"),
                     max_width="155px",
                     overflow="hidden",
                     text_overflow="ellipsis",
                     white_space="nowrap",
+                    cursor=rx.cond(doc["status"] == "ready", "pointer", "default"),
+                    _hover=rx.cond(
+                        doc["status"] == "ready",
+                        {"color": "#c7d2fe", "text_decoration": "underline"},
+                        {},
+                    ),
+                    on_click=cast(Any, rx.cond(
+                        doc["status"] == "ready",
+                        cast(Any, ProjectState).open_document_preview(doc["filename"], 1),
+                        rx.fragment()
+                    )),
                 ),
                 rx.hstack(
                     status_icon,
@@ -477,7 +488,7 @@ def render_source_pill(src: Any) -> rx.Component:
             padding="4px 11px",
             display="inline-flex",
             align_items="center",
-            cursor="default",
+            cursor="pointer",
             transition="all 0.15s ease",
             _hover={
                 "background": "rgba(99,102,241,0.16)",
@@ -485,6 +496,7 @@ def render_source_pill(src: Any) -> rx.Component:
                 "color": "white",
                 "transform": "translateY(-1px)",
             },
+            on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(src.filename, src.page)),
         ),
         content=src.text_preview,
     )
@@ -768,6 +780,168 @@ def chat_area() -> rx.Component:
     )
 
 
+def preview_inspector_dialog() -> rx.Component:
+    return rx.dialog.root(
+        rx.dialog.content(
+            # Modal Header: Document name + page controls + close button
+            rx.hstack(
+                rx.vstack(
+                    rx.hstack(
+                        rx.html("""<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
+                        rx.heading(
+                            ProjectState.selected_preview_filename,
+                            font_size="1.2rem",
+                            font_weight="800",
+                            color="#e4e4e7",
+                            max_width="320px",
+                            overflow="hidden",
+                            text_overflow="ellipsis",
+                            white_space="nowrap",
+                            letter_spacing="-0.02em",
+                        ),
+                        align="center",
+                        spacing="2",
+                    ),
+                    rx.text(
+                        "Instant Page Text Inspector",
+                        font_size="0.78rem",
+                        color="rgba(161,161,170,0.6)",
+                    ),
+                    spacing="1",
+                    align_items="start",
+                ),
+                
+                # Page Navigation Controls
+                rx.hstack(
+                    rx.button(
+                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>"""),
+                        background="rgba(255,255,255,0.03)",
+                        border="1px solid rgba(255,255,255,0.08)",
+                        color=rx.cond(ProjectState.selected_preview_page > 1, "#f4f4f5", "rgba(113,113,122,0.4)"),
+                        border_radius="8px",
+                        padding="6px 10px",
+                        cursor=rx.cond(ProjectState.selected_preview_page > 1, "pointer", "default"),
+                        disabled=ProjectState.selected_preview_page <= 1,
+                        on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(
+                            ProjectState.selected_preview_filename, 
+                            ProjectState.selected_preview_page - 1
+                        )),
+                        _hover=rx.cond(
+                            ProjectState.selected_preview_page > 1,
+                            {"background": "rgba(255,255,255,0.08)", "color": "white"},
+                            {}
+                        ),
+                    ),
+                    rx.box(
+                        rx.text(
+                            "Page ", ProjectState.selected_preview_page,
+                            font_size="0.82rem",
+                            font_weight="700",
+                            color="#818cf8",
+                        ),
+                        background="rgba(99,102,241,0.08)",
+                        border="1px solid rgba(99,102,241,0.2)",
+                        border_radius="8px",
+                        padding="5px 12px",
+                        display="flex",
+                        align_items="center",
+                    ),
+                    rx.button(
+                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>"""),
+                        background="rgba(255,255,255,0.03)",
+                        border="1px solid rgba(255,255,255,0.08)",
+                        color="#f4f4f5",
+                        border_radius="8px",
+                        padding="6px 10px",
+                        cursor="pointer",
+                        on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(
+                            ProjectState.selected_preview_filename, 
+                            ProjectState.selected_preview_page + 1
+                        )),
+                        _hover={"background": "rgba(255,255,255,0.08)", "color": "white"},
+                    ),
+                    align="center",
+                    spacing="2",
+                ),
+
+                # Close Button
+                rx.button(
+                    rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>"""),
+                    background="rgba(255,255,255,0.03)",
+                    border="1px solid rgba(255,255,255,0.08)",
+                    color="rgba(161,161,170,0.6)",
+                    border_radius="8px",
+                    padding="6px 10px",
+                    cursor="pointer",
+                    on_click=cast(Any, ProjectState.close_preview_modal),
+                    _hover={"background": "rgba(255,255,255,0.08)", "color": "#f4f4f5"},
+                ),
+                width="100%",
+                justify="between",
+                align_items="center",
+                margin_bottom="24px",
+                border_bottom="1px solid rgba(255,255,255,0.06)",
+                padding_bottom="16px",
+            ),
+
+            # Modal Body: Extracted Page Text
+            rx.cond(
+                ProjectState.is_preview_loading,
+                # Skeleton loaders during fetch
+                rx.vstack(
+                    rx.box(
+                        width="100%", height="20px", border_radius="4px",
+                        background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
+                        background_size="200% 100%", style={"animation": "skeletonPulse 1.6s infinite linear"},
+                    ),
+                    rx.box(
+                        width="95%", height="20px", border_radius="4px",
+                        background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
+                        background_size="200% 100%", style={"animation": "skeletonPulse 1.6s infinite linear 0.2s"},
+                    ),
+                    rx.box(
+                        width="98%", height="20px", border_radius="4px",
+                        background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
+                        background_size="200% 100%", style={"animation": "skeletonPulse 1.6s infinite linear 0.4s"},
+                    ),
+                    rx.box(
+                        width="88%", height="20px", border_radius="4px",
+                        background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
+                        background_size="200% 100%", style={"animation": "skeletonPulse 1.6s infinite linear 0.6s"},
+                    ),
+                    spacing="3",
+                    width="100%",
+                ),
+                # Extracted text pane
+                rx.box(
+                    rx.text(
+                        ProjectState.selected_preview_text,
+                        font_size="0.92rem",
+                        line_height="1.7",
+                        color="#e4e4e7",
+                        white_space="pre-wrap",
+                    ),
+                    max_height="480px",
+                    overflow_y="auto",
+                    padding_right="8px",
+                    width="100%",
+                ),
+            ),
+
+            background="rgba(14,14,20,0.96)",
+            backdrop_filter="blur(32px)",
+            border="1px solid rgba(255,255,255,0.08)",
+            border_radius="24px",
+            padding="32px",
+            max_width="680px",
+            width="90vw",
+            box_shadow="0 32px 80px -16px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04)",
+        ),
+        open=ProjectState.is_preview_modal_open,
+        on_open_change=cast(Any, ProjectState.set_is_preview_modal_open),
+    )
+
+
 def project_page() -> rx.Component:
     from sceneforge.pages.dashboard import loading_bar
     return rx.box(
@@ -806,6 +980,8 @@ def project_page() -> rx.Component:
             z_index="1",
             position="relative",
         ),
+
+        preview_inspector_dialog(),
 
         style=body_style,
         on_mount=cast(Any, ProjectState.on_load_project),

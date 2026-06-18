@@ -112,13 +112,13 @@ def signup(email: str, password: str) -> Any:
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    if not result.user:
+    if result is None or not result.user:
         raise HTTPException(status_code=400, detail="Signup failed — no user returned.")
 
     # Best-effort profile insert (non-fatal if it already exists)
     try:
         get_anon_client().table("profiles").insert({
-            "id":                  str(result.user.id),
+            "id":                  result.user.id,
             "email":               email,
             "questions_today":     0,
             "last_question_date":  date.today().isoformat(),
@@ -143,7 +143,7 @@ def login(email: str, password: str) -> Any:
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    if not result.session:
+    if result is None or not result.session:
         raise HTTPException(status_code=401, detail="Login failed — no session returned.")
 
     return result
@@ -164,7 +164,7 @@ def get_current_user(token: str) -> Any:
 
     try:
         response = get_anon_client().auth.get_user(token)
-        if not response.user:
+        if response is None or not response.user:
             raise HTTPException(status_code=401, detail="Invalid token")
         
         _user_cache.set(token, response.user)
@@ -182,7 +182,7 @@ def refresh_supabase_token(refresh_token: str) -> tuple[str, str]:
     """
     try:
         res = get_anon_client().auth.refresh_session(refresh_token)
-        if not res.session:
+        if res is None or not res.session:
             raise HTTPException(status_code=401, detail="Refresh session failed — no session returned.")
         return res.session.access_token, res.session.refresh_token
     except Exception as e:
@@ -218,10 +218,16 @@ def check_rate_limit(user_id: str, token: str) -> bool:
             _upsert_profile(client, user_id, today, 1)
             return True
 
-        profile    = rows[0]
-        last_date  = profile.get("last_question_date", "")
-        if hasattr(last_date, "isoformat"):
-            last_date = last_date.isoformat()
+        profile = rows[0]
+        if not isinstance(profile, dict):
+            _upsert_profile(client, user_id, today, 1)
+            return True
+
+        last_date = profile.get("last_question_date", "")
+        if last_date is None:
+            last_date = ""
+        elif not isinstance(last_date, str) and hasattr(last_date, "isoformat"):
+            last_date = getattr(last_date, "isoformat")()
 
         if last_date != today:
             # New day — reset
@@ -231,7 +237,8 @@ def check_rate_limit(user_id: str, token: str) -> bool:
             }).eq("id", user_id).execute()
             return True
 
-        count = profile.get("questions_today", 0)
+        raw_count = profile.get("questions_today", 0)
+        count = raw_count if isinstance(raw_count, int) else 0
         if count >= config.DAILY_QUESTION_LIMIT:
             return False
 

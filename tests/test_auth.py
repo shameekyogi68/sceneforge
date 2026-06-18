@@ -167,6 +167,19 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(context.exception.detail, "Invalid or expired token")
 
     @patch("backend.auth.get_anon_client")
+    def test_get_current_user_returns_none(self, mock_anon):
+        mock_client = MagicMock()
+        mock_anon.return_value = mock_client
+        mock_client.auth.get_user.return_value = None
+        
+        from fastapi import HTTPException
+        with self.assertRaises(HTTPException) as context:
+            get_current_user("none_token")
+        self.assertEqual(context.exception.status_code, 401)
+        self.assertEqual(context.exception.detail, "Invalid token")
+
+
+    @patch("backend.auth.get_anon_client")
     def test_refresh_token_success(self, mock_anon):
         mock_client = MagicMock()
         mock_anon.return_value = mock_client

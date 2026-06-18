@@ -1,5 +1,5 @@
 import reflex as rx
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, cast
 import os
 import sys
 import uuid
@@ -43,6 +43,7 @@ class State(rx.State):
     user_id: str = rx.Cookie("", name="user_id", secure=True, same_site="strict")
     refresh_token: str = rx.Cookie("", name="refresh_token", secure=True, same_site="strict")
     user_email: str = ""
+    router: Any = rx.State.router  # type: ignore
 
     @rx.var
     def user_avatar_char(self) -> str:
@@ -251,7 +252,7 @@ class AuthState(State):
 
             if not site_url:
                 try:
-                    page_host = str(self.router.page.host or "")
+                    page_host = self.router.page.host or ""
                     if page_host:
                         if "localhost" in page_host or "127.0.0.1" in page_host:
                             site_url = f"http://{page_host}"
@@ -277,7 +278,7 @@ class AuthState(State):
 
     def handle_callback_load(self):
         """Get the url hash fragment on callback page load."""
-        return rx.call_script("window.location.hash", callback=AuthState.process_callback_hash)
+        return rx.call_script("window.location.hash", callback=cast(Any, self.process_callback_hash))
 
     async def process_callback_hash(self, hash_str: str):
         """Parse token from hash, set session cookies, and redirect to dashboard."""
@@ -386,9 +387,11 @@ class DashboardState(State):
         """Insert a new project via API and reload dashboard."""
         name = self.new_project_name.strip()
         if not name:
-            return rx.toast.error("Project name cannot be empty.")
+            yield rx.toast.error("Project name cannot be empty.")
+            return
         if len(name) > 120:
-            return rx.toast.error("Project name must be 120 characters or fewer.")
+            yield rx.toast.error("Project name must be 120 characters or fewer.")
+            return
 
         try:
             response = await self._api_request("POST", "/projects", json={"name": name})
@@ -396,7 +399,7 @@ class DashboardState(State):
                 self.is_modal_open = False
                 self.new_project_name = ""
                 rx.toast.success(f"Project '{name}' created!")
-                await self.load_projects()
+                yield self.load_projects()
             else:
                 detail = response.json().get("detail", "Failed to create project")
                 rx.toast.error(f"Failed to create project: {detail}")
@@ -428,7 +431,7 @@ class DashboardState(State):
             if response.status_code == 200:
                 rx.toast.success(f"Project '{project_name}' deleted.")
                 self.close_delete_confirm()
-                await self.load_projects()
+                yield self.load_projects()
             else:
                 detail = response.json().get("detail", "Failed to delete project")
                 rx.toast.error(f"Failed to delete project: {detail}")
@@ -591,8 +594,8 @@ class ProjectState(State):
 
         for file in files:
             # 1. Extension check
-            if not file.filename.lower().endswith(".pdf"):
-                rx.toast.error(f"File '{file.filename}' is not a PDF.")
+            if not file.filename or not file.filename.lower().endswith(".pdf"):
+                rx.toast.error(f"File '{file.filename or 'Unnamed'}' is not a PDF.")
                 continue
 
             # Read file contents
@@ -720,9 +723,9 @@ class ProjectState(State):
     def use_example_question(self, text: str):
         """Set input message and send."""
         self.input_message = text
-        return ProjectState.send_message()
+        return self.send_message()
 
     def handle_key_down(self, key: str, key_info: Dict[str, bool]):
         """Handle key down event and trigger send message on Enter without Shift."""
         if key == "Enter" and not key_info.get("shift_key", False):
-            return ProjectState.send_message()
+            return self.send_message()

@@ -3,8 +3,9 @@ import logging
 import os
 import sys
 import uuid
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict, cast
 from pathlib import Path
+from postgrest import CountMethod
 
 from fastapi import FastAPI, HTTPException, Depends, Header, BackgroundTasks, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -164,6 +165,7 @@ def auth_me_endpoint(token: str = Depends(get_token), user: Any = Depends(get_us
     try:
         db = get_authenticated_client(token)
         res = db.table("profiles").select("questions_today").eq("id", str(user.id)).execute()
+        today_count = 0
         if not res.data:
             # Initialize profile row for user
             from datetime import date
@@ -177,9 +179,12 @@ def auth_me_endpoint(token: str = Depends(get_token), user: Any = Depends(get_us
                 }).execute()
             except Exception:
                 pass
-            today_count = 0
         else:
-            today_count = res.data[0].get("questions_today", 0)
+            res_data = res.data
+            if isinstance(res_data, list) and res_data:
+                row = res_data[0]
+                if isinstance(row, dict):
+                    today_count = row.get("questions_today", 0)
         return {"id": str(user.id), "email": user.email, "questions_today": today_count}
     except Exception as e:
         logger.exception("Failed to retrieve profile in auth/me")
@@ -205,9 +210,10 @@ def create_project_endpoint(req: ProjectCreateRequest, token: str = Depends(get_
             "name": name,
             "user_id": str(user.id),
         }).execute()
-        if not res.data:
+        res_data = res.data
+        if not isinstance(res_data, list) or not res_data:
             raise HTTPException(status_code=500, detail="Failed to insert project.")
-        return res.data[0]
+        return res_data[0]
     except Exception as e:
         logger.exception("Create project failed")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -218,11 +224,16 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
     try:
         db = get_authenticated_client(token)
         res = db.table("projects").select("*").eq("user_id", str(user.id)).execute()
-        data = res.data or []
-        for p in data:
-            created = p.get("created_at", "")
-            p["created_date"] = created.split("T")[0] if "T" in created else created
-        return data
+        data_list = res.data
+        projects_list = []
+        if isinstance(data_list, list):
+            for p in data_list:
+                if isinstance(p, dict):
+                    created = str(p.get("created_at", ""))
+                    p_copy = dict(p)
+                    p_copy["created_date"] = created.split("T")[0] if "T" in created else created
+                    projects_list.append(p_copy)
+        return projects_list
     except Exception as e:
         logger.exception("List projects failed")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -282,13 +293,19 @@ def delete_document_endpoint(document_id: str, token: str = Depends(get_token), 
         
         # Verify ownership by checking project ownership
         doc_res = db.table("documents").select("project_id, filename").eq("id", document_id).execute()
-        if not doc_res.data:
+        doc_data = doc_res.data
+        if not isinstance(doc_data, list) or not doc_data:
+            raise HTTPException(status_code=404, detail="Document not found")
+        first_row = doc_data[0]
+        if not isinstance(first_row, dict):
             raise HTTPException(status_code=404, detail="Document not found")
         
-        project_id = doc_res.data[0]["project_id"]
-        filename = doc_res.data[0]["filename"]
+        project_id = first_row.get("project_id")
+        filename = first_row.get("filename")
+        if not project_id or not filename:
+            raise HTTPException(status_code=404, detail="Document not found")
         
-        proj_res = db.table("projects").select("id").eq("id", project_id).eq("user_id", str(user.id)).execute()
+        proj_res = db.table("projects").select("id").eq("id", str(project_id)).eq("user_id", str(user.id)).execute()
         if not proj_res.data:
             raise HTTPException(status_code=403, detail="Access denied to delete this document")
             
@@ -296,7 +313,7 @@ def delete_document_endpoint(document_id: str, token: str = Depends(get_token), 
         db.table("document_chunks").delete().eq("document_id", document_id).execute()
         db.table("documents").delete().eq("id", document_id).execute()
         
-        return {"message": f"Document '{filename}' deleted successfully"}
+        return {"message": f"Document '{str(filename)}' deleted successfully"}
     except HTTPException as he:
         raise he
     except Exception as e:
@@ -340,7 +357,8 @@ async def upload_document_endpoint(
 ):
     """Upload PDF file and trigger async background processing."""
     # 1. Enforce extension check
-    if not file.filename.lower().endswith(".pdf"):
+    filename = file.filename or "uploaded_document.pdf"
+    if not filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF documents are allowed.")
 
     # 2. Magic bytes validation (read first 4 bytes to verify %PDF)
@@ -356,8 +374,9 @@ async def upload_document_endpoint(
         raise HTTPException(status_code=403, detail="Access denied to this project")
 
     # 4. Limit verification (30 files max)
-    doc_count_res = db.table("documents").select("id", count="exact").eq("project_id", project_id).execute()
-    existing_count = doc_count_res.count if hasattr(doc_count_res, "count") else len(doc_count_res.data or [])
+    doc_count_res = db.table("documents").select("id", count=CountMethod.exact).eq("project_id", project_id).execute()
+    count_val = doc_count_res.count
+    existing_count = count_val if count_val is not None else len(cast(List, doc_count_res.data or []))
     if existing_count >= config.MAX_FILES_PER_PROJECT:
         raise HTTPException(status_code=400, detail=f"Maximum limit of {config.MAX_FILES_PER_PROJECT} documents per project reached.")
 
@@ -371,23 +390,28 @@ async def upload_document_endpoint(
     try:
         doc_res = db.table("documents").insert({
             "project_id": project_id,
-            "filename": file.filename,
+            "filename": filename,
             "status": "processing",
         }).execute()
         
-        if not doc_res.data:
+        res_data = doc_res.data
+        if not isinstance(res_data, list) or not res_data:
+            raise HTTPException(status_code=500, detail="Failed to initialize document status in database.")
+        first_row = res_data[0]
+        if not isinstance(first_row, dict):
+            raise HTTPException(status_code=500, detail="Failed to initialize document status in database.")
+        doc_id = first_row.get("id")
+        if not doc_id:
             raise HTTPException(status_code=500, detail="Failed to initialize document status in database.")
         
-        doc_id = doc_res.data[0]["id"]
-        
-        temp_path = UPLOADS_DIR / f"{project_id}_{uuid.uuid4()}_{file.filename}"
+        temp_path = UPLOADS_DIR / f"{project_id}_{uuid.uuid4()}_{filename}"
         temp_path.write_bytes(contents)
 
         # 7. Queue background processing
         background_tasks.add_task(
             process_pdf_background_task,
             str(temp_path),
-            file.filename,
+            filename,
             project_id,
             str(doc_id),
             token
@@ -449,9 +473,12 @@ async def ask_endpoint(
                     "title": message[:50]
                 }).execute()
             )
-            if conv_res.data:
-                conv_id = conv_res.data[0]["id"]
-            else:
+            res_data = conv_res.data
+            if isinstance(res_data, list) and res_data:
+                first_row = res_data[0]
+                if isinstance(first_row, dict):
+                    conv_id = first_row.get("id")
+            if not conv_id:
                 raise HTTPException(status_code=500, detail="Failed to create chat conversation.")
 
         # 4. Run RAG Pipeline (memory already fetched in parallel above)
@@ -466,7 +493,7 @@ async def ask_endpoint(
             user_id=req.project_id
         )
         background_tasks.add_task(
-            _save_messages_bg, db, conv_id, message, answer, sources
+            _save_messages_bg, db, str(conv_id), message, answer, sources
         )
 
         # 6. Compute remaining from rate-limit data already in DB (avoid extra query)
@@ -521,20 +548,30 @@ def get_project_messages(project_id: str, limit: int = 50, token: str = Depends(
             raise HTTPException(status_code=403, detail="Access denied to this project")
             
         conv_res = db.table("conversations").select("id").eq("project_id", project_id).order("created_at", desc=True).limit(1).execute()
-        if not conv_res.data:
+        conv_data = conv_res.data
+        if not isinstance(conv_data, list) or not conv_data:
             return {"conversation_id": "", "messages": []}
             
-        conv_id = conv_res.data[0]["id"]
-        msg_res = db.table("messages").select("role, content, sources").eq("conversation_id", conv_id).order("created_at", asc=True).limit(limit).execute()
+        first_row = conv_data[0]
+        if not isinstance(first_row, dict):
+            return {"conversation_id": "", "messages": []}
+        conv_id = first_row.get("id")
+        if not conv_id:
+            return {"conversation_id": "", "messages": []}
+            
+        msg_res = db.table("messages").select("role, content, sources").eq("conversation_id", str(conv_id)).order("created_at", desc=False).limit(limit).execute()
         
         # Structure messages output
         messages = []
-        for m in (msg_res.data or []):
-            messages.append({
-                "role": m.get("role", ""),
-                "content": m.get("content", ""),
-                "sources": m.get("sources") or []
-            })
+        msg_data = msg_res.data
+        if isinstance(msg_data, list):
+            for m in msg_data:
+                if isinstance(m, dict):
+                    messages.append({
+                        "role": str(m.get("role", "")),
+                        "content": str(m.get("content", "")),
+                        "sources": cast(List[Dict], m.get("sources") or [])
+                    })
             
         return {"conversation_id": str(conv_id), "messages": messages}
     except HTTPException as he:

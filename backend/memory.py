@@ -4,7 +4,7 @@ All public functions are silent — they never raise.
 """
 
 import logging
-from typing import Dict, List
+from typing import Dict, List, cast, Any
 
 import backend.config as config
 
@@ -92,7 +92,8 @@ def get_project_memory(user_id: str) -> str:
         if not result:
             return ""
 
-        memories = result if isinstance(result, list) else result.get("results", [])
+        mem_data = result if isinstance(result, list) else (result.get("results", []) if isinstance(result, dict) else [])
+        memories = cast(List[Any], mem_data)
         if not memories:
             return ""
 

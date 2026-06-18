@@ -90,13 +90,18 @@ def main():
         print("\nStep 4: Generating and processing test PDF...")
         temp_pdf_path = generate_test_pdf(pdf_filename, pdf_content)
         
-        # Insert document metadata (status processing)
         doc_insert = supabase.table("documents").insert({
             "project_id": project_id,
             "filename": pdf_filename,
             "status": "processing"
         }).execute()
-        document_id = doc_insert.data[0]["id"]
+        res_data = doc_insert.data
+        if not isinstance(res_data, list) or not res_data:
+            raise RuntimeError("Failed to insert document.")
+        first_row = res_data[0]
+        if not isinstance(first_row, dict):
+            raise RuntimeError("Failed to insert document.")
+        document_id = str(first_row.get("id"))
         
         # Process and store chunk vectors
         print("Parsing PDF and generating embeddings...")

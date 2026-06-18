@@ -9,7 +9,7 @@ Performance optimisations:
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any, cast
 
 import fitz  # PyMuPDF
 from supabase import create_client
@@ -53,7 +53,7 @@ def extract_text_from_pdf(pdf_path: str) -> List[Dict]:
     """
     pages: List[Dict] = []
     with fitz.open(pdf_path) as doc:
-        for i, page in enumerate(doc, start=1):
+        for i, page in enumerate(cast(Any, doc), start=1):
             text = page.get_text().strip()
             if text:
                 pages.append({"text": text, "page": i})
@@ -116,7 +116,7 @@ def _embed_batch(texts: List[str], task_type: str) -> List[List[float]]:
         embeddings = response.embeddings
         if not embeddings:
             raise RuntimeError("Gemini returned no embeddings.")
-        results.extend([e.values for e in embeddings])
+        results.extend([cast(List[float], e.values) for e in embeddings if e.values is not None])
     if len(results) != len(texts):
         raise RuntimeError(
             f"Gemini returned {len(results)} embeddings for {len(texts)} texts."
@@ -204,19 +204,73 @@ def search_documents(
     token: Optional[str] = None,
 ) -> List[Dict]:
     """
-    Embed question and retrieve top-k chunks via cosine similarity.
+    Retrieve top-k chunks using Hybrid Search (Vector Similarity + Full-Text Search)
+    merged via Reciprocal Rank Fusion (RRF).
     """
-    query_embedding = get_embedding(question, task_type="retrieval_query")
+    if top_k <= 0:
+        return []
+
     client = _get_client(token)
-    result = client.rpc(
-        "match_chunks",
-        {
-            "query_embedding": query_embedding,
-            "project_id":      project_id,
-            "match_count":     top_k,
-        },
-    ).execute()
-    return result.data or []
+    candidate_limit = top_k * 2
+
+    # 1. Vector Search
+    vector_chunks: List[Dict] = []
+    try:
+        query_embedding = get_embedding(question, task_type="retrieval_query")
+        result = client.rpc(
+            "match_chunks",
+            {
+                "query_embedding": query_embedding,
+                "project_id":      project_id,
+                "match_count":     candidate_limit,
+            },
+        ).execute()
+        vector_chunks = cast(List[Dict], result.data or [])
+    except Exception as exc:
+        logger.exception("Vector search RPC failed: %s", exc)
+
+    # 2. Full-Text Search (FTS)
+    fts_chunks: List[Dict] = []
+    try:
+        fts_res = (
+            client.table("document_chunks")
+            .select("chunk_text", "filename", "page_num", "document_id")
+            .eq("project_id", project_id)
+            .wfts("chunk_text", question)
+            .limit(candidate_limit)
+            .execute()
+        )
+        fts_chunks = cast(List[Dict], fts_res.data or [])
+    except Exception as exc:
+        logger.warning("FTS text_search failed: %s", exc)
+
+    # 3. Reciprocal Rank Fusion (RRF)
+    k_const = 60
+    rrf_scores: Dict[Tuple[str, int, str], float] = {}
+    chunk_map: Dict[Tuple[str, int, str], Dict] = {}
+
+    # Rank vector chunks
+    for rank, chunk in enumerate(vector_chunks, start=1):
+        key = (chunk["filename"], chunk["page_num"], chunk["chunk_text"])
+        chunk_map[key] = chunk
+        rrf_scores[key] = rrf_scores.get(key, 0.0) + 1.0 / (k_const + rank)
+
+    # Rank FTS chunks
+    for rank, chunk in enumerate(fts_chunks, start=1):
+        key = (chunk["filename"], chunk["page_num"], chunk["chunk_text"])
+        if key not in chunk_map:
+            chunk_copy = dict(chunk)
+            if "similarity" not in chunk_copy:
+                chunk_copy["similarity"] = 0.0
+            chunk_map[key] = chunk_copy
+        rrf_scores[key] = rrf_scores.get(key, 0.0) + 1.0 / (k_const + rank)
+
+    # Sort keys by RRF score descending
+    sorted_keys = sorted(rrf_scores.keys(), key=lambda k: rrf_scores[k], reverse=True)
+
+    results = [chunk_map[key] for key in sorted_keys[:top_k]]
+    return results
+
 
 
 # ---------------------------------------------------------------------------
@@ -293,7 +347,7 @@ def answer_with_sources(
             max_output_tokens=2048,
         ),
     )
-    answer_text = response.text
+    answer_text = response.text or ""
 
     sources = [
         {

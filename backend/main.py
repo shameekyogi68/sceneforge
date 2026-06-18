@@ -475,7 +475,13 @@ async def ask_endpoint(
                 lambda: db.table("profiles").select("questions_today")
                     .eq("id", user_id_str).execute()
             )
-            today_count = profile_res.data[0]["questions_today"] if profile_res.data else 0
+            data_list = profile_res.data
+            today_count = 0
+            if isinstance(data_list, list) and len(data_list) > 0:
+                row = data_list[0]
+                if isinstance(row, dict):
+                    raw_val = row.get("questions_today", 0)
+                    today_count = int(raw_val) if isinstance(raw_val, (int, float, str)) else 0
         except Exception:
             today_count = 0
         remaining = max(0, config.DAILY_QUESTION_LIMIT - today_count)

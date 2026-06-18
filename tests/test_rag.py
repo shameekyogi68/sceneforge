@@ -87,5 +87,70 @@ class TestRag(unittest.TestCase):
         self.assertIn("Answer ONLY from the numbered source documents", prompt)
         self.assertIn("Do NOT add outside knowledge", prompt)
 
+    @patch("backend.rag.get_embedding")
+    @patch("backend.rag._get_client")
+    def test_hybrid_search_rrf(self, mock_get_client, mock_get_embedding):
+        # Mock dependencies
+        mock_client = MagicMock()
+        mock_get_client.return_value = mock_client
+        mock_get_embedding.return_value = [0.1] * 768
+
+        # Mock vector search RPC response
+        mock_rpc = MagicMock()
+        mock_client.rpc.return_value = mock_rpc
+        
+        # Vector results: rank 1 is "vector first", rank 2 is "shared chunk"
+        vector_data = [
+            {"filename": "doc1.pdf", "page_num": 1, "chunk_text": "vector first", "similarity": 0.9},
+            {"filename": "doc1.pdf", "page_num": 2, "chunk_text": "shared chunk", "similarity": 0.8},
+        ]
+        mock_rpc.execute.return_value.data = vector_data
+
+        # Mock FTS select chain response
+        # FTS results: rank 1 is "shared chunk", rank 2 is "fts first"
+        mock_table = MagicMock()
+        mock_client.table.return_value = mock_table
+        
+        mock_select = MagicMock()
+        mock_table.select.return_value = mock_select
+        
+        mock_eq = MagicMock()
+        mock_select.eq.return_value = mock_eq
+        
+        mock_wfts = MagicMock()
+        mock_eq.wfts.return_value = mock_wfts
+        
+        mock_limit = MagicMock()
+        mock_wfts.limit.return_value = mock_limit
+        
+        fts_data = [
+            {"filename": "doc1.pdf", "page_num": 2, "chunk_text": "shared chunk"},
+            {"filename": "doc1.pdf", "page_num": 3, "chunk_text": "fts first"},
+        ]
+        mock_limit.execute.return_value.data = fts_data
+
+        # Import search_documents here
+        from backend.rag import search_documents
+
+        # Call search_documents with top_k = 3
+        results = search_documents("test query", "project-uuid", top_k=3)
+
+        # Expected RRF scores:
+        # shared chunk:
+        #   rank in vector: 2 -> 1 / (60 + 2) = 1/62
+        #   rank in fts: 1 -> 1 / (60 + 1) = 1/61
+        #   total = 1/62 + 1/61 ≈ 0.016129 + 0.016393 = 0.032522
+        # vector first:
+        #   rank in vector: 1 -> 1 / (60 + 1) = 1/61 ≈ 0.016393
+        # fts first:
+        #   rank in fts: 2 -> 1 / (60 + 2) = 1/62 ≈ 0.016129
+        #
+        # Ordering should be: shared chunk, vector first, fts first.
+        self.assertEqual(len(results), 3)
+        self.assertEqual(results[0]["chunk_text"], "shared chunk")
+        self.assertEqual(results[1]["chunk_text"], "vector first")
+        self.assertEqual(results[2]["chunk_text"], "fts first")
+        self.assertEqual(results[2]["similarity"], 0.0)
+
 if __name__ == "__main__":
     unittest.main()

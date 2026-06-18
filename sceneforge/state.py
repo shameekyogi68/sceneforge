@@ -588,10 +588,12 @@ class ProjectState(State):
                 return rx.redirect("/dashboard")
             self.project_name = matching[0]["name"]
 
-            # Load project dependencies
-            await self.load_documents()
-            await self.load_profile()
-            await self.load_chat_history()
+            # Load project dependencies concurrently
+            await asyncio.gather(
+                self.load_documents(),
+                self.load_profile(),
+                self.load_chat_history()
+            )
 
         except Exception as e:
             logger.exception("Failed to load project details")
@@ -686,7 +688,7 @@ class ProjectState(State):
                 any_processing = any(d["status"] == "processing" for d in self.documents)
                 if not any_processing:
                     break
-            await asyncio.sleep(2.0)
+            await asyncio.sleep(0.5)
 
     async def send_message(self):
         """Send message to API, perform RAG, update UI with streamed answers, and refresh rate counts."""

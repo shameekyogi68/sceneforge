@@ -28,6 +28,10 @@ PROJECT_KEYFRAMES = """
   0%,100% { transform: translate(0,0) scale(1); }
   50%      { transform: translate(15px,-20px) scale(1.04); }
 }
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50%       { transform: translate(-20px, 15px) scale(1.05); }
+}
 @keyframes uploadPulse {
   0%,100% { border-color: rgba(99,102,241,0.2); background: rgba(255,255,255,0.01); }
   50%      { border-color: rgba(99,102,241,0.45); background: rgba(99,102,241,0.04); }
@@ -770,6 +774,26 @@ def project_page() -> rx.Component:
         rx.html(f"<style>{GLOBAL_CSS}{PROJECT_KEYFRAMES}</style>"),
         loading_bar(cast(Any, ProjectState.is_sending)),
 
+        # Ambient background orbs for premium high-fidelity look
+        rx.box(
+            width="600px", height="600px",
+            background="radial-gradient(circle at center, rgba(99,102,241,0.4) 0%, rgba(79,70,229,0.15) 50%, transparent 70%)",
+            position="absolute", border_radius="50%",
+            filter="blur(110px)", opacity="0.12",
+            top="-250px", left="-150px", z_index="0",
+            pointer_events="none",
+            style={"animation": "orbFloat 20s ease-in-out infinite"},
+        ),
+        rx.box(
+            width="500px", height="500px",
+            background="radial-gradient(circle at center, rgba(168,85,247,0.35) 0%, rgba(124,58,237,0.12) 50%, transparent 70%)",
+            position="absolute", border_radius="50%",
+            filter="blur(110px)", opacity="0.1",
+            bottom="-150px", right="-100px", z_index="0",
+            pointer_events="none",
+            style={"animation": "orbFloat2 24s ease-in-out infinite"},
+        ),
+
         project_header(),
 
         rx.hstack(
@@ -779,6 +803,8 @@ def project_page() -> rx.Component:
             align_items="stretch",
             width="100%",
             class_name="page-transition",
+            z_index="1",
+            position="relative",
         ),
 
         style=body_style,

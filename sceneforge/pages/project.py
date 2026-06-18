@@ -1,5 +1,5 @@
 import reflex as rx
-from typing import Any
+from typing import Any, cast
 from sceneforge.state import ProjectState
 from sceneforge.styles import GLOBAL_CSS
 
@@ -144,7 +144,7 @@ def project_header() -> rx.Component:
                     "border_color": "rgba(239,68,68,0.3)",
                     "color": "#fca5a5",
                 },
-                on_click=ProjectState.logout,
+                on_click=cast(Any, ProjectState.logout),
             ),
             align="center",
             spacing="3",
@@ -179,73 +179,129 @@ def render_doc_item(doc: Any) -> rx.Component:
         ),
     )
 
-    return rx.hstack(
-        # File icon
-        rx.box(
-            rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(161,161,170,0.7)" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>"""),
-            flex_shrink="0",
-        ),
-        # Filename + status
+    # Simulated pipeline tracker step
+    step_val = ProjectState.doc_steps[doc["id"]]
+
+    stepper_view = rx.cond(
+        doc["status"] == "processing",
         rx.vstack(
-            rx.text(
-                doc["filename"],
-                font_size="0.8rem",
-                font_weight="600",
-                color="#e4e4e7",
-                max_width="155px",
-                overflow="hidden",
-                text_overflow="ellipsis",
-                white_space="nowrap",
+            rx.hstack(
+                rx.cond(
+                    step_val > 1,
+                    rx.text("✓", color="#34d399", font_size="0.68rem", font_weight="700"),
+                    rx.box(width="6px", height="6px", border_radius="50%", background_color="#fbbf24", style={"animation": "statusPulse 1.2s infinite"}),
+                ),
+                rx.text("Extracting PDF text...", font_size="0.68rem", color=rx.cond(step_val >= 1, "#e4e4e7", "rgba(113,113,122,0.4)")),
+                align="center",
+                spacing="2",
             ),
             rx.hstack(
-                status_icon,
-                rx.text(
-                    doc["status"],
-                    font_size="0.68rem",
-                    color=status_color,
-                    font_weight="500",
-                    text_transform="capitalize",
-                    style=rx.cond(
-                        doc["status"] == "processing",
-                        {"animation": "statusPulse 1.5s ease infinite"},
-                        {},
+                rx.cond(
+                    step_val > 2,
+                    rx.text("✓", color="#34d399", font_size="0.68rem", font_weight="700"),
+                    rx.cond(
+                        step_val == 2,
+                        rx.box(width="6px", height="6px", border_radius="50%", background_color="#fbbf24", style={"animation": "statusPulse 1.2s infinite"}),
+                        rx.box(width="6px", height="6px", border_radius="50%", background_color="rgba(113,113,122,0.4)"),
                     ),
                 ),
-                spacing="1",
+                rx.text("Generating embeddings...", font_size="0.68rem", color=rx.cond(step_val >= 2, "#e4e4e7", "rgba(113,113,122,0.4)")),
                 align="center",
+                spacing="2",
             ),
-            spacing="0",
+            rx.hstack(
+                rx.cond(
+                    step_val > 3,
+                    rx.text("✓", color="#34d399", font_size="0.68rem", font_weight="700"),
+                    rx.cond(
+                        step_val == 3,
+                        rx.box(width="6px", height="6px", border_radius="50%", background_color="#fbbf24", style={"animation": "statusPulse 1.2s infinite"}),
+                        rx.box(width="6px", height="6px", border_radius="50%", background_color="rgba(113,113,122,0.4)"),
+                    ),
+                ),
+                rx.text("Indexing vectors in DB...", font_size="0.68rem", color=rx.cond(step_val >= 3, "#e4e4e7", "rgba(113,113,122,0.4)")),
+                align="center",
+                spacing="2",
+            ),
+            spacing="1",
             align_items="start",
-            flex="1",
-            min_width="0",
+            padding_left="24px",
+            margin_top="6px",
+            width="100%",
         ),
-        # Delete btn
-        rx.button(
-            rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>"""),
-            background="rgba(239,68,68,0.05)",
-            border="1px solid rgba(239,68,68,0.12)",
-            color="rgba(252,165,165,0.6)",
-            cursor="pointer",
-            padding="6px",
-            border_radius="7px",
-            flex_shrink="0",
-            transition="all 0.2s ease",
-            _hover={
-                "background": "#ef4444",
-                "border_color": "#ef4444",
-                "color": "#fff",
-                "transform": "scale(1.1)",
-            },
-            _active={"transform": "scale(0.95)"},
-            on_click=lambda: ProjectState.delete_document(doc["id"], doc["filename"]),
+    )
+
+    return rx.vstack(
+        rx.hstack(
+            # File icon
+            rx.box(
+                rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(161,161,170,0.7)" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>"""),
+                flex_shrink="0",
+            ),
+            # Filename + status
+            rx.vstack(
+                rx.text(
+                    doc["filename"],
+                    font_size="0.8rem",
+                    font_weight="600",
+                    color="#e4e4e7",
+                    max_width="155px",
+                    overflow="hidden",
+                    text_overflow="ellipsis",
+                    white_space="nowrap",
+                ),
+                rx.hstack(
+                    status_icon,
+                    rx.text(
+                        doc["status"],
+                        font_size="0.68rem",
+                        color=status_color,
+                        font_weight="500",
+                        text_transform="capitalize",
+                        style=rx.cond(
+                            doc["status"] == "processing",
+                            {"animation": "statusPulse 1.5s ease infinite"},
+                            {},
+                        ),
+                    ),
+                    spacing="1",
+                    align="center",
+                ),
+                spacing="0",
+                align_items="start",
+                flex="1",
+                min_width="0",
+            ),
+            # Delete btn
+            rx.button(
+                rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>"""),
+                background="rgba(239,68,68,0.05)",
+                border="1px solid rgba(239,68,68,0.12)",
+                color="rgba(252,165,165,0.6)",
+                cursor="pointer",
+                padding="6px",
+                border_radius="7px",
+                flex_shrink="0",
+                transition="all 0.2s ease",
+                _hover={
+                    "background": "#ef4444",
+                    "border_color": "#ef4444",
+                    "color": "#fff",
+                    "transform": "scale(1.1)",
+                },
+                _active={"transform": "scale(0.95)"},
+                on_click=lambda: cast(Any, ProjectState.delete_document)(doc["id"], doc["filename"]),
+            ),
+            width="100%",
+            align_items="center",
+            gap="10px",
         ),
+        stepper_view,
         width="100%",
         padding="10px 12px",
         border_radius="11px",
         background="rgba(255,255,255,0.02)",
         border="1px solid rgba(255,255,255,0.04)",
-        align_items="center",
-        gap="10px",
         transition="all 0.15s ease",
         _hover={"background": "rgba(255,255,255,0.04)", "border_color": "rgba(255,255,255,0.08)"},
     )
@@ -305,10 +361,10 @@ def sidebar() -> rx.Component:
             ),
 
             rx.cond(
-                rx.selected_files("pdf_upload"),
+                cast(Any, rx.selected_files("pdf_upload")),
                 rx.vstack(
                     rx.text(
-                        "Selected: ", rx.selected_files("pdf_upload").join(", "),
+                        "Selected: ", cast(Any, rx.selected_files("pdf_upload")).join(", "),
                         font_size="0.7rem",
                         color="rgba(165,180,252,0.8)",
                         line_height="1.5",
@@ -329,7 +385,7 @@ def sidebar() -> rx.Component:
                             "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
                             "transform": "translateY(-1px)",
                         },
-                        on_click=ProjectState.handle_upload(rx.upload_files(upload_id="pdf_upload")),
+                        on_click=cast(Any, ProjectState.handle_upload)(rx.upload_files(upload_id="pdf_upload")),
                     ),
                     width="100%",
                     spacing="2",
@@ -359,7 +415,7 @@ def sidebar() -> rx.Component:
                 spacing="2",
             ),
             rx.cond(
-                ProjectState.documents.length() > 0,
+                cast(Any, ProjectState.documents).length() > 0,
                 rx.vstack(
                     rx.foreach(ProjectState.documents, render_doc_item),
                     width="100%",
@@ -469,7 +525,7 @@ def render_chat_message(msg: Any) -> rx.Component:
             ),
             # Source pills
             rx.cond(
-                msg.sources.length() > 0,
+                cast(Any, msg.sources).length() > 0,
                 rx.flex(
                     rx.foreach(msg.sources, render_source_pill),
                     flex_wrap="wrap",
@@ -530,7 +586,7 @@ def welcome_screen() -> rx.Component:
                 "box_shadow": "0 6px 20px rgba(99,102,241,0.1)",
             },
             _active={"transform": "translateY(0)"},
-            on_click=lambda: ProjectState.use_example_question(text),
+            on_click=lambda: cast(Any, ProjectState.use_example_question)(text),
         )
 
     return rx.vstack(
@@ -593,7 +649,7 @@ def chat_area() -> rx.Component:
         # ── Message list ──────────────────────────────────────────────
         rx.box(
             rx.cond(
-                ProjectState.chat_history.length() > 0,
+                cast(Any, ProjectState.chat_history).length() > 0,
                 rx.vstack(
                     rx.foreach(ProjectState.chat_history, render_chat_message),
                     rx.cond(
@@ -626,7 +682,7 @@ def chat_area() -> rx.Component:
                     rx.text_area(
                         placeholder="Ask a question about your documents...",
                         value=ProjectState.input_message,
-                        on_change=ProjectState.set_input_message,
+                        on_change=cast(Any, ProjectState.set_input_message),
                         background="rgba(18,18,26,0.7)",
                         border="1px solid rgba(255,255,255,0.08)",
                         border_radius="16px",
@@ -644,7 +700,7 @@ def chat_area() -> rx.Component:
                             "box_shadow": "0 0 0 3px rgba(99,102,241,0.08)",
                             "outline": "none",
                         },
-                        on_key_down=ProjectState.handle_key_down,
+                        on_key_down=cast(Any, ProjectState.handle_key_down),
                     ),
                     flex="1",
                 ),
@@ -681,7 +737,7 @@ def chat_area() -> rx.Component:
                         "transform": "translateY(-1px) scale(1.02)",
                     },
                     _active={"transform": "translateY(0) scale(0.98)"},
-                    on_click=ProjectState.send_message,
+                    on_click=cast(Any, ProjectState.send_message),
                 ),
                 width="100%",
                 align_items="end",
@@ -709,8 +765,10 @@ def chat_area() -> rx.Component:
 
 
 def project_page() -> rx.Component:
+    from sceneforge.pages.dashboard import loading_bar
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{PROJECT_KEYFRAMES}</style>"),
+        loading_bar(cast(Any, ProjectState.is_sending)),
 
         project_header(),
 
@@ -720,8 +778,9 @@ def project_page() -> rx.Component:
             height="calc(100vh - 57px)",
             align_items="stretch",
             width="100%",
+            class_name="page-transition",
         ),
 
         style=body_style,
-        on_mount=ProjectState.on_load_project,
+        on_mount=cast(Any, ProjectState.on_load_project),
     )

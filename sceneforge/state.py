@@ -481,6 +481,7 @@ class ProjectState(State):
     remaining_questions: str = "100 questions remaining today"
     is_sending: bool = False
     conversation_id: str = ""
+    doc_steps: Dict[str, int] = {}
 
     # Explicit setter (replacing deprecated state_auto_setters)
     def set_input_message(self, value: str):
@@ -492,6 +493,11 @@ class ProjectState(State):
             response = await self._api_request("GET", f"/documents/{self.project_id}")
             if response.status_code == 200:
                 self.documents = response.json()
+                # Initialize simulated steps for any document that is processing
+                for d in self.documents:
+                    d_id = str(d.get("id", ""))
+                    if d.get("status") == "processing" and d_id not in self.doc_steps:
+                        self.doc_steps[d_id] = 1
             else:
                 self.documents = []
         except Exception:
@@ -666,6 +672,17 @@ class ProjectState(State):
         while True:
             async with self:
                 await self.load_documents()
+                # Increment steps for documents that are still processing
+                for d in self.documents:
+                    d_id = str(d.get("id", ""))
+                    if d.get("status") == "processing":
+                        current_step = self.doc_steps.get(d_id, 1)
+                        if current_step < 3:
+                            self.doc_steps[d_id] = current_step + 1
+                    elif d_id in self.doc_steps:
+                        # Clean up completed documents
+                        del self.doc_steps[d_id]
+                
                 any_processing = any(d["status"] == "processing" for d in self.documents)
                 if not any_processing:
                     break

@@ -1,4 +1,5 @@
 import reflex as rx
+from typing import Any, cast
 from sceneforge.state import AuthState
 from sceneforge.styles import GLOBAL_CSS
 
@@ -239,7 +240,7 @@ def login_page() -> rx.Component:
                         "transform": "translateY(-2px)",
                     },
                     _active={"transform": "translateY(0)"},
-                    on_click=AuthState.login_with_google,
+                    on_click=cast(Any, AuthState.login_with_google),
                     style={"position": "relative", "overflow": "hidden"},
                 ),
                 width="100%",
@@ -324,14 +325,11 @@ def login_page() -> rx.Component:
             ),
 
             # ── Card geometry ─────────────────────────────────────────
+            class_name="glass-panel page-transition",
             width="100%",
             max_width="420px",
-            background="rgba(16,16,22,0.7)",
-            backdrop_filter="blur(32px) saturate(1.5)",
-            border="1px solid rgba(255,255,255,0.07)",
             border_radius="28px",
             padding="56px 44px",
-            box_shadow="0 32px 80px -16px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06)",
             z_index="1",
             style={
                 "animation": "fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) both",

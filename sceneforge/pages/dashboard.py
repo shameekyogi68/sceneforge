@@ -1,5 +1,5 @@
 import reflex as rx
-from typing import Any
+from typing import Any, cast
 from sceneforge.state import DashboardState
 from sceneforge.styles import GLOBAL_CSS
 
@@ -149,7 +149,7 @@ def header_bar() -> rx.Component:
                     "transform": "translateY(-1px)",
                 },
                 _active={"transform": "translateY(0)"},
-                on_click=DashboardState.logout,
+                on_click=cast(Any, DashboardState.logout),
             ),
             align="center",
             spacing="3",
@@ -194,7 +194,7 @@ def render_project_card(proj: Any) -> rx.Component:
                 "box_shadow": "0 4px 12px rgba(239,68,68,0.35)",
             },
             _active={"transform": "scale(0.95)"},
-            on_click=lambda: DashboardState.confirm_delete_project(proj["id"], proj["name"]),
+            on_click=lambda: cast(Any, DashboardState.confirm_delete_project)(proj["id"], proj["name"]),
         ),
 
         # Card content
@@ -264,19 +264,25 @@ def project_skeleton_card() -> rx.Component:
                 width="44px",
                 height="44px",
                 border_radius="12px",
-                background="rgba(255,255,255,0.03)",
+                background="linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%)",
+                background_size="200% 100%",
+                style={"animation": "skeletonPulse 1.6s infinite linear"},
             ),
             rx.box(
                 width="70%",
                 height="16px",
                 border_radius="4px",
-                background="rgba(255,255,255,0.03)",
+                background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
+                background_size="200% 100%",
+                style={"animation": "skeletonPulse 1.6s infinite linear 0.2s"},
             ),
             rx.box(
                 width="40%",
                 height="12px",
                 border_radius="4px",
-                background="rgba(255,255,255,0.02)",
+                background="linear-gradient(90deg, rgba(255,255,255,0.01) 25%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.01) 75%)",
+                background_size="200% 100%",
+                style={"animation": "skeletonPulse 1.6s infinite linear 0.4s"},
             ),
             spacing="3",
             align_items="start",
@@ -285,13 +291,31 @@ def project_skeleton_card() -> rx.Component:
         border="1px solid rgba(255,255,255,0.03)",
         border_radius="20px",
         padding="28px 26px",
-        style={"animation": "skeletonShimmer 1.5s ease-in-out infinite"},
+    )
+
+
+def loading_bar(is_active: Any) -> rx.Component:
+    return rx.cond(
+        is_active,
+        rx.box(
+            width="100%",
+            height="3px",
+            background="linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #6366f1 100%)",
+            background_size="200% 100%",
+            position="absolute",
+            top="0",
+            left="0",
+            z_index="1000",
+            style={"animation": "progressGlow 1.5s linear infinite"},
+        ),
+        rx.fragment()
     )
 
 
 def dashboard_page() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{DASH_KEYFRAMES}</style>"),
+        loading_bar(DashboardState.is_loading),
 
         header_bar(),
 
@@ -346,7 +370,7 @@ def dashboard_page() -> rx.Component:
                     rx.input(
                         placeholder="Search projects...",
                         value=DashboardState.search_query,
-                        on_change=DashboardState.set_search_query,
+                        on_change=cast(Any, DashboardState.set_search_query),
                         border="none",
                         outline="none",
                         color="#f4f4f5",
@@ -389,7 +413,7 @@ def dashboard_page() -> rx.Component:
                         "background": "linear-gradient(135deg, #818cf8 0%, #6366f1 100%)",
                     },
                     _active={"transform": "translateY(0)", "box_shadow": "0 2px 8px rgba(99,102,241,0.3)"},
-                    on_click=DashboardState.open_modal,
+                    on_click=cast(Any, DashboardState.open_modal),
                 ),
                 width="100%",
                 justify="between",
@@ -409,7 +433,7 @@ def dashboard_page() -> rx.Component:
                     width="100%",
                 ),
                 rx.cond(
-                    DashboardState.filtered_projects.length() > 0,
+                    cast(Any, DashboardState.filtered_projects).length() > 0,
                     rx.grid(
                         rx.foreach(DashboardState.filtered_projects, render_project_card),
                         columns=rx.breakpoints(initial="1", sm="2", md="3"),
@@ -469,7 +493,7 @@ def dashboard_page() -> rx.Component:
                                 "transform": "translateY(-1px)",
                                 "box_shadow": "0 4px 16px rgba(99,102,241,0.15)",
                             },
-                            on_click=DashboardState.open_modal,
+                            on_click=cast(Any, DashboardState.open_modal),
                         ),
                         padding="80px 24px",
                         background="rgba(16,16,24,0.3)",
@@ -489,6 +513,7 @@ def dashboard_page() -> rx.Component:
             padding="52px 40px",
             z_index="1",
             spacing="8",
+            class_name="page-transition",
         ),
 
         # ── New Project Modal ─────────────────────────────────────────
@@ -540,7 +565,7 @@ def dashboard_page() -> rx.Component:
                         placeholder="e.g. MyBombayFilm",
                         max_length=80,
                         value=DashboardState.new_project_name,
-                        on_change=DashboardState.set_new_project_name,
+                        on_change=cast(Any, DashboardState.set_new_project_name),
                         background="rgba(255,255,255,0.03)",
                         border="1px solid rgba(255,255,255,0.09)",
                         border_radius="12px",
@@ -592,7 +617,7 @@ def dashboard_page() -> rx.Component:
                             "transform": "translateY(-1px)",
                         },
                         _active={"transform": "translateY(0)"},
-                        on_click=DashboardState.create_project,
+                        on_click=cast(Any, DashboardState.create_project),
                     ),
                     spacing="3",
                     margin_top="28px",
@@ -608,7 +633,7 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)",
             ),
             open=DashboardState.is_modal_open,
-            on_open_change=lambda open: DashboardState.set_is_modal_open(open),
+            on_open_change=lambda open: cast(Any, DashboardState.set_is_modal_open)(open),
         ),
 
         # ── Delete Confirmation Modal ─────────────────────────────────
@@ -644,7 +669,7 @@ def dashboard_page() -> rx.Component:
                         padding="10px 20px",
                         font_size="0.875rem",
                         cursor="pointer",
-                        on_click=DashboardState.close_delete_confirm,
+                        on_click=cast(Any, DashboardState.close_delete_confirm),
                     ),
                     rx.button(
                         "Delete Project",
@@ -656,7 +681,7 @@ def dashboard_page() -> rx.Component:
                         font_weight="700",
                         cursor="pointer",
                         box_shadow="0 4px 14px rgba(239,68,68,0.25)",
-                        on_click=DashboardState.execute_delete_project,
+                        on_click=cast(Any, DashboardState.execute_delete_project),
                     ),
                     spacing="3",
                     justify="end",
@@ -670,9 +695,9 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8)",
             ),
             open=DashboardState.is_delete_confirm_open,
-            on_open_change=lambda open: DashboardState.set_is_delete_confirm_open(open),
+            on_open_change=lambda open: cast(Any, DashboardState.set_is_delete_confirm_open)(open),
         ),
 
         style=body_style,
-        on_mount=DashboardState.load_projects,
+        on_mount=cast(Any, DashboardState.load_projects),
     )

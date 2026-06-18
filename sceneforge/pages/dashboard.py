@@ -633,7 +633,7 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)",
             ),
             open=DashboardState.is_modal_open,
-            on_open_change=cast(Any, lambda open: cast(Any, DashboardState).set_is_modal_open(open)),
+            on_open_change=cast(Any, DashboardState.set_is_modal_open),
         ),
 
         # ── Delete Confirmation Modal ─────────────────────────────────
@@ -695,7 +695,7 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8)",
             ),
             open=DashboardState.is_delete_confirm_open,
-            on_open_change=cast(Any, lambda open: cast(Any, DashboardState).set_is_delete_confirm_open(open)),
+            on_open_change=cast(Any, DashboardState.set_is_delete_confirm_open),
         ),
 
         style=body_style,

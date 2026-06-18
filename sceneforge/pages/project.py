@@ -290,7 +290,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                     "transform": "scale(1.1)",
                 },
                 _active={"transform": "scale(0.95)"},
-                on_click=lambda: cast(Any, ProjectState).delete_document(doc["id"], doc["filename"]),
+                on_click=cast(Any, lambda: cast(Any, ProjectState).delete_document(doc["id"], doc["filename"])),
             ),
             width="100%",
             align_items="center",
@@ -586,7 +586,7 @@ def welcome_screen() -> rx.Component:
                 "box_shadow": "0 6px 20px rgba(99,102,241,0.1)",
             },
             _active={"transform": "translateY(0)"},
-            on_click=lambda: cast(Any, ProjectState).use_example_question(text),
+            on_click=cast(Any, lambda: cast(Any, ProjectState).use_example_question(text)),
         )
 
     return rx.vstack(

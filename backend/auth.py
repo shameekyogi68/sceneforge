@@ -8,8 +8,9 @@ Optimisations:
 """
 
 import logging
+import time
 from datetime import date
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import HTTPException
 from supabase import create_client
@@ -57,6 +58,43 @@ _client_cache = ClientCache()
 
 def get_authenticated_client(token: str):
     return _client_cache.get(token)
+
+
+class UserCache:
+    """Thread-safe cache for verified Supabase users to avoid round-trip get_user calls."""
+    def __init__(self, ttl: float = 60.0, max_size: int = 100):
+        self.cache = {}
+        self.ttl = ttl
+        self.max_size = max_size
+        self._lock = threading.Lock()
+
+    def get(self, token: str) -> Optional[Any]:
+        if not token:
+            return None
+        with self._lock:
+            if token in self.cache:
+                user, expiry = self.cache[token]
+                if time.time() < expiry:
+                    return user
+                else:
+                    del self.cache[token]
+            return None
+
+    def set(self, token: str, user: Any):
+        if not token:
+            return
+        with self._lock:
+            if len(self.cache) >= self.max_size:
+                now = time.time()
+                expired = [k for k, (_, exp) in self.cache.items() if now >= exp]
+                if expired:
+                    for k in expired:
+                        self.cache.pop(k, None)
+                else:
+                    self.cache.popitem()
+            self.cache[token] = (user, time.time() + self.ttl)
+
+_user_cache = UserCache()
 
 
 # ---------------------------------------------------------------------------
@@ -120,10 +158,16 @@ def get_current_user(token: str) -> Any:
     Validate a JWT and return the Supabase user object.
     Raises HTTPException(401) on invalid/expired token.
     """
+    cached_user = _user_cache.get(token)
+    if cached_user:
+        return cached_user
+
     try:
         response = get_anon_client().auth.get_user(token)
         if not response.user:
             raise HTTPException(status_code=401, detail="Invalid token")
+        
+        _user_cache.set(token, response.user)
         return response.user
     except HTTPException:
         raise

@@ -408,7 +408,12 @@ async def upload_document_endpoint(
 # ---------------------------------------------------------------------------
 
 @app.post("/ask", response_model=ChatResponse)
-def ask_endpoint(req: ChatRequest, token: str = Depends(get_token), user: Any = Depends(get_user)):
+def ask_endpoint(
+    req: ChatRequest,
+    background_tasks: BackgroundTasks,
+    token: str = Depends(get_token),
+    user: Any = Depends(get_user)
+):
     """Perform RAG chat queries against project documents."""
     message = req.message.strip()
     if not message:
@@ -442,8 +447,9 @@ def ask_endpoint(req: ChatRequest, token: str = Depends(get_token), user: Any = 
         memory = get_project_memory(req.project_id)
         answer, sources = answer_with_sources(message, req.project_id, memory, token=token)
 
-        # 5. Save exchange to Mem0 memory
-        save_conversation_memory(
+        # 5. Save exchange to Mem0 memory (in background)
+        background_tasks.add_task(
+            save_conversation_memory,
             [
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": answer}

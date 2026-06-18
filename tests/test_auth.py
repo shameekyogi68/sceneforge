@@ -29,9 +29,11 @@ with patch("supabase.create_client") as mock_create_client:
 class TestAuth(unittest.TestCase):
 
     def setUp(self):
-        # Reset the global cached anon client
+        # Reset the global cached anon client and user cache
         import backend.auth
         backend.auth._anon_client = None
+        if hasattr(backend.auth, "_user_cache"):
+            backend.auth._user_cache.cache.clear()
 
     @patch("backend.auth.create_client")
     def test_client_cache_basic(self, mock_create):

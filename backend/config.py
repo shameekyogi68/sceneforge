@@ -6,7 +6,7 @@ All values are module-level; no classes, no lazy loading.
 import os
 
 # Must be set before any protobuf-backed library is imported
-os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
+# os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
 from dotenv import load_dotenv
 

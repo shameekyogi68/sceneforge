@@ -622,6 +622,30 @@ def get_project_messages(project_id: str, limit: int = 50, token: str = Depends(
         logger.exception("Get messages failed")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+@app.delete("/projects/{project_id}/messages")
+def clear_project_messages_endpoint(project_id: str, token: str = Depends(get_token), user: Any = Depends(get_user)):
+    """Clear all chat messages and memory for a specific project."""
+    try:
+        db = get_authenticated_client(token)
+        
+        # Verify project ownership
+        proj_res = db.table("projects").select("id").eq("id", project_id).eq("user_id", str(user.id)).execute()
+        if not proj_res.data:
+            raise HTTPException(status_code=403, detail="Access denied to this project")
+            
+        # Delete project memory
+        clear_project_memory(project_id)
+        
+        # Delete all conversations belonging to this project (which cascades to messages)
+        db.table("conversations").delete().eq("project_id", project_id).execute()
+        
+        return {"message": "Chat history and memory cleared successfully."}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.exception("Clear project messages failed")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 # ---------------------------------------------------------------------------
 # Liveness / Health Check
 # ---------------------------------------------------------------------------

@@ -709,6 +709,7 @@ class ProjectState(State):
         # Add user message to UI immediately for instant feedback
         self.chat_history.append(ChatMessage(role="user", content=message, sources=[]))
         yield
+        yield ProjectState.scroll_to_bottom
 
         try:
             response = await self._api_request(
@@ -729,6 +730,7 @@ class ProjectState(State):
                 ))
                 self.is_sending = False
                 yield
+                yield ProjectState.scroll_to_bottom
                 return
             elif response.status_code != 200:
                 detail = response.json().get("detail", "Error generating response.")
@@ -768,6 +770,7 @@ class ProjectState(State):
         finally:
             self.is_sending = False
             yield
+            yield ProjectState.scroll_to_bottom
 
     def use_example_question(self, text: str):
         """Set input message and send."""
@@ -813,3 +816,26 @@ class ProjectState(State):
         finally:
             self.is_preview_loading = False
             yield
+
+    async def scroll_to_bottom(self):
+        """Scroll chat container to bottom smoothly."""
+        yield rx.call_script(
+            "const el = document.getElementById('chat-scroll-container'); "
+            "if (el) { el.scrollTop = el.scrollHeight; }"
+        )
+
+    async def clear_chat(self):
+        """Delete conversation messages and memory for the current project."""
+        try:
+            response = await self._api_request("DELETE", f"/projects/{self.project_id}/messages")
+            if response.status_code == 200:
+                self.chat_history = []
+                self.conversation_id = ""
+                rx.toast.success("Chat history cleared.")
+            else:
+                detail = response.json().get("detail", "Failed to clear chat history.")
+                rx.toast.error(f"Error: {detail}")
+        except Exception as e:
+            logger.exception("Failed to clear chat")
+            rx.toast.error("An error occurred while clearing chat.")
+        yield

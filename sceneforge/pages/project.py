@@ -131,6 +131,27 @@ def project_header() -> rx.Component:
                 border_radius="20px",
                 padding="5px 14px",
             ),
+            # Clear Chat History Button
+            rx.button(
+                rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>"""),
+                rx.text("Clear Chat", font_size="0.8rem", font_weight="600",
+                        display=rx.breakpoints(initial="none", sm="block")),
+                background="rgba(255,255,255,0.03)",
+                border="1px solid rgba(255,255,255,0.07)",
+                color="rgba(212,212,216,0.8)",
+                border_radius="9px",
+                padding="7px 13px",
+                cursor="pointer",
+                gap="6px",
+                transition="all 0.2s ease",
+                _hover={
+                    "background": "rgba(239,68,68,0.08)",
+                    "border_color": "rgba(239,68,68,0.3)",
+                    "color": "#fca5a5",
+                },
+                on_click=cast(Any, lambda: cast(Any, ProjectState).clear_chat),
+            ),
+            # Sign Out Button
             rx.button(
                 rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>"""),
                 rx.text("Sign Out", font_size="0.8rem", font_weight="600",
@@ -508,14 +529,40 @@ def render_chat_message(msg: Any) -> rx.Component:
     return rx.box(
         rx.vstack(
             # Bubble
+            # Bubble
             rx.box(
-                rx.markdown(
-                    msg.content,
-                    style={
-                        "font_size": "0.91rem",
-                        "line_height": "1.65",
-                        "color": rx.cond(is_user, "#ffffff", "#e4e4e7"),
-                    },
+                rx.hstack(
+                    rx.markdown(
+                        msg.content,
+                        style={
+                            "font_size": "0.91rem",
+                            "line_height": "1.65",
+                            "color": rx.cond(is_user, "#ffffff", "#e4e4e7"),
+                        },
+                        flex="1",
+                    ),
+                    rx.cond(
+                        not is_user,
+                        rx.button(
+                            rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>"""),
+                            background="rgba(255,255,255,0.02)",
+                            border="1px solid rgba(255,255,255,0.06)",
+                            color="rgba(161,161,170,0.6)",
+                            padding="5px",
+                            border_radius="6px",
+                            cursor="pointer",
+                            transition="all 0.15s ease",
+                            _hover={"background": "rgba(255,255,255,0.08)", "color": "white", "transform": "scale(1.05)"},
+                            _active={"transform": "scale(0.95)"},
+                            on_click=rx.set_clipboard(msg.content),
+                            margin_left="8px",
+                            align_self="start",
+                        ),
+                        rx.fragment()
+                    ),
+                    align_items="start",
+                    justify_content="between",
+                    width="100%",
                 ),
                 padding="14px 20px",
                 border_radius="18px",
@@ -679,6 +726,7 @@ def chat_area() -> rx.Component:
                 ),
                 welcome_screen(),
             ),
+            id="chat-scroll-container",
             flex="1",
             overflow_y="auto",
             padding="32px 36px 8px",

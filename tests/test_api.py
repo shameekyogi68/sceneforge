@@ -355,5 +355,25 @@ class TestApi(unittest.TestCase):
         self.assertEqual(data["page_num"], 4)
         self.assertEqual(data["text"], "First chunk on page 4. Second chunk on page 4.")
 
+    @patch("backend.main.get_current_user")
+    @patch("backend.main.get_authenticated_client")
+    @patch("backend.main.clear_project_memory")
+    def test_clear_project_messages_success(self, mock_clear_mem, mock_get_db, mock_get_user):
+        mock_get_user.return_value = self.dummy_user
+        mock_db = MagicMock()
+        mock_get_db.return_value = mock_db
+
+        # Project ownership mock
+        mock_proj_res = MagicMock()
+        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
+
+        headers = {"Authorization": "Bearer dummy-token"}
+        response = self.client.delete("/projects/proj-1/messages", headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "Chat history and memory cleared successfully.")
+        mock_clear_mem.assert_called_once_with("proj-1")
+        mock_db.table().delete().eq().execute.assert_called_once()
+
 if __name__ == "__main__":
     unittest.main()

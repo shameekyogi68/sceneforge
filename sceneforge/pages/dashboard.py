@@ -194,7 +194,7 @@ def render_project_card(proj: Any) -> rx.Component:
                 "box_shadow": "0 4px 12px rgba(239,68,68,0.35)",
             },
             _active={"transform": "scale(0.95)"},
-            on_click=lambda: cast(Any, DashboardState.confirm_delete_project)(proj["id"], proj["name"]),
+            on_click=lambda: cast(Any, DashboardState).confirm_delete_project(proj["id"], proj["name"]),
         ),
 
         # Card content
@@ -252,7 +252,7 @@ def render_project_card(proj: Any) -> rx.Component:
             "box_shadow": "0 20px 48px -8px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.12)",
         },
         _active={"transform": "translateY(-2px)"},
-        on_click=lambda: rx.redirect(f"/project?project_id={proj['id']}"),
+        on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj['id']}")),
         style={"animation": "cardEntrance 0.5s cubic-bezier(0.16,1,0.3,1) both"},
     )
 
@@ -633,7 +633,7 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)",
             ),
             open=DashboardState.is_modal_open,
-            on_open_change=lambda open: cast(Any, DashboardState.set_is_modal_open)(open),
+            on_open_change=lambda open: cast(Any, DashboardState).set_is_modal_open(open),
         ),
 
         # ── Delete Confirmation Modal ─────────────────────────────────
@@ -695,7 +695,7 @@ def dashboard_page() -> rx.Component:
                 box_shadow="0 32px 80px -16px rgba(0,0,0,0.8)",
             ),
             open=DashboardState.is_delete_confirm_open,
-            on_open_change=lambda open: cast(Any, DashboardState.set_is_delete_confirm_open)(open),
+            on_open_change=lambda open: cast(Any, DashboardState).set_is_delete_confirm_open(open),
         ),
 
         style=body_style,

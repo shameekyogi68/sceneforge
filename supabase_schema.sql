@@ -78,6 +78,10 @@ CREATE INDEX IF NOT EXISTS document_chunks_document_id_idx ON document_chunks (d
 CREATE INDEX IF NOT EXISTS documents_project_id_idx ON documents (project_id);
 CREATE INDEX IF NOT EXISTS conversations_project_id_idx ON conversations (project_id);
 
+-- Full-Text Search GIN index for fast keyword matching and hybrid retrieval
+CREATE INDEX IF NOT EXISTS document_chunks_fts_idx ON document_chunks 
+    USING gin (to_tsvector('english', chunk_text));
+
 -- =========================================================================
 -- Database Functions (RPC)
 -- =========================================================================

@@ -277,15 +277,19 @@ def search_documents(
     rrf_scores: Dict[Tuple[str, int, str], float] = {}
     chunk_map: Dict[Tuple[str, int, str], Dict] = {}
 
+    def _normalize_key(fn: str, pg: int, txt: str) -> Tuple[str, int, str]:
+        # Normalize whitespace and lowercase to prevent duplicate keys due to formatting differences
+        return (fn, pg, " ".join(txt.split()).strip().lower())
+
     # Rank vector chunks
     for rank, chunk in enumerate(vector_chunks, start=1):
-        key = (chunk["filename"], chunk["page_num"], chunk["chunk_text"])
+        key = _normalize_key(chunk["filename"], chunk["page_num"], chunk["chunk_text"])
         chunk_map[key] = chunk
         rrf_scores[key] = rrf_scores.get(key, 0.0) + 1.0 / (k_const + rank)
 
     # Rank FTS chunks
     for rank, chunk in enumerate(fts_chunks, start=1):
-        key = (chunk["filename"], chunk["page_num"], chunk["chunk_text"])
+        key = _normalize_key(chunk["filename"], chunk["page_num"], chunk["chunk_text"])
         if key not in chunk_map:
             chunk_copy = dict(chunk)
             if "similarity" not in chunk_copy:

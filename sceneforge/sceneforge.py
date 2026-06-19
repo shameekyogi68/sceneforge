@@ -15,7 +15,11 @@ app = rx.App(
         "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
     },
     stylesheets=[
-        # Inlined via a data URI approach — we inject via html component in each page
+        "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap",
+    ],
+    head_components=[
+        rx.el.link(rel="preconnect", href="https://fonts.googleapis.com"),
+        rx.el.link(rel="preconnect", href="https://fonts.gstatic.com", cross_origin=""),
     ],
     api_transformer=fastapi_app,
 )

@@ -205,7 +205,7 @@ def render_doc_item(doc: Any) -> rx.Component:
     )
 
     # Simulated pipeline tracker step
-    step_val = ProjectState.doc_steps[doc["id"]]
+    step_val = ProjectState.doc_steps[doc["id"].to(str)]
 
     stepper_view = rx.cond(
         doc["status"] == "processing",
@@ -280,11 +280,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         {"color": "#c7d2fe", "text_decoration": "underline"},
                         {},
                     ),
-                    on_click=cast(Any, rx.cond(
-                        doc["status"] == "ready",
-                        cast(Any, ProjectState).open_document_preview(doc["filename"], 1),
-                        rx.fragment()
-                    )),
+                    on_click=cast(Any, cast(Any, ProjectState).open_document_preview(doc["filename"].to(str), 1, "")),
                 ),
                 rx.hstack(
                     status_icon,
@@ -542,7 +538,7 @@ def render_chat_message(msg: Any) -> rx.Component:
                         flex="1",
                     ),
                     rx.cond(
-                        not is_user,
+                        ~is_user,
                         rx.button(
                             rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>"""),
                             background="rgba(255,255,255,0.02)",

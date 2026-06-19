@@ -814,6 +814,16 @@ class ProjectState(State):
 
     async def open_document_preview(self, filename: str, page_num: int, highlight_text: str = ""):
         """Fetch and display preview of a specific document page."""
+        # Ensure document is ready before opening preview
+        doc_ready = False
+        for doc in self.documents:
+            if doc.get("filename") == filename:
+                if doc.get("status") == "ready":
+                    doc_ready = True
+                break
+        if not doc_ready:
+            return
+
         self.selected_preview_filename = filename
         self.selected_preview_page = page_num
         self.selected_preview_highlight = highlight_text

@@ -226,12 +226,27 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
         res = db.table("projects").select("*").eq("user_id", str(user.id)).execute()
         data_list = res.data
         projects_list = []
+        
+        # Safely count documents grouped by project_id
+        document_counts = {}
+        try:
+            docs_res = db.table("documents").select("project_id").execute()
+            docs_data = docs_res.data or []
+            if isinstance(docs_data, list):
+                for d in docs_data:
+                    if isinstance(d, dict) and "project_id" in d:
+                        pid = d["project_id"]
+                        document_counts[pid] = document_counts.get(pid, 0) + 1
+        except Exception as exc:
+            logger.warning("Could not retrieve document counts: %s", exc)
+
         if isinstance(data_list, list):
             for p in data_list:
                 if isinstance(p, dict):
                     created = str(p.get("created_at", ""))
                     p_copy = dict(p)
                     p_copy["created_date"] = created.split("T")[0] if "T" in created else created
+                    p_copy["document_count"] = document_counts.get(p.get("id"), 0)
                     projects_list.append(p_copy)
         return projects_list
     except Exception as e:

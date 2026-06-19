@@ -133,6 +133,53 @@ class TestApi(unittest.TestCase):
 
     @patch("backend.main.get_current_user")
     @patch("backend.main.get_authenticated_client")
+    def test_list_projects_with_document_counts(self, mock_get_db, mock_get_user):
+        mock_get_user.return_value = self.dummy_user
+        mock_db = MagicMock()
+        mock_get_db.return_value = mock_db
+        
+        # Mock table specifically depending on arguments to list document counts
+        mock_projects_table = MagicMock()
+        mock_documents_table = MagicMock()
+        
+        def table_side_effect(table_name):
+            if table_name == "projects":
+                return mock_projects_table
+            elif table_name == "documents":
+                return mock_documents_table
+            return MagicMock()
+            
+        mock_db.table.side_effect = table_side_effect
+        
+        # Set up projects table query mock
+        mock_projects_select_res = MagicMock()
+        mock_projects_select_res.data = [
+            {"id": "proj-1", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z"},
+            {"id": "proj-2", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z"}
+        ]
+        mock_projects_table.select.return_value.eq.return_value.execute.return_value = mock_projects_select_res
+        
+        # Set up documents table query mock
+        mock_documents_select_res = MagicMock()
+        mock_documents_select_res.data = [
+            {"project_id": "proj-1"},
+            {"project_id": "proj-1"},
+            {"project_id": "proj-2"}
+        ]
+        mock_documents_table.select.return_value.execute.return_value = mock_documents_select_res
+        
+        headers = {"Authorization": "Bearer dummy-token"}
+        response = self.client.get("/projects", headers=headers)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 2)
+        self.assertEqual(data[0]["name"], "Project Alpha")
+        self.assertEqual(data[0]["document_count"], 2)
+        self.assertEqual(data[1]["name"], "Project Beta")
+        self.assertEqual(data[1]["document_count"], 1)
+
+    @patch("backend.main.get_current_user")
+    @patch("backend.main.get_authenticated_client")
     @patch("backend.main.clear_project_memory")
     def test_delete_project(self, mock_clear_mem, mock_get_db, mock_get_user):
         mock_get_user.return_value = self.dummy_user

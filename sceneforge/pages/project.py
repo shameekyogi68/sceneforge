@@ -421,7 +421,7 @@ def sidebar() -> rx.Component:
                             "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
                             "transform": "translateY(-1px)",
                         },
-                        on_click=cast(Any, ProjectState.handle_upload)(rx.upload_files(upload_id="pdf_upload")),
+                        on_click=[cast(Any, ProjectState.handle_upload)(rx.upload_files(upload_id="pdf_upload")), rx.clear_selected_files("pdf_upload")],
                     ),
                     width="100%",
                     spacing="2",
@@ -517,7 +517,7 @@ def render_source_pill(src: Any) -> rx.Component:
                 "color": "white",
                 "transform": "translateY(-1px)",
             },
-            on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(src.filename, src.page)),
+            on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(src.filename, src.page, src.text_preview)),
         ),
         content=src.text_preview,
     )
@@ -554,7 +554,7 @@ def render_chat_message(msg: Any) -> rx.Component:
                             transition="all 0.15s ease",
                             _hover={"background": "rgba(255,255,255,0.08)", "color": "white", "transform": "scale(1.05)"},
                             _active={"transform": "scale(0.95)"},
-                            on_click=rx.set_clipboard(msg.content),
+                            on_click=[rx.set_clipboard(msg.content), rx.toast.success("Copied to clipboard!")],
                             margin_left="8px",
                             align_self="start",
                         ),
@@ -653,6 +653,25 @@ def welcome_screen() -> rx.Component:
         )
 
     return rx.vstack(
+        # Warning when no documents uploaded
+        rx.cond(
+            cast(Any, ProjectState.documents).length() == 0,
+            rx.box(
+                rx.hstack(
+                    rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>"""),
+                    rx.text("To start, upload research PDF files in the left sidebar dropzone.", font_size="0.8rem", color="#fef08a", font_weight="600"),
+                    align="center",
+                    spacing="2",
+                ),
+                background="rgba(251,191,36,0.08)",
+                border="1px solid rgba(251,191,36,0.22)",
+                border_radius="12px",
+                padding="10px 16px",
+                margin_bottom="12px",
+                width="100%",
+                max_width="460px",
+            ),
+        ),
         # Sparkles icon
         rx.box(
             rx.html("""<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -962,12 +981,10 @@ def preview_inspector_dialog() -> rx.Component:
                 ),
                 # Extracted text pane
                 rx.box(
-                    rx.text(
-                        ProjectState.selected_preview_text,
-                        font_size="0.92rem",
-                        line_height="1.7",
-                        color="#e4e4e7",
-                        white_space="pre-wrap",
+                    rx.html(
+                        "<div style=\"white-space: pre-wrap; font-family: inherit; font-size: 0.92rem; line-height: 1.7; color: #e4e4e7;\">"
+                        + ProjectState.selected_preview_text +
+                        "</div>"
                     ),
                     max_height="480px",
                     overflow_y="auto",

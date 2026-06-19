@@ -225,11 +225,29 @@ def render_project_card(proj: Any) -> rx.Component:
                 line_height="1.3",
                 letter_spacing="-0.01em",
             ),
+            # Document Count Badge
+            rx.hstack(
+                rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(161,161,170,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
+                rx.text(
+                    rx.cond(
+                        proj["document_count"] == 1,
+                        "1 document",
+                        proj["document_count"].to(str) + " documents",
+                    ),
+                    font_size="0.77rem",
+                    color="rgba(161,161,170,0.6)",
+                    font_weight="500",
+                ),
+                align="center",
+                spacing="1",
+                margin_top="3px",
+            ),
             rx.text(
                 proj["created_date"],
                 font_size="0.77rem",
                 color="rgba(113,113,122,0.7)",
                 font_weight="500",
+                margin_top="4px",
             ),
             spacing="1",
             align_items="start",

@@ -487,6 +487,7 @@ class ProjectState(State):
     selected_preview_filename: str = ""
     selected_preview_page: int = 1
     selected_preview_text: str = ""
+    selected_preview_highlight: str = ""
     is_preview_modal_open: bool = False
     is_preview_loading: bool = False
 
@@ -789,11 +790,13 @@ class ProjectState(State):
         self.is_preview_modal_open = False
         self.selected_preview_filename = ""
         self.selected_preview_text = ""
+        self.selected_preview_highlight = ""
 
-    async def open_document_preview(self, filename: str, page_num: int):
+    async def open_document_preview(self, filename: str, page_num: int, highlight_text: str = ""):
         """Fetch and display preview of a specific document page."""
         self.selected_preview_filename = filename
         self.selected_preview_page = page_num
+        self.selected_preview_highlight = highlight_text
         self.is_preview_loading = True
         self.selected_preview_text = "Fetching document page text..."
         self.is_preview_modal_open = True
@@ -806,7 +809,30 @@ class ProjectState(State):
                 params={"filename": filename, "page_num": page_num}
             )
             if response.status_code == 200:
-                self.selected_preview_text = response.json().get("text", "")
+                raw_text = response.json().get("text", "")
+                
+                import html
+                # Escape HTML characters to protect against XSS or formatting breaks from PDF content
+                escaped_text = html.escape(raw_text)
+                
+                if self.selected_preview_highlight:
+                    # Clean the citation snippet
+                    clean_highlight = self.selected_preview_highlight.replace("...", "").strip()
+                    if clean_highlight and len(clean_highlight) >= 5:
+                        import re
+                        try:
+                            # Safely escape regex characters in search phrase
+                            pattern = re.escape(clean_highlight)
+                            # Wrap matching string in mark tags
+                            escaped_text = re.sub(
+                                pattern,
+                                lambda m: f'<mark class="search-highlight">{m.group(0)}</mark>',
+                                escaped_text,
+                                flags=re.IGNORECASE
+                            )
+                        except Exception:
+                            pass
+                self.selected_preview_text = escaped_text
             else:
                 detail = response.json().get("detail", "Failed to load document text.")
                 self.selected_preview_text = f"Error: {detail}"

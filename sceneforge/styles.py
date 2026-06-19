@@ -102,5 +102,17 @@ body {
         0 0 0 3px rgba(99, 102, 241, 0.12),
         0 4px 16px -4px rgba(99, 102, 241, 0.15) !important;
 }
+
+/* Premium Highlight style for document preview citations */
+.search-highlight {
+    background-color: rgba(234, 179, 8, 0.3) !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 1px 4px;
+    font-weight: 600;
+    box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+    border: 1px solid rgba(234, 179, 8, 0.5);
+}
 """
+
 

@@ -182,6 +182,7 @@ class AuthState(State):
     confirm_password: str = ""
     show_password: bool = False
     is_signup: bool = False
+    show_email_form: bool = False
     error_message: str = ""
     success_message: str = ""
     is_loading: bool = False
@@ -198,6 +199,25 @@ class AuthState(State):
     def toggle_password_visibility(self):
         """Toggle password visibility mask."""
         self.show_password = not self.show_password
+
+    def toggle_email_form(self):
+        """Toggle showing email/password form versus one-click Google OAuth."""
+        self.show_email_form = not self.show_email_form
+        self.email = ""
+        self.password = ""
+        self.confirm_password = ""
+        self.show_password = False
+        self.error_message = ""
+        self.success_message = ""
+
+    def set_email(self, value: str):
+        self.email = value
+
+    def set_password(self, value: str):
+        self.password = value
+
+    def set_confirm_password(self, value: str):
+        self.confirm_password = value
 
     async def handle_auth(self):
         """Submit the login or signup form."""

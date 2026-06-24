@@ -10,6 +10,11 @@ from sceneforge.styles import GLOBAL_CSS
 
 from backend.main import app as fastapi_app
 
+from reflex_components_core.core import banner
+banner.connection_toaster = lambda *args, **kwargs: rx.fragment()  # type: ignore
+banner.connection_modal = lambda *args, **kwargs: rx.fragment()  # type: ignore
+banner.connection_pulser = lambda *args, **kwargs: rx.fragment()  # type: ignore
+
 app = rx.App(
     style={
         "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
@@ -21,11 +26,32 @@ app = rx.App(
         rx.el.link(rel="preconnect", href="https://fonts.googleapis.com"),
         rx.el.link(rel="preconnect", href="https://fonts.gstatic.com", cross_origin=""),
     ],
+    hydrate_fallback=rx.box(
+        rx.center(
+            rx.heading(
+                "tselaf",
+                size="9",
+                font_weight="800",
+                letter_spacing="-0.04em",
+                style={
+                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
+                    "background_size": "200% auto",
+                    "-webkit-background-clip": "text",
+                    "-webkit-text-fill-color": "transparent",
+                }
+            ),
+            width="100vw",
+            height="100vh",
+            background_color="#09090b",
+        )
+    ),
     api_transformer=fastapi_app,
 )
 
-# Inject global CSS into every page via the app's head
-# (Reflex 0.9.x: use add_page + inject html style tag in root component)
+import logging
+logger = logging.getLogger("sceneforge")
+logger.info("Configured CORS Allowed Origins: %s", rx.config.get_config().cors_allowed_origins)
+logger.info("Configured API URL: %s", rx.config.get_config().api_url)
 
 from typing import Any, cast
 
@@ -43,25 +69,31 @@ app.add_page(privacy_page, route="/privacy")
 def index():
     return rx.center(
         rx.html(f"<style>{GLOBAL_CSS}</style>"),
-        rx.html("""
-            <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        rx.vstack(
+            rx.heading(
+                "tselaf",
+                size="8",
+                font_weight="800",
+                letter_spacing="-0.04em",
+                style={
+                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
+                    "-webkit-background-clip": "text",
+                    "-webkit-text-fill-color": "transparent",
+                    "background-clip": "text",
+                },
+            ),
+            rx.html("""
                 <div style="
-                    width:48px;height:48px;
-                    background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.12));
-                    border:1px solid rgba(99,102,241,0.3);
-                    border-radius:14px;
-                    display:flex;align-items:center;justify-content:center;
-                ">
-                    <svg style="width:22px;height:22px;color:#a5b4fc;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.2 6 3 11l-.9-2.4 17.2-5.1Z"/>
-                        <path d="M2 12V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4"/>
-                        <path d="M2 12h20"/>
-                        <path d="m7 2 2 4"/><path d="m12 2 2 4"/><path d="m17 2 2 4"/>
-                    </svg>
-                </div>
-                <div style="width:20px;height:20px;border:2px solid rgba(99,102,241,0.2);border-top-color:#818cf8;border-radius:50%;animation:spin-slow 0.8s linear infinite;"></div>
-            </div>
-        """),
+                    width: 20px; height: 20px;
+                    border: 2px solid rgba(99,102,241,0.2);
+                    border-top-color: #818cf8;
+                    border-radius: 50%;
+                    animation: spin-slow 0.8s linear infinite;
+                "></div>
+            """),
+            align="center",
+            spacing="4",
+        ),
         height="100vh",
         background_color="#080810",
         width="100%",

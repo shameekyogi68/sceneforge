@@ -85,7 +85,7 @@ def project_header() -> rx.Component:
             ),
             rx.hstack(
                 rx.text(
-                    "ScriptIQ",
+                    "tselaf",
                     font_size="1.05rem",
                     font_weight="800",
                     letter_spacing="-0.03em",
@@ -611,7 +611,7 @@ def typing_indicator() -> rx.Component:
                     background:rgba(22,22,32,0.6);border:1px solid rgba(255,255,255,0.07);
                     border-radius:18px;border-bottom-left-radius:4px;
                     backdrop-filter:blur(16px);box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-                    <span style="font-size:0.8rem;color:rgba(161,161,170,0.7);font-weight:500;margin-right:8px;">ScriptIQ is thinking</span>
+                    <span style="font-size:0.8rem;color:rgba(161,161,170,0.7);font-weight:500;margin-right:8px;">tselaf is thinking</span>
                     <span style="width:7px;height:7px;background:#818cf8;border-radius:50%;animation:typingDot 1.2s ease infinite 0s;display:inline-block;"></span>
                     <span style="width:7px;height:7px;background:#818cf8;border-radius:50%;animation:typingDot 1.2s ease infinite 0.2s;display:inline-block;"></span>
                     <span style="width:7px;height:7px;background:#818cf8;border-radius:50%;animation:typingDot 1.2s ease infinite 0.4s;display:inline-block;"></span>

@@ -7,17 +7,23 @@ from reflex_base.plugins.sitemap import SitemapPlugin
 # app so the frontend build bakes the correct WebSocket host into env.json.
 # A wrong or missing value here causes the browser to connect to a dead host
 # and receive a 403.
-api_url = os.getenv("API_URL", "https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev")
+api_url = os.getenv("API_URL", "https://sceneforge-aqua-ocean.reflex.run")
 
-config = rx.Config(
-    app_name="sceneforge",
-    api_url=api_url,
-    cors_allowed_origins=[
-        origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if origin.strip()
+cors_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if cors_env == "*":
+    cors_allowed_origins = ("*",)
+else:
+    cors_allowed_origins = [
+        origin.strip() for origin in cors_env.split(",") if origin.strip()
     ] or [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://sceneforge-aqua-ocean.reflex.run",
-    ],
+    ]
+
+config = rx.Config(
+    app_name="sceneforge",
+    api_url=api_url,
+    cors_allowed_origins=cors_allowed_origins,
     plugins=[RadixThemesPlugin(), SitemapPlugin()],
 )

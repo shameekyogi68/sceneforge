@@ -62,7 +62,7 @@ def project_header() -> rx.Component:
             rx.link(
                 rx.hstack(
                     rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>"""),
-                    rx.text("SYS.DIR", font_size="0.82rem", font_weight="600"),
+                    rx.text("DASHBOARD", font_size="0.82rem", font_weight="600"),
                     align="center",
                     spacing="1",
                 ),
@@ -117,7 +117,7 @@ def project_header() -> rx.Component:
         rx.hstack(
             rx.box(
                 rx.text(
-                    rx.text("QUOTA: ", color=MUTED_COLOR, as_="span"),
+                    rx.text("QUESTIONS: ", color=MUTED_COLOR, as_="span"),
                     ProjectState.remaining_questions,
                     font_size="0.75rem",
                     color=ACCENT_COLOR,
@@ -132,7 +132,7 @@ def project_header() -> rx.Component:
             # Clear Chat History Button
             rx.button(
                 rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>"""),
-                rx.text("PURGE", font_size="0.8rem", font_weight="600", letter_spacing="0.1em",
+                rx.text("CLEAR CHAT", font_size="0.8rem", font_weight="600", letter_spacing="0.1em",
                         display=rx.breakpoints(initial="none", sm="block")),
                 background=SURFACE_COLOR,
                 border=f"1px solid {MUTED_COLOR}",
@@ -153,7 +153,7 @@ def project_header() -> rx.Component:
             # Sign Out Button
             rx.button(
                 rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>"""),
-                rx.text("DISCONNECT", font_size="0.8rem", font_weight="600", letter_spacing="0.1em",
+                rx.text("LOG OUT", font_size="0.8rem", font_weight="600", letter_spacing="0.1em",
                         display=rx.breakpoints(initial="none", sm="block")),
                 background=SURFACE_COLOR,
                 border=f"1px solid {MUTED_COLOR}",
@@ -347,7 +347,7 @@ def sidebar() -> rx.Component:
             rx.hstack(
                 rx.html(f"""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 5 5 12"/></svg>"""),
                 rx.text(
-                    "DATA_INGESTION",
+                    "UPLOAD DOCUMENTS",
                     font_size="0.68rem",
                     font_weight="700",
                     text_transform="uppercase",
@@ -397,7 +397,7 @@ def sidebar() -> rx.Component:
                 cast(Any, rx.selected_files("pdf_upload")),
                 rx.vstack(
                     rx.text(
-                        "TARGET: ", cast(Any, rx.selected_files("pdf_upload")).join(", "),
+                        "FILE: ", cast(Any, rx.selected_files("pdf_upload")).join(", "),
                         font_size="0.7rem",
                         color=ACCENT_COLOR,
                         line_height="1.5",
@@ -405,7 +405,7 @@ def sidebar() -> rx.Component:
                     ),
                     rx.button(
                         rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>"""),
-                        rx.text("EXECUTE_UPLOAD", font_size="0.8rem", font_weight="700", letter_spacing="0.05em"),
+                        rx.text("UPLOAD PDF", font_size="0.8rem", font_weight="700", letter_spacing="0.05em"),
                         background="rgba(0,240,255,0.15)",
                         border=f"1px solid {ACCENT_COLOR}",
                         color=ACCENT_COLOR,
@@ -441,7 +441,7 @@ def sidebar() -> rx.Component:
             rx.hstack(
                 rx.html(f"""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
                 rx.text(
-                    "INDEXED_DATA",
+                    "PROJECT FILES",
                     font_size="0.68rem",
                     font_weight="700",
                     text_transform="uppercase",
@@ -461,7 +461,7 @@ def sidebar() -> rx.Component:
                 rx.vstack(
                     rx.html(f"""<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{MUTED_COLOR}" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
                     rx.text(
-                        "NO_RECORDS_FOUND",
+                        "NO DOCUMENTS FOUND",
                         font_size="0.78rem",
                         color=MUTED_COLOR,
                         text_align="center",
@@ -611,7 +611,7 @@ def typing_indicator() -> rx.Component:
                 <div style="display:flex;align-items:center;gap:5px;padding:14px 18px;
                     background:{SURFACE_COLOR};border:1px solid rgba(0,240,255,0.3);
                     border-radius:4px;">
-                    <span style="font-size:0.8rem;color:{ACCENT_COLOR};font-weight:700;margin-right:8px;letter-spacing:0.1em;">PROCESSING_QUERY</span>
+                    <span style="font-size:0.8rem;color:{ACCENT_COLOR};font-weight:700;margin-right:8px;letter-spacing:0.1em;">ASTRA IS TYPING</span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0s;display:inline-block;"></span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0.2s;display:inline-block;"></span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0.4s;display:inline-block;"></span>
@@ -654,7 +654,7 @@ def welcome_screen() -> rx.Component:
             rx.box(
                 rx.hstack(
                     rx.html(f"""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{ERROR_COLOR}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""),
-                    rx.text("WARN: SYSTEM LACKS CONTEXT. INGEST DATA TO PROCEED.", font_size="0.8rem", color=ERROR_COLOR, font_weight="700", letter_spacing="0.05em"),
+                    rx.text("NO FILES UPLOADED. PLEASE UPLOAD A SCRIPT OR CHARACTER BIBLE TO PROCEED.", font_size="0.8rem", color=ERROR_COLOR, font_weight="700", letter_spacing="0.05em"),
                     align="center",
                     spacing="2",
                 ),
@@ -689,7 +689,7 @@ def welcome_screen() -> rx.Component:
             box_shadow=f"inset 0 0 15px rgba(0,240,255,0.2)",
         ),
         rx.heading(
-            "INITIALIZE QUERY_ENGINE",
+            "START CREATING",
             size="5",
             color="#fff",
             font_weight="800",
@@ -697,7 +697,7 @@ def welcome_screen() -> rx.Component:
             text_align="center",
         ),
         rx.text(
-            "SYSTEM AWAITING INPUT PROMPT. SPECIFY PARAMETERS.",
+            "Astra is ready. Ask questions about your script or explore ideas.",
             color=ACCENT_COLOR,
             font_size="0.87rem",
             text_align="center",
@@ -763,7 +763,7 @@ def chat_area() -> rx.Component:
                 rx.text(">", color=ACCENT_COLOR, font_weight="bold", font_size="1.2rem"),
                 rx.box(
                     rx.text_area(
-                        placeholder="ENTER COMMAND OR QUERY...",
+                        placeholder="Ask Astra about your script or characters...",
                         value=ProjectState.input_message,
                         on_change=cast(Any, ProjectState.set_input_message),
                         background="transparent",
@@ -819,7 +819,7 @@ def chat_area() -> rx.Component:
             ),
             # Hint
             rx.text(
-                "SYS.MSG: [ENTER] TO EXEC, [SHIFT+ENTER] FOR NEWLINE",
+                "Tip: Press [ENTER] to send, [SHIFT+ENTER] for a new line",
                 font_size="0.65rem",
                 color=MUTED_COLOR,
                 text_align="left",
@@ -864,7 +864,7 @@ def preview_inspector_dialog() -> rx.Component:
                             spacing="2",
                         ),
                         rx.text(
-                            "DATA_INSPECTOR_MODULE",
+                            "DOCUMENT VIEWER",
                             font_size="0.78rem",
                             color=ACCENT_COLOR,
                             letter_spacing="0.1em",

@@ -98,7 +98,7 @@ def header_bar() -> rx.Component:
             # Sign out
             rx.button(
                 rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>"""),
-                rx.text("TERMINATE", class_name="hud-text", display=rx.breakpoints(initial="none", sm="block")),
+                rx.text("LOG OUT", class_name="hud-text", display=rx.breakpoints(initial="none", sm="block")),
                 background="transparent",
                 border="1px solid rgba(239,68,68,0.4)",
                 color="#ef4444",
@@ -170,7 +170,7 @@ def render_project_card(proj: Any) -> rx.Component:
             # Metadata
             rx.box(
                 rx.hstack(
-                    rx.text("DOC_COUNT:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                    rx.text("DOCUMENTS:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
                     rx.text(proj.document_count.to(str), class_name="hud-text", font_size="0.65rem", color="#00F0FF"),
                     align="center",
                     spacing="2",
@@ -259,7 +259,7 @@ def dashboard_page() -> rx.Component:
         rx.vstack(
             # Header
             rx.vstack(
-                rx.text("SYSTEM ACCESS // DIRECTORIES", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
+                rx.text("WORKSPACE // PROJECTS", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
                 rx.heading("Active Projects", size="7", font_weight="800", color="#E2E8F0"),
                 spacing="2",
                 align_items="start",
@@ -271,7 +271,7 @@ def dashboard_page() -> rx.Component:
                 rx.hstack(
                     rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
                     rx.input(
-                        placeholder="SEARCH_INDEX...",
+                        placeholder="Search projects...",
                         value=DashboardState.search_query,
                         on_change=cast(Any, DashboardState.set_search_query),
                         border="none", outline="none", background="transparent",
@@ -283,7 +283,7 @@ def dashboard_page() -> rx.Component:
                     border_radius="4px", padding="8px 12px", width="100%", max_width="320px", align_items="center", gap="8px",
                 ),
                 rx.button(
-                    rx.text("+ INIT_PROJECT", class_name="hud-text", font_size="0.8rem"),
+                    rx.text("+ NEW PROJECT", class_name="hud-text", font_size="0.8rem"),
                     background="transparent",
                     color="#00F0FF",
                     border="1px solid #00F0FF",
@@ -313,11 +313,11 @@ def dashboard_page() -> rx.Component:
                     ),
                     rx.vstack(
                         rx.box(
-                            rx.text("NO_DATA_FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
+                            rx.text("NO PROJECTS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
                             margin_bottom="16px",
                         ),
                         rx.button(
-                            rx.text("+ INIT_FIRST_PROJECT", class_name="hud-text", font_size="0.8rem"),
+                            rx.text("Start your first project", class_name="hud-text", font_size="0.8rem"),
                             background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
                             border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
                             on_click=cast(Any, DashboardState.open_modal),
@@ -334,18 +334,18 @@ def dashboard_page() -> rx.Component:
         rx.dialog.root(
             rx.dialog.content(
                 rx.vstack(
-                    rx.text("SYSTEM_COMMAND // NEW_PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
-                    rx.heading("Initialize Directory", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("CREATE NEW PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                    rx.heading("Initialize Project", size="6", font_weight="800", color="#E2E8F0"),
                     margin_bottom="20px", spacing="1", align_items="start",
                 ),
                 rx.input(
-                    placeholder="ENTER_DIRECTORY_NAME...", max_length=80,
+                    placeholder="Enter project title...", max_length=80,
                     value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
                     class_name="premium-input", border_radius="4px", padding="12px 16px", width="100%", margin_bottom="24px",
                 ),
                 rx.hstack(
                     rx.dialog.close(rx.button("CANCEL", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer")),
-                    rx.button("EXECUTE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #00F0FF", color="#00F0FF", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(0,240,255,0.4)"}, on_click=cast(Any, DashboardState.create_project)),
+                    rx.button("CREATE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #00F0FF", color="#00F0FF", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(0,240,255,0.4)"}, on_click=cast(Any, DashboardState.create_project)),
                     spacing="3", justify="end",
                 ),
                 class_name="glass-panel", padding="32px", max_width="400px",
@@ -356,14 +356,14 @@ def dashboard_page() -> rx.Component:
         rx.dialog.root(
             rx.dialog.content(
                 rx.vstack(
-                    rx.text("WARNING // DESTRUCTIVE_ACTION", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
-                    rx.heading("Delete Directory?", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("DELETE PROJECT", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
+                    rx.heading("Delete Project?", size="6", font_weight="800", color="#E2E8F0"),
                     rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. All data will be purged.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
                     margin_bottom="24px", spacing="1", align_items="start",
                 ),
                 rx.hstack(
-                    rx.button("ABORT", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer", on_click=cast(Any, DashboardState.close_delete_confirm)),
-                    rx.button("CONFIRM_PURGE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #ef4444", color="#ef4444", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(239,68,68,0.4)"}, on_click=cast(Any, DashboardState.execute_delete_project)),
+                    rx.button("CANCEL", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer", on_click=cast(Any, DashboardState.close_delete_confirm)),
+                    rx.button("DELETE PERMANENTLY", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #ef4444", color="#ef4444", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(239,68,68,0.4)"}, on_click=cast(Any, DashboardState.execute_delete_project)),
                     spacing="3", justify="end",
                 ),
                 class_name="glass-panel", padding="32px", max_width="400px", border="1px solid rgba(239,68,68,0.3)",

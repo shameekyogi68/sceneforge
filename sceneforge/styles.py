@@ -14,6 +14,7 @@ FONT_FAMILY = "'JetBrains Mono', monospace"
 
 GLOBAL_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -82,9 +83,9 @@ body {
 .premium-input {
     background: rgba(10, 15, 25, 0.8) !important;
     border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    color: #00F0FF !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.85rem !important;
+    color: #E2E8F0 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.95rem !important;
     transition: all 0.2s ease-in-out !important;
 }
 .premium-input:focus-within {

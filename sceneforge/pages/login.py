@@ -65,7 +65,7 @@ def login_page() -> rx.Component:
         # Top HUD elements
         rx.box(
             rx.hstack(
-                rx.text("+ AUTH_TERMINAL_01", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
+                rx.text("+ CREATIVE_SUITE_01", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
                 rx.spacer(),
                 rx.vstack(
                     rx.text("STATUS: OPERATIONAL", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.5)"),
@@ -81,7 +81,7 @@ def login_page() -> rx.Component:
         
         # Bottom left HUD element
         rx.box(
-            rx.text("PROCESSING CORE: TSELAF-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
+            rx.text("CREATIVE SUITE: TSELAF", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
             position="absolute", bottom="32px", left="48px",
         ),
 
@@ -143,7 +143,7 @@ def login_page() -> rx.Component:
             rx.box(
                 rx.hstack(
                     rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(255,255,255,0.1))"),
-                    rx.text("ENCRYPTION ENABLED", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)", white_space="nowrap"),
+                    rx.text("SECURE LOGIN", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)", white_space="nowrap"),
                     rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(255,255,255,0.1))"),
                     spacing="3",
                     align_items="center",
@@ -156,7 +156,7 @@ def login_page() -> rx.Component:
             
             # ── HUD Text Footer ───────────────────────────────────────
             rx.vstack(
-                rx.text("AUTH SYSTEM PROTOCOL 7.1 // SECURE", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                rx.text("WORKSPACE ACCESS VERIFIED", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
                 rx.hstack(
                     rx.box(width="4px", height="4px", border_radius="50%", background="#00F0FF"),
                     rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.4)"),

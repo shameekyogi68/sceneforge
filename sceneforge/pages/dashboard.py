@@ -58,23 +58,6 @@ def header_bar() -> rx.Component:
         # Logo
         rx.link(
             rx.hstack(
-                rx.box(
-                    rx.html("""<svg style="width:20px;height:20px;color:#a5b4fc;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.2 6 3 11l-.9-2.4 17.2-5.1Z"/>
-                        <path d="M2 12V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4"/>
-                        <path d="M2 12h20"/>
-                        <path d="m7 2 2 4"/><path d="m12 2 2 4"/><path d="m17 2 2 4"/>
-                    </svg>"""),
-                    width="36px",
-                    height="36px",
-                    border_radius="10px",
-                    background="linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15))",
-                    border="1px solid rgba(99,102,241,0.25)",
-                    display="flex",
-                    align_items="center",
-                    justify_content="center",
-                    box_shadow="0 0 20px rgba(99,102,241,0.15)",
-                ),
                 rx.text(
                     "SceneForge",
                     font_size="1.2rem",

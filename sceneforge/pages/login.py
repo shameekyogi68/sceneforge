@@ -366,7 +366,6 @@ def login_page() -> rx.Component:
 
             # ── Logo + wordmark ──────────────────────────────────────
             rx.vstack(
-                clapperboard_logo(),
                 rx.box(
                     rx.heading(
                         "SceneForge",

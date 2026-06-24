@@ -124,13 +124,13 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
 
 def terms_page() -> rx.Component:
     terms_content = rx.vstack(
-        rx.text("Welcome to tselaf. By using our services, you agree to comply with and be bound by the following terms of service. Please review them carefully.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
+        rx.text("Welcome to ScriptIQ. By using our services, you agree to comply with and be bound by the following terms of service. Please review them carefully.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
         rx.heading("1. Acceptable Use", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("You agree to use tselaf only for lawful purposes related to film research. You may not upload malicious documents or attempt to exploit the service or database.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("You agree to use ScriptIQ only for lawful purposes related to film research. You may not upload malicious documents or attempt to exploit the service or database.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         rx.heading("2. Intellectual Property", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("The uploaded research documents are owned by their respective copyright holders. tselaf processes the documents solely to provide retrieval-augmented answers to the uploading user.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("The uploaded research documents are owned by their respective copyright holders. ScriptIQ processes the documents solely to provide retrieval-augmented answers to the uploading user.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         rx.heading("3. AI Limitations", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("While tselaf incorporates zero-hallucination prompting and vector search, AI models may occasionally produce incomplete or inaccurate answers. Users should verify critical sources directly.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("While ScriptIQ incorporates zero-hallucination prompting and vector search, AI models may occasionally produce incomplete or inaccurate answers. Users should verify critical sources directly.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         rx.heading("4. Terminations", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
         rx.text("We reserve the right to suspend or terminate accounts that exceed fair use policies (e.g. rate limit bypassing) or violate acceptable use guidelines.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         spacing="4",
@@ -144,7 +144,7 @@ def terms_page() -> rx.Component:
 
 def privacy_page() -> rx.Component:
     privacy_content = rx.vstack(
-        rx.text("At tselaf, we value your privacy. This policy outlines how we handle your personal data and uploaded documents.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
+        rx.text("At ScriptIQ, we value your privacy. This policy outlines how we handle your personal data and uploaded documents.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
         rx.heading("1. Data Collected", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
         rx.text("We collect your email address for account authentication and user session management. Uploaded documents are stored securely in Supabase Storage.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         rx.heading("2. Document Security", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
@@ -152,7 +152,7 @@ def privacy_page() -> rx.Component:
         rx.heading("3. Third-party APIs", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
         rx.text("To generate responses, queries are processed by the Gemini API. We do not share your documents with third parties for training purposes.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         rx.heading("4. Cookies", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("tselaf uses secure, same-site cookies to maintain your login session. No cross-site tracking cookies are utilized.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("ScriptIQ uses secure, same-site cookies to maintain your login session. No cross-site tracking cookies are utilized.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
         spacing="4",
         align_items="start",
     )

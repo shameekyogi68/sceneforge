@@ -74,7 +74,7 @@ def callback_page() -> rx.Component:
         """),
         rx.vstack(
             rx.heading(
-                "tselaf",
+                "ScriptIQ",
                 size="8",
                 font_weight="800",
                 letter_spacing="-0.04em",

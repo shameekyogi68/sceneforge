@@ -170,7 +170,7 @@ def login_page() -> rx.Component:
             rx.vstack(
                 rx.box(
                     rx.heading(
-                        "tselaf",
+                        "ScriptIQ",
                         size="8",
                         font_weight="800",
                         letter_spacing="-0.04em",
@@ -265,7 +265,7 @@ def login_page() -> rx.Component:
             # ── Footer ────────────────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.text("By signing in you agree to tselaf's ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
+                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
                     rx.link("Terms", href="/terms", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),
                     rx.text(" & ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
                     rx.link("Privacy Policy", href="/privacy", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),

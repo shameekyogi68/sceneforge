@@ -526,6 +526,23 @@ class ProjectState(State):
         return f"{max(0, 100 - self.questions_today)} questions remaining today"
 
     async def load_documents(self):
+        """Load document list for sidebar."""
+        try:
+            response = await self._api_request("GET", f"/documents/{self.project_id}")
+            if response.status_code == 200:
+                self.documents = response.json()
+                # Initialize simulated steps for any document that is processing
+                for d in self.documents:
+                    d_id = str(d.get("id", ""))
+                    if d.get("status") == "processing" and d_id not in self.doc_steps:
+                        self.doc_steps[d_id] = 1
+            else:
+                self.documents = []
+        except Exception:
+            logger.exception("Failed to load documents")
+            self.documents = []
+
+    async def load_chat_history(self):
         """Load messages for the last active conversation."""
         try:
             response = await self._api_request("GET", f"/projects/{self.project_id}/messages")

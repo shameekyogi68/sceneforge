@@ -16,10 +16,6 @@ DASH_KEYFRAMES = """
   from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes shimmerText {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
 @keyframes orbFloat {
   0%, 100% { transform: translate(0,0) scale(1); }
   50%       { transform: translate(20px, -30px) scale(1.04); }
@@ -28,26 +24,17 @@ DASH_KEYFRAMES = """
   0%, 100% { transform: translate(0,0) scale(1); }
   50%       { transform: translate(-25px, 20px) scale(1.06); }
 }
-@keyframes spinnerPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
-}
-@keyframes deletePop {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
 @keyframes skeletonShimmer {
-  0%, 100% { opacity: 0.35; }
-  50%       { opacity: 0.7; }
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.5; }
 }
 """
 
 body_style = {
     "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-    "background_color": "#080810",
+    "background_color": "transparent",
     "min_height": "100vh",
-    "color": "#f4f4f5",
+    "color": "#E2E8F0",
     "position": "relative",
     "overflow_x": "hidden",
 }
@@ -55,21 +42,18 @@ body_style = {
 
 def header_bar() -> rx.Component:
     return rx.hstack(
-        # Logo
+        # Wordmark
         rx.link(
             rx.hstack(
                 rx.text(
-                    "ScriptIQ",
+                    "tselaf",
                     font_size="1.2rem",
+                    font_family="'JetBrains Mono', monospace",
                     font_weight="800",
-                    letter_spacing="-0.03em",
+                    color="#00F0FF",
+                    letter_spacing="0.05em",
                     style={
-                        "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 50%, #c084fc 100%)",
-                        "background_size": "200% auto",
-                        "-webkit-background-clip": "text",
-                        "-webkit-text-fill-color": "transparent",
-                        "background-clip": "text",
-                        "animation": "shimmerText 4s linear infinite",
+                        "text_shadow": "0 0 10px rgba(0,240,255,0.5)",
                     },
                 ),
                 align="center",
@@ -88,62 +72,58 @@ def header_bar() -> rx.Component:
                         DashboardState.user_avatar_char,
                         font_weight="700",
                         font_size="0.82rem",
-                        color="white",
+                        color="#05080F",
                         text_transform="uppercase",
                     ),
                     width="34px",
                     height="34px",
                     border_radius="50%",
-                    background="linear-gradient(135deg, #6366f1, #a855f7)",
+                    background="#00F0FF",
                     display="flex",
                     align_items="center",
                     justify_content="center",
-                    box_shadow="0 0 16px rgba(99,102,241,0.35)",
+                    box_shadow="0 0 10px rgba(0,240,255,0.4)",
                     flex_shrink="0",
                 ),
                 rx.text(
                     DashboardState.user_email,
                     font_size="0.82rem",
-                    color="rgba(161,161,170,0.8)",
-                    font_weight="500",
+                    color="rgba(255,255,255,0.6)",
+                    font_family="'JetBrains Mono', monospace",
                     display=rx.breakpoints(initial="none", sm="block"),
                 ),
                 align="center",
-                spacing="2",
+                spacing="3",
             ),
             # Sign out
             rx.button(
                 rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>"""),
-                rx.text("Sign Out", display=rx.breakpoints(initial="none", sm="block")),
-                background="rgba(255,255,255,0.03)",
-                border="1px solid rgba(255,255,255,0.08)",
-                color="rgba(212,212,216,0.8)",
-                border_radius="10px",
+                rx.text("TERMINATE", class_name="hud-text", display=rx.breakpoints(initial="none", sm="block")),
+                background="transparent",
+                border="1px solid rgba(239,68,68,0.4)",
+                color="#ef4444",
+                border_radius="4px",
                 padding="8px 14px",
-                font_size="0.82rem",
-                font_weight="600",
+                font_size="0.75rem",
                 cursor="pointer",
                 gap="6px",
                 transition="all 0.2s ease",
                 _hover={
-                    "background": "rgba(239,68,68,0.08)",
-                    "border_color": "rgba(239,68,68,0.3)",
-                    "color": "#fca5a5",
-                    "transform": "translateY(-1px)",
+                    "background": "rgba(239,68,68,0.1)",
+                    "box_shadow": "0 0 10px rgba(239,68,68,0.3)",
                 },
-                _active={"transform": "translateY(0)"},
                 on_click=cast(Any, DashboardState.logout),
             ),
             align="center",
-            spacing="3",
+            spacing="4",
             margin_left="auto",
         ),
 
         width="100%",
         padding="14px 40px",
-        background="rgba(8,8,16,0.7)",
-        backdrop_filter="blur(28px) saturate(1.5)",
-        border_bottom="1px solid rgba(255,255,255,0.06)",
+        background="rgba(5,8,15,0.8)",
+        backdrop_filter="blur(12px)",
+        border_bottom="1px solid rgba(0,240,255,0.2)",
         position="sticky",
         top="0",
         z_index="50",
@@ -152,109 +132,74 @@ def header_bar() -> rx.Component:
 
 def render_project_card(proj: Any) -> rx.Component:
     return rx.box(
-        # Delete button — top right
+        # Delete button
         rx.button(
-            rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-            </svg>"""),
+            rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>"""),
             position="absolute",
             top="18px",
             right="18px",
-            background="rgba(239,68,68,0.05)",
-            border="1px solid rgba(239,68,68,0.12)",
-            color="rgba(252,165,165,0.7)",
-            border_radius="8px",
+            background="transparent",
+            border="1px solid rgba(239,68,68,0.3)",
+            color="#ef4444",
+            border_radius="4px",
             padding="7px",
             cursor="pointer",
             z_index="2",
-            transition="all 0.2s cubic-bezier(0.16,1,0.3,1)",
+            transition="all 0.2s ease",
             _hover={
-                "background": "#ef4444",
-                "border_color": "#ef4444",
-                "color": "#ffffff",
-                "transform": "scale(1.1)",
-                "box_shadow": "0 4px 12px rgba(239,68,68,0.35)",
+                "background": "rgba(239,68,68,0.15)",
+                "box_shadow": "0 0 10px rgba(239,68,68,0.4)",
             },
-            _active={"transform": "scale(0.95)"},
             on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj["id"], proj["name"])),
         ),
 
         # Card content
         rx.vstack(
-            # Icon
             rx.box(
-                rx.html("""<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                </svg>"""),
-                width="44px",
-                height="44px",
-                border_radius="12px",
-                background="rgba(99,102,241,0.1)",
-                border="1px solid rgba(99,102,241,0.2)",
-                color="#818cf8",
-                display="flex",
-                align_items="center",
-                justify_content="center",
-                margin_bottom="16px",
-                transition="all 0.3s ease",
+                rx.text(f"ID: {proj['id'][:8]}", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.5)"),
+                margin_bottom="4px",
             ),
             rx.text(
                 proj["name"],
-                font_size="1.05rem",
+                font_size="1.1rem",
                 font_weight="700",
-                color="#f4f4f5",
+                color="#E2E8F0",
                 word_break="break-all",
                 line_height="1.3",
-                letter_spacing="-0.01em",
             ),
-            # Document Count Badge
-            rx.hstack(
-                rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(161,161,170,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
-                rx.text(
-                    rx.cond(
-                        proj["document_count"] == 1,
-                        "1 document",
-                        proj["document_count"].to(str) + " documents",
-                    ),
-                    font_size="0.77rem",
-                    color="rgba(161,161,170,0.6)",
-                    font_weight="500",
+            # Metadata
+            rx.box(
+                rx.hstack(
+                    rx.text("DOC_COUNT:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                    rx.text(proj["document_count"].to(str), class_name="hud-text", font_size="0.65rem", color="#00F0FF"),
+                    align="center",
+                    spacing="2",
                 ),
-                align="center",
-                spacing="1",
-                margin_top="3px",
-            ),
-            rx.text(
-                proj["created_date"],
-                font_size="0.77rem",
-                color="rgba(113,113,122,0.7)",
-                font_weight="500",
-                margin_top="4px",
+                rx.hstack(
+                    rx.text("CREATED:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                    rx.text(proj["created_date"], class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.6)"),
+                    align="center",
+                    spacing="2",
+                ),
+                margin_top="12px",
             ),
             spacing="1",
             align_items="start",
         ),
 
-        # Gradient line at bottom on hover (via box-shadow trick)
-        background="rgba(20,20,28,0.5)",
-        border="1px solid rgba(255,255,255,0.055)",
-        border_radius="20px",
-        padding="28px 26px",
+        # Styling
+        class_name="glass-panel",
+        padding="24px",
         cursor="pointer",
         position="relative",
-        backdrop_filter="blur(16px)",
-        overflow="hidden",
-        transition="all 0.3s cubic-bezier(0.16,1,0.3,1)",
+        transition="all 0.2s ease",
         _hover={
-            "transform": "translateY(-5px)",
-            "background": "rgba(99,102,241,0.05)",
-            "border_color": "rgba(99,102,241,0.35)",
-            "box_shadow": "0 20px 48px -8px rgba(99,102,241,0.12), 0 0 0 1px rgba(99,102,241,0.12)",
+            "transform": "translateY(-3px)",
+            "border_color": "rgba(0,240,255,0.4)",
+            "box_shadow": "0 8px 32px rgba(0,240,255,0.1)",
         },
-        _active={"transform": "translateY(-2px)"},
         on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj['id']}")),
-        style={"animation": "cardEntrance 0.5s cubic-bezier(0.16,1,0.3,1) both"},
+        style={"animation": "cardEntrance 0.4s ease both"},
     )
 
 
@@ -262,441 +207,168 @@ def project_skeleton_card() -> rx.Component:
     return rx.box(
         rx.vstack(
             rx.box(
-                width="44px",
-                height="44px",
-                border_radius="12px",
-                background="linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%)",
-                background_size="200% 100%",
-                style={"animation": "skeletonPulse 1.6s infinite linear"},
+                width="40%", height="10px",
+                background="rgba(0,240,255,0.1)",
+                style={"animation": "skeletonShimmer 1.5s infinite linear"},
             ),
             rx.box(
-                width="70%",
-                height="16px",
-                border_radius="4px",
-                background="linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%)",
-                background_size="200% 100%",
-                style={"animation": "skeletonPulse 1.6s infinite linear 0.2s"},
+                width="80%", height="18px",
+                background="rgba(255,255,255,0.05)",
+                style={"animation": "skeletonShimmer 1.5s infinite linear 0.2s"},
             ),
             rx.box(
-                width="40%",
-                height="12px",
-                border_radius="4px",
-                background="linear-gradient(90deg, rgba(255,255,255,0.01) 25%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.01) 75%)",
-                background_size="200% 100%",
-                style={"animation": "skeletonPulse 1.6s infinite linear 0.4s"},
+                width="60%", height="10px",
+                background="rgba(255,255,255,0.03)",
+                style={"animation": "skeletonShimmer 1.5s infinite linear 0.4s"},
             ),
             spacing="3",
             align_items="start",
         ),
-        background="rgba(20,20,28,0.3)",
-        border="1px solid rgba(255,255,255,0.03)",
-        border_radius="20px",
-        padding="28px 26px",
-    )
-
-
-def loading_bar(is_active: Any) -> rx.Component:
-    return rx.cond(
-        is_active,
-        rx.box(
-            width="100%",
-            height="3px",
-            background="linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #6366f1 100%)",
-            background_size="200% 100%",
-            position="absolute",
-            top="0",
-            left="0",
-            z_index="1000",
-            style={"animation": "progressGlow 1.5s linear infinite"},
-        ),
-        rx.fragment()
+        class_name="glass-panel",
+        padding="24px",
     )
 
 
 def dashboard_page() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{DASH_KEYFRAMES}</style>"),
-        loading_bar(DashboardState.is_loading),
+        rx.cond(DashboardState.is_loading, rx.box(
+            width="100%", height="2px",
+            background="linear-gradient(90deg, #00F0FF 0%, #8B5CF6 50%, #00F0FF 100%)",
+            background_size="200% 100%", position="absolute", top="0", left="0", z_index="1000",
+            style={"animation": "pulseNeon 1.5s linear infinite"}
+        ), rx.fragment()),
 
         header_bar(),
 
-        # Ambient orbs
-        rx.box(
-            width="700px", height="700px",
-            background="radial-gradient(circle, rgba(99,102,241,0.5), rgba(79,70,229,0.2))",
-            position="absolute", border_radius="50%",
-            filter="blur(130px)", opacity="0.07",
-            top="-300px", left="-200px", z_index="0",
-            pointer_events="none",
-            style={"animation": "orbFloat 20s ease-in-out infinite"},
-        ),
+        # Ambient background touches
         rx.box(
             width="600px", height="600px",
-            background="radial-gradient(circle, rgba(168,85,247,0.5), rgba(124,58,237,0.2))",
-            position="absolute", border_radius="50%",
-            filter="blur(130px)", opacity="0.06",
-            bottom="-200px", right="-150px", z_index="0",
-            pointer_events="none",
-            style={"animation": "orbFloat2 24s ease-in-out infinite"},
+            background="radial-gradient(circle, rgba(0,240,255,0.05), transparent 70%)",
+            position="absolute", border_radius="50%", filter="blur(80px)",
+            top="-20%", left="-10%", z_index="0", pointer_events="none",
+        ),
+        rx.box(
+            width="500px", height="500px",
+            background="radial-gradient(circle, rgba(139,92,246,0.05), transparent 70%)",
+            position="absolute", border_radius="50%", filter="blur(80px)",
+            bottom="-10%", right="-10%", z_index="0", pointer_events="none",
         ),
 
         # Main content
         rx.vstack(
-            # Page heading
+            # Header
             rx.vstack(
-                rx.heading(
-                    "Your Projects",
-                    size="8",
-                    font_weight="800",
-                    color="#f4f4f5",
-                    letter_spacing="-0.04em",
-                    line_height="1.1",
-                ),
-                rx.text(
-                    "Each project holds its own research documents and AI chat history.",
-                    color="rgba(161,161,170,0.7)",
-                    font_size="0.92rem",
-                    letter_spacing="0.005em",
-                ),
+                rx.text("SYSTEM ACCESS // DIRECTORIES", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
+                rx.heading("Active Projects", size="7", font_weight="800", color="#E2E8F0"),
                 spacing="2",
                 align_items="start",
-                style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
+                style={"animation": "fadeSlideUp 0.4s ease 0.1s both"},
             ),
 
             # Toolbar
             rx.hstack(
-                # Search
                 rx.hstack(
-                    rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(113,113,122,0.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
+                    rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
                     rx.input(
-                        placeholder="Search projects...",
+                        placeholder="SEARCH_INDEX...",
                         value=DashboardState.search_query,
                         on_change=cast(Any, DashboardState.set_search_query),
-                        border="none",
-                        outline="none",
-                        color="#f4f4f5",
-                        font_size="0.875rem",
-                        background="transparent",
-                        width="100%",
-                        style={"caret-color": "#818cf8"},
-                        _placeholder={"color": "rgba(113,113,122,0.6)"},
+                        border="none", outline="none", background="transparent",
+                        color="#E2E8F0", font_family="'JetBrains Mono', monospace", font_size="0.85rem",
+                        width="100%", style={"caret-color": "#00F0FF"},
+                        _placeholder={"color": "rgba(255,255,255,0.3)"},
                     ),
-                    background="rgba(255,255,255,0.03)",
-                    border="1px solid rgba(255,255,255,0.07)",
-                    border_radius="12px",
-                    padding="8px 14px",
-                    width="100%",
-                    max_width="340px",
-                    align_items="center",
-                    gap="8px",
-                    transition="all 0.2s ease",
-                    _focus_within={
-                        "border_color": "rgba(99,102,241,0.45)",
-                        "background": "rgba(99,102,241,0.04)",
-                        "box_shadow": "0 0 0 3px rgba(99,102,241,0.08)",
-                    },
+                    class_name="premium-input",
+                    border_radius="4px", padding="8px 12px", width="100%", max_width="320px", align_items="center", gap="8px",
                 ),
-                # New project button
                 rx.button(
-                    rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
-                    rx.text("New Project", font_size="0.875rem", font_weight="700"),
-                    background="linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
-                    color="white",
-                    border_radius="12px",
-                    padding="10px 20px",
+                    rx.text("+ INIT_PROJECT", class_name="hud-text", font_size="0.8rem"),
+                    background="transparent",
+                    color="#00F0FF",
+                    border="1px solid #00F0FF",
+                    border_radius="4px",
+                    padding="10px 16px",
                     cursor="pointer",
-                    gap="7px",
-                    box_shadow="0 4px 20px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
-                    transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
-                    _hover={
-                        "box_shadow": "0 8px 30px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.15)",
-                        "transform": "translateY(-2px)",
-                        "background": "linear-gradient(135deg, #818cf8 0%, #6366f1 100%)",
-                    },
-                    _active={"transform": "translateY(0)", "box_shadow": "0 2px 8px rgba(99,102,241,0.3)"},
+                    class_name="cyber-button-hover",
                     on_click=cast(Any, DashboardState.open_modal),
                 ),
-                width="100%",
-                justify="between",
-                align_items="center",
-                style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s both"},
+                width="100%", justify="between", align_items="center",
+                style={"animation": "fadeSlideUp 0.4s ease 0.2s both"},
             ),
 
-            # Projects loading skeleton, grid or empty state
+            # Grid
             rx.cond(
                 DashboardState.is_loading,
                 rx.grid(
-                    project_skeleton_card(),
-                    project_skeleton_card(),
-                    project_skeleton_card(),
-                    columns=rx.breakpoints(initial="1", sm="2", md="3"),
-                    spacing="5",
-                    width="100%",
+                    project_skeleton_card(), project_skeleton_card(), project_skeleton_card(),
+                    columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
                 ),
                 rx.cond(
                     cast(Any, DashboardState.filtered_projects).length() > 0,
                     rx.grid(
                         rx.foreach(DashboardState.filtered_projects, render_project_card),
-                        columns=rx.breakpoints(initial="1", sm="2", md="3"),
-                        spacing="5",
-                        width="100%",
-                        style={"animation": "fadeIn 0.4s ease 0.3s both"},
+                        columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
+                        style={"animation": "fadeIn 0.3s ease 0.3s both"},
                     ),
-                    # Empty state
                     rx.vstack(
                         rx.box(
-                            rx.html("""<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
-                                <line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/>
-                                <line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
-                            </svg>"""),
-                            width="72px", height="72px",
-                            border_radius="20px",
-                            background="rgba(99,102,241,0.08)",
-                            border="1px solid rgba(99,102,241,0.15)",
-                            color="#818cf8",
-                            display="flex",
-                            align_items="center",
-                            justify_content="center",
-                            margin_bottom="24px",
-                        ),
-                        rx.heading(
-                            "No projects yet",
-                            size="5",
-                            color="#e4e4e7",
-                            font_weight="700",
-                            letter_spacing="-0.02em",
-                        ),
-                        rx.text(
-                            "Create your first project to start uploading research documents and asking questions.",
-                            color="rgba(113,113,122,0.8)",
-                            font_size="0.9rem",
-                            text_align="center",
-                            max_width="340px",
-                            line_height="1.6",
+                            rx.text("NO_DATA_FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
+                            margin_bottom="16px",
                         ),
                         rx.button(
-                            rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
-                            rx.text("Create Project", font_size="0.875rem", font_weight="600"),
-                            background="rgba(255,255,255,0.04)",
-                            border="1px solid rgba(255,255,255,0.1)",
-                            color="#e4e4e7",
-                            padding="10px 22px",
-                            border_radius="12px",
-                            cursor="pointer",
-                            gap="7px",
-                            margin_top="8px",
-                            transition="all 0.2s ease",
-                            _hover={
-                                "background": "rgba(99,102,241,0.08)",
-                                "border_color": "rgba(99,102,241,0.4)",
-                                "color": "white",
-                                "transform": "translateY(-1px)",
-                                "box_shadow": "0 4px 16px rgba(99,102,241,0.15)",
-                            },
+                            rx.text("+ INIT_FIRST_PROJECT", class_name="hud-text", font_size="0.8rem"),
+                            background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
+                            border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
                             on_click=cast(Any, DashboardState.open_modal),
                         ),
-                        padding="80px 24px",
-                        background="rgba(16,16,24,0.3)",
-                        border="1px dashed rgba(255,255,255,0.07)",
-                        border_radius="24px",
-                        width="100%",
-                        align="center",
-                        spacing="3",
-                        style={"animation": "fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s both"},
+                        class_name="glass-panel", padding="60px 24px", width="100%", align="center",
+                        style={"animation": "fadeSlideUp 0.4s ease 0.3s both"},
                     ),
                 ),
             ),
-
-            width="100%",
-            max_width="1100px",
-            margin="0 auto",
-            padding="52px 40px",
-            z_index="1",
-            spacing="8",
-            class_name="page-transition",
+            width="100%", max_width="1100px", margin="0 auto", padding="48px 40px", z_index="1", spacing="6", class_name="page-transition",
         ),
 
-        # ── New Project Modal ─────────────────────────────────────────
+        # Modals
         rx.dialog.root(
             rx.dialog.content(
-                # Header
-                rx.hstack(
-                    rx.vstack(
-                        rx.heading(
-                            "New Project",
-                            font_size="1.3rem",
-                            font_weight="800",
-                            color="#f4f4f5",
-                            letter_spacing="-0.03em",
-                        ),
-                        rx.text(
-                            "Give your research project a clear, memorable name.",
-                            font_size="0.82rem",
-                            color="rgba(161,161,170,0.7)",
-                        ),
-                        spacing="1",
-                        align_items="start",
-                    ),
-                    rx.dialog.close(
-                        rx.box(
-                            rx.html("""<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>"""),
-                            width="32px", height="32px",
-                            border_radius="8px",
-                            background="rgba(255,255,255,0.04)",
-                            border="1px solid rgba(255,255,255,0.08)",
-                            color="rgba(161,161,170,0.6)",
-                            display="flex",
-                            align_items="center",
-                            justify_content="center",
-                            cursor="pointer",
-                            transition="all 0.15s ease",
-                            _hover={"background": "rgba(255,255,255,0.08)", "color": "#f4f4f5"},
-                        ),
-                    ),
-                    width="100%",
-                    justify="between",
-                    align_items="start",
-                    margin_bottom="24px",
-                ),
-
-                # Input
-                rx.box(
-                    rx.input(
-                        placeholder="e.g. MyBombayFilm",
-                        max_length=80,
-                        value=DashboardState.new_project_name,
-                        on_change=cast(Any, DashboardState.set_new_project_name),
-                        background="rgba(255,255,255,0.03)",
-                        border="1px solid rgba(255,255,255,0.09)",
-                        border_radius="12px",
-                        padding="14px 18px",
-                        color="#f4f4f5",
-                        font_size="0.95rem",
-                        width="100%",
-                        style={"caret-color": "#818cf8"},
-                        _placeholder={"color": "rgba(113,113,122,0.6)"},
-                        _focus={
-                            "border_color": "rgba(99,102,241,0.5)",
-                            "background": "rgba(99,102,241,0.04)",
-                            "box_shadow": "0 0 0 3px rgba(99,102,241,0.1)",
-                            "outline": "none",
-                        },
-                    ),
-                    width="100%",
-                ),
-
-                # Buttons
-                rx.hstack(
-                    rx.dialog.close(
-                        rx.button(
-                            "Cancel",
-                            background="rgba(255,255,255,0.03)",
-                            border="1px solid rgba(255,255,255,0.08)",
-                            color="rgba(161,161,170,0.8)",
-                            border_radius="10px",
-                            padding="10px 20px",
-                            font_size="0.875rem",
-                            cursor="pointer",
-                            transition="all 0.2s ease",
-                            _hover={"background": "rgba(255,255,255,0.07)", "color": "white"},
-                        )
-                    ),
-                    rx.button(
-                        "Create Project",
-                        background="linear-gradient(135deg, #6366f1, #4f46e5)",
-                        color="white",
-                        border_radius="10px",
-                        padding="10px 22px",
-                        font_size="0.875rem",
-                        font_weight="700",
-                        cursor="pointer",
-                        box_shadow="0 4px 14px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
-                        transition="all 0.2s cubic-bezier(0.16,1,0.3,1)",
-                        _hover={
-                            "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
-                            "transform": "translateY(-1px)",
-                        },
-                        _active={"transform": "translateY(0)"},
-                        on_click=cast(Any, DashboardState.create_project),
-                    ),
-                    spacing="3",
-                    margin_top="28px",
-                    justify="end",
-                ),
-
-                background="rgba(14,14,20,0.95)",
-                backdrop_filter="blur(32px)",
-                border="1px solid rgba(255,255,255,0.08)",
-                border_radius="24px",
-                padding="36px",
-                max_width="440px",
-                box_shadow="0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04)",
-            ),
-            open=DashboardState.is_modal_open,
-            on_open_change=cast(Any, DashboardState.set_is_modal_open),
-        ),
-
-        # ── Delete Confirmation Modal ─────────────────────────────────
-        rx.dialog.root(
-            rx.dialog.content(
-                # Header
                 rx.vstack(
-                    rx.heading(
-                        "Delete Project?",
-                        font_size="1.3rem",
-                        font_weight="800",
-                        color="#fca5a5",
-                        letter_spacing="-0.03em",
-                    ),
-                    rx.text(
-                        f"Are you sure you want to permanently delete '{DashboardState.project_to_delete_name}'? This will delete all documents, chunks, and messages, and cannot be undone.",
-                        font_size="0.86rem",
-                        color="rgba(161,161,170,0.8)",
-                        line_height="1.5",
-                    ),
-                    spacing="2",
-                    align_items="start",
-                    margin_bottom="24px",
+                    rx.text("SYSTEM_COMMAND // NEW_PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                    rx.heading("Initialize Directory", size="6", font_weight="800", color="#E2E8F0"),
+                    margin_bottom="20px", spacing="1", align_items="start",
                 ),
-                # Buttons
+                rx.input(
+                    placeholder="ENTER_DIRECTORY_NAME...", max_length=80,
+                    value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
+                    class_name="premium-input", border_radius="4px", padding="12px 16px", width="100%", margin_bottom="24px",
+                ),
                 rx.hstack(
-                    rx.button(
-                        "Cancel",
-                        background="rgba(255,255,255,0.03)",
-                        border="1px solid rgba(255,255,255,0.08)",
-                        color="rgba(161,161,170,0.8)",
-                        border_radius="10px",
-                        padding="10px 20px",
-                        font_size="0.875rem",
-                        cursor="pointer",
-                        on_click=cast(Any, DashboardState.close_delete_confirm),
-                    ),
-                    rx.button(
-                        "Delete Project",
-                        background="linear-gradient(135deg, #ef4444, #dc2626)",
-                        color="white",
-                        border_radius="10px",
-                        padding="10px 22px",
-                        font_size="0.875rem",
-                        font_weight="700",
-                        cursor="pointer",
-                        box_shadow="0 4px 14px rgba(239,68,68,0.25)",
-                        on_click=cast(Any, DashboardState.execute_delete_project),
-                    ),
-                    spacing="3",
-                    justify="end",
+                    rx.dialog.close(rx.button("CANCEL", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer")),
+                    rx.button("EXECUTE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #00F0FF", color="#00F0FF", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(0,240,255,0.4)"}, on_click=cast(Any, DashboardState.create_project)),
+                    spacing="3", justify="end",
                 ),
-                background="rgba(14,14,20,0.95)",
-                backdrop_filter="blur(32px)",
-                border="1px solid rgba(239,68,68,0.2)",
-                border_radius="24px",
-                padding="36px",
-                max_width="440px",
-                box_shadow="0 32px 80px -16px rgba(0,0,0,0.8)",
+                class_name="glass-panel", padding="32px", max_width="400px",
             ),
-            open=DashboardState.is_delete_confirm_open,
-            on_open_change=cast(Any, DashboardState.set_is_delete_confirm_open),
+            open=DashboardState.is_modal_open, on_open_change=cast(Any, DashboardState.set_is_modal_open),
+        ),
+
+        rx.dialog.root(
+            rx.dialog.content(
+                rx.vstack(
+                    rx.text("WARNING // DESTRUCTIVE_ACTION", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
+                    rx.heading("Delete Directory?", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. All data will be purged.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
+                    margin_bottom="24px", spacing="1", align_items="start",
+                ),
+                rx.hstack(
+                    rx.button("ABORT", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer", on_click=cast(Any, DashboardState.close_delete_confirm)),
+                    rx.button("CONFIRM_PURGE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #ef4444", color="#ef4444", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(239,68,68,0.4)"}, on_click=cast(Any, DashboardState.execute_delete_project)),
+                    spacing="3", justify="end",
+                ),
+                class_name="glass-panel", padding="32px", max_width="400px", border="1px solid rgba(239,68,68,0.3)",
+            ),
+            open=DashboardState.is_delete_confirm_open, on_open_change=cast(Any, DashboardState.set_is_delete_confirm_open),
         ),
 
         style=body_style,

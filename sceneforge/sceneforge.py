@@ -31,18 +31,17 @@ app = rx.App(
             rx.heading(
                 "ScriptIQ",
                 size="9",
+                font_family="'JetBrains Mono', monospace",
                 font_weight="800",
-                letter_spacing="-0.04em",
+                letter_spacing="-0.02em",
+                color="#00F0FF",
                 style={
-                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
-                    "background_size": "200% auto",
-                    "-webkit-background-clip": "text",
-                    "-webkit-text-fill-color": "transparent",
+                    "text_shadow": "0 0 15px rgba(0, 240, 255, 0.4)",
                 }
             ),
             width="100vw",
             height="100vh",
-            background_color="#09090b",
+            background_color="#05080F",
         )
     ),
     api_transformer=fastapi_app,

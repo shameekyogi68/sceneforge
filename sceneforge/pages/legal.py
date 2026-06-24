@@ -1,11 +1,11 @@
 import reflex as rx
-from sceneforge.styles import GLOBAL_CSS
+from sceneforge.styles import GLOBAL_CSS, BACKGROUND_COLOR, SURFACE_COLOR, ACCENT_COLOR, TEXT_COLOR, MUTED_COLOR, FONT_FAMILY
 
 body_style = {
-    "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-    "background_color": "#080810",
+    "font_family": FONT_FAMILY,
+    "background_color": BACKGROUND_COLOR,
     "min_height": "100vh",
-    "color": "#f4f4f5",
+    "color": TEXT_COLOR,
     "position": "relative",
     "overflow_x": "hidden",
     "display": "flex",
@@ -27,6 +27,11 @@ KEYFRAMES = """
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes shimmerText {
+  0%   { text-shadow: 0 0 5px #00F0FF, 0 0 10px #00F0FF; }
+  50%  { text-shadow: 0 0 20px #00F0FF, 0 0 30px #00F0FF; }
+  100% { text-shadow: 0 0 5px #00F0FF, 0 0 10px #00F0FF; }
+}
 """
 
 def ambient_background() -> rx.Component:
@@ -34,7 +39,7 @@ def ambient_background() -> rx.Component:
         rx.box(
             width="500px",
             height="500px",
-            background="radial-gradient(circle at center, rgba(99,102,241,0.4) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(0,240,255,0.15) 0%, transparent 70%)",
             position="absolute",
             border_radius="50%",
             filter="blur(80px)",
@@ -48,7 +53,7 @@ def ambient_background() -> rx.Component:
         rx.box(
             width="500px",
             height="500px",
-            background="radial-gradient(circle at center, rgba(168,85,247,0.3) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(255,0,85,0.1) 0%, transparent 70%)",
             position="absolute",
             border_radius="50%",
             filter="blur(80px)",
@@ -58,6 +63,15 @@ def ambient_background() -> rx.Component:
             z_index="0",
             pointer_events="none",
             style={"animation": "floatOrb2 18s ease-in-out infinite"},
+        ),
+        rx.box(
+            position="absolute",
+            top="0", left="0", right="0", bottom="0",
+            background="linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px)",
+            background_size="100% 4px",
+            z_index="0",
+            pointer_events="none",
+            opacity="0.4",
         ),
     )
 
@@ -70,29 +84,28 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
             rx.link(
                 rx.hstack(
                     rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>"""),
-                    rx.text("Back to Login", font_size="0.84rem", font_weight="600"),
+                    rx.text("SYS.BACK_TO_LOGIN", font_size="0.84rem", font_weight="600"),
                     align="center",
                     spacing="1",
                 ),
                 href="/login",
-                color="rgba(161,161,170,0.8)",
+                color=MUTED_COLOR,
                 text_decoration="none",
-                _hover={"color": "#a5b4fc", "text_decoration": "none"},
+                transition="all 0.2s ease",
+                _hover={"color": ACCENT_COLOR, "text_decoration": "none", "text_shadow": f"0 0 8px {ACCENT_COLOR}"},
                 margin_bottom="24px",
             ),
             
             # Heading
             rx.heading(
-                title,
+                title.upper(),
                 size="7",
                 font_weight="800",
-                letter_spacing="-0.03em",
+                letter_spacing="0.1em",
                 margin_bottom="16px",
                 style={
-                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 50%, #c084fc 100%)",
-                    "-webkit-background-clip": "text",
-                    "-webkit-text-fill-color": "transparent",
-                    "background-clip": "text",
+                    "color": "#fff",
+                    "animation": "shimmerText 3s linear infinite",
                 }
             ),
             
@@ -100,7 +113,7 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
             rx.box(
                 height="1px",
                 width="100%",
-                background="rgba(255,255,255,0.08)",
+                background=f"rgba(0,240,255,0.2)",
                 margin_bottom="24px",
             ),
             
@@ -112,27 +125,38 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
         ),
         width="100%",
         max_width="720px",
-        background="rgba(16,16,22,0.75)",
-        backdrop_filter="blur(32px) saturate(1.5)",
-        border="1px solid rgba(255,255,255,0.07)",
-        border_radius="24px",
+        background="rgba(5,8,15,0.85)",
+        backdrop_filter="blur(10px)",
+        border=f"1px solid {ACCENT_COLOR}",
+        border_radius="4px",
         padding="48px",
-        box_shadow="0 32px 80px -16px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.02)",
+        box_shadow=f"0 0 20px rgba(0,240,255,0.1), inset 0 0 20px rgba(0,240,255,0.05)",
         z_index="1",
+        position="relative",
         style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) both"},
+        _before={
+            "content": '""',
+            "position": "absolute",
+            "top": "0", "left": "0", "right": "0", "bottom": "0",
+            "background": "linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px)",
+            "background_size": "100% 3px",
+            "pointer_events": "none",
+            "z_index": "10",
+            "opacity": "0.3",
+        }
     )
 
 def terms_page() -> rx.Component:
     terms_content = rx.vstack(
-        rx.text("Welcome to ScriptIQ. By using our services, you agree to comply with and be bound by the following terms of service. Please review them carefully.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
-        rx.heading("1. Acceptable Use", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("You agree to use ScriptIQ only for lawful purposes related to film research. You may not upload malicious documents or attempt to exploit the service or database.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("2. Intellectual Property", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("The uploaded research documents are owned by their respective copyright holders. ScriptIQ processes the documents solely to provide retrieval-augmented answers to the uploading user.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("3. AI Limitations", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("While ScriptIQ incorporates zero-hallucination prompting and vector search, AI models may occasionally produce incomplete or inaccurate answers. Users should verify critical sources directly.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("4. Terminations", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("We reserve the right to suspend or terminate accounts that exceed fair use policies (e.g. rate limit bypassing) or violate acceptable use guidelines.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("Welcome to tselaf. By using our services, you agree to comply with and be bound by the following terms of service. Please review them carefully.", color=TEXT_COLOR, font_size="0.92rem", line_height="1.6"),
+        rx.heading("1. ACCEPTABLE_USE", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("You agree to use tselaf only for lawful purposes related to research. You may not upload malicious documents or attempt to exploit the service or database.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("2. INTELLECTUAL_PROPERTY", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("The uploaded research documents are owned by their respective copyright holders. tselaf processes the documents solely to provide retrieval-augmented answers to the uploading user.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("3. AI_LIMITATIONS", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("While tselaf incorporates zero-hallucination prompting and vector search, AI models may occasionally produce incomplete or inaccurate answers. Users should verify critical sources directly.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("4. TERMINATION", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("We reserve the right to suspend or terminate accounts that exceed fair use policies (e.g. rate limit bypassing) or violate acceptable use guidelines.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
         spacing="4",
         align_items="start",
     )
@@ -144,15 +168,15 @@ def terms_page() -> rx.Component:
 
 def privacy_page() -> rx.Component:
     privacy_content = rx.vstack(
-        rx.text("At ScriptIQ, we value your privacy. This policy outlines how we handle your personal data and uploaded documents.", color="rgba(212,212,216,0.9)", font_size="0.92rem", line_height="1.6"),
-        rx.heading("1. Data Collected", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("We collect your email address for account authentication and user session management. Uploaded documents are stored securely in Supabase Storage.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("2. Document Security", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("Your documents and corresponding embedded chunks are privately linked to your user account. No other users can access your documents or view your chat history.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("3. Third-party APIs", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("To generate responses, queries are processed by the Gemini API. We do not share your documents with third parties for training purposes.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
-        rx.heading("4. Cookies", size="4", font_weight="700", color="#f4f4f5", margin_top="16px"),
-        rx.text("ScriptIQ uses secure, same-site cookies to maintain your login session. No cross-site tracking cookies are utilized.", color="rgba(161,161,170,0.9)", font_size="0.88rem", line_height="1.6"),
+        rx.text("At tselaf, we value your privacy. This policy outlines how we handle your personal data and uploaded documents.", color=TEXT_COLOR, font_size="0.92rem", line_height="1.6"),
+        rx.heading("1. DATA_COLLECTED", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("We collect your email address for account authentication and user session management. Uploaded documents are stored securely in Supabase Storage.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("2. DOCUMENT_SECURITY", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("Your documents and corresponding embedded chunks are privately linked to your user account. No other users can access your documents or view your chat history.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("3. THIRD_PARTY_APIS", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("To generate responses, queries are processed by the Gemini API. We do not share your documents with third parties for training purposes.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
+        rx.heading("4. COOKIES", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.text("tselaf uses secure, same-site cookies to maintain your login session. No cross-site tracking cookies are utilized.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
         spacing="4",
         align_items="start",
     )

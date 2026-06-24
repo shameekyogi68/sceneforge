@@ -5,7 +5,7 @@ from sceneforge.styles import GLOBAL_CSS
 
 body_style = {
     "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-    "background_color": "#080810",
+    "background_color": "transparent",
     "min_height": "100vh",
     "color": "#f4f4f5",
     "position": "relative",
@@ -21,131 +21,30 @@ KEYFRAMES = """
   33%       { transform: translate(30px, -40px) scale(1.05); }
   66%       { transform: translate(-20px, 20px) scale(0.97); }
 }
-@keyframes floatOrb2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  40%       { transform: translate(-40px, 30px) scale(1.08); }
-  70%       { transform: translate(20px, -20px) scale(0.95); }
-}
-@keyframes floatOrb3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%       { transform: translate(25px, 35px) scale(1.04); }
-}
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
-  50%       { box-shadow: 0 0 40px rgba(99, 102, 241, 0.35), 0 0 80px rgba(168, 85, 247, 0.15); }
-}
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes logoEntrance {
-  0%   { opacity: 0; transform: scale(0.7) rotate(-10deg); filter: blur(8px); }
-  60%  { opacity: 1; transform: scale(1.05) rotate(2deg); filter: blur(0px); }
-  100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0px); }
-}
-@keyframes borderPulse {
-  0%, 100% { border-color: rgba(255,255,255,0.08); }
-  50%       { border-color: rgba(99,102,241,0.25); }
-}
 """
-
 
 def ambient_orbs() -> rx.Component:
     """Animated multi-layered ambient background orbs."""
     return rx.fragment(
-        # Primary indigo orb — top left
         rx.box(
-            width="600px",
-            height="600px",
-            background="radial-gradient(circle at center, rgba(99,102,241,0.55) 0%, rgba(79,70,229,0.25) 45%, transparent 70%)",
-            position="absolute",
-            border_radius="50%",
-            filter="blur(80px)",
-            opacity="0.18",
-            top="-220px",
-            left="-180px",
-            z_index="0",
-            pointer_events="none",
+            width="600px", height="600px",
+            background="radial-gradient(circle at center, rgba(0,240,255,0.1) 0%, transparent 70%)",
+            position="absolute", border_radius="50%", filter="blur(80px)",
+            top="-20%", left="-10%", z_index="0", pointer_events="none",
             style={"animation": "floatOrb 18s ease-in-out infinite"},
         ),
-        # Purple orb — bottom right
         rx.box(
-            width="700px",
-            height="700px",
-            background="radial-gradient(circle at center, rgba(168,85,247,0.5) 0%, rgba(124,58,237,0.2) 45%, transparent 70%)",
-            position="absolute",
-            border_radius="50%",
-            filter="blur(90px)",
-            opacity="0.16",
-            bottom="-280px",
-            right="-200px",
-            z_index="0",
-            pointer_events="none",
-            style={"animation": "floatOrb2 22s ease-in-out infinite"},
-        ),
-        # Subtle cyan accent — mid right
-        rx.box(
-            width="350px",
-            height="350px",
-            background="radial-gradient(circle at center, rgba(34,211,238,0.3) 0%, transparent 65%)",
-            position="absolute",
-            border_radius="50%",
-            filter="blur(60px)",
-            opacity="0.08",
-            top="30%",
-            right="-80px",
-            z_index="0",
-            pointer_events="none",
-            style={"animation": "floatOrb3 26s ease-in-out infinite"},
-        ),
-        # Subtle grid overlay
-        rx.box(
-            position="absolute",
-            top="0", left="0", right="0", bottom="0",
-            background_image="linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-            background_size="60px 60px",
-            z_index="0",
-            pointer_events="none",
+            width="700px", height="700px",
+            background="radial-gradient(circle at center, rgba(139,92,246,0.1) 0%, transparent 70%)",
+            position="absolute", border_radius="50%", filter="blur(90px)",
+            bottom="-20%", right="-10%", z_index="0", pointer_events="none",
+            style={"animation": "floatOrb 22s ease-in-out infinite reverse"},
         ),
     )
-
-
-def clapperboard_logo() -> rx.Component:
-    return rx.box(
-        rx.html(
-            """
-            <div style="
-                width:64px; height:64px;
-                background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.12) 100%);
-                border: 1px solid rgba(99,102,241,0.3);
-                border-radius: 18px;
-                display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 0 30px rgba(99,102,241,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
-                animation: logoEntrance 0.8s cubic-bezier(0.34,1.56,0.64,1) both, pulse-glow 4s ease-in-out infinite 1s;
-            ">
-                <svg style="width:30px; height:30px; color: #a5b4fc;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.2 6 3 11l-.9-2.4 17.2-5.1Z"/>
-                    <path d="M2 12V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4"/>
-                    <path d="M2 12h20"/>
-                    <path d="m7 2 2 4"/><path d="m12 2 2 4"/><path d="m17 2 2 4"/>
-                </svg>
-            </div>
-            """
-        ),
-    )
-
 
 def google_icon() -> rx.Component:
     return rx.html(
@@ -162,35 +61,53 @@ def login_page() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{KEYFRAMES}</style>"),
         ambient_orbs(),
+        
+        # Top HUD elements
+        rx.box(
+            rx.hstack(
+                rx.text("+ AUTH_TERMINAL_01", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
+                rx.spacer(),
+                rx.vstack(
+                    rx.text("STATUS: OPERATIONAL", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.5)"),
+                    rx.text("10:14:38 UTC", class_name="hud-text", font_size="0.75rem", color="#00F0FF"),
+                    spacing="1",
+                    align_items="flex-end"
+                ),
+                width="100%",
+            ),
+            position="absolute", top="32px", left="0", right="0", padding_x="48px",
+            z_index="0"
+        ),
+        
+        # Bottom left HUD element
+        rx.box(
+            rx.text("PROCESSING CORE: SCRIPTIQ-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
+            position="absolute", bottom="32px", left="48px",
+        ),
 
         # Card
         rx.vstack(
-
-            # ── Logo + wordmark ──────────────────────────────────────
             rx.vstack(
                 rx.box(
                     rx.heading(
                         "ScriptIQ",
                         size="8",
+                        font_family="'JetBrains Mono', monospace",
                         font_weight="800",
-                        letter_spacing="-0.04em",
+                        letter_spacing="-0.02em",
+                        color="#E2E8F0",
                         style={
-                            "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
-                            "background_size": "200% auto",
-                            "-webkit-background-clip": "text",
-                            "-webkit-text-fill-color": "transparent",
-                            "background-clip": "text",
-                            "animation": "shimmer 4s linear infinite",
-                        },
+                            "text_shadow": "0 0 15px rgba(139, 92, 246, 0.4)",
+                        }
                     ),
                     margin_top="18px",
                 ),
                 rx.text(
                     "Film research, powered by AI",
-                    color="rgba(161,161,170,0.85)",
-                    font_size="0.92rem",
+                    color="rgba(255,255,255,0.6)",
+                    font_size="0.85rem",
                     text_align="center",
-                    letter_spacing="0.01em",
+                    letter_spacing="0.02em",
                 ),
                 align="center",
                 spacing="2",
@@ -201,95 +118,80 @@ def login_page() -> rx.Component:
             rx.box(
                 rx.button(
                     google_icon(),
-                    rx.text("Continue with Google", font_size="0.98rem", font_weight="700", letter_spacing="0.01em"),
-                    background="rgba(255, 255, 255, 0.95)",
-                    color="#09090b",
-                    border_radius="14px",
+                    rx.text("Continue with Google", font_size="0.95rem", font_weight="700", letter_spacing="0.01em"),
+                    background="#FFFFFF",
+                    color="#05080F",
+                    border_radius="24px",
                     width="100%",
-                    padding_y="14px",
+                    padding_y="22px",
                     cursor="pointer",
                     gap="12px",
-                    box_shadow="0 4px 14px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
-                    transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                    box_shadow="0 0 20px rgba(0, 240, 255, 0.15)",
+                    transition="all 0.2s ease-in-out",
                     _hover={
-                        "background": "#ffffff",
-                        "box_shadow": "0 8px 30px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.15)",
-                        "transform": "translateY(-2px)",
+                        "box_shadow": "0 0 30px rgba(0, 240, 255, 0.4)",
+                        "transform": "translateY(-1px)",
                     },
                     _active={"transform": "translateY(0)"},
                     on_click=cast(Any, AuthState.login_with_google),
-                    style={"position": "relative", "overflow": "hidden"},
                 ),
                 width="100%",
-                margin_top="16px",
+                margin_top="32px",
             ),
-
-            # ── Error / Success alerts ────────────────────────────────
-            rx.cond(
-                AuthState.error_message != "",
-                rx.box(
-                    rx.hstack(
-                        rx.html("""<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>"""),
-                        rx.text(AuthState.error_message, color="#fca5a5", font_size="0.86rem", line_height="1.5"),
-                        align="center",
-                        spacing="2",
-                    ),
+            
+            # ── Decorative Divider ────────────────────────────────────
+            rx.box(
+                rx.hstack(
+                    rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(255,255,255,0.1))"),
+                    rx.text("ENCRYPTION ENABLED", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)", white_space="nowrap"),
+                    rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(255,255,255,0.1))"),
+                    spacing="3",
+                    align_items="center",
                     width="100%",
-                    background="rgba(239,68,68,0.07)",
-                    border="1px solid rgba(239,68,68,0.22)",
-                    border_radius="12px",
-                    padding="13px 16px",
-                    margin_top="4px",
-                    style={"animation": "fadeSlideUp 0.3s ease both"},
                 ),
+                margin_top="32px",
+                margin_bottom="16px",
+                width="100%",
             ),
-            rx.cond(
-                AuthState.success_message != "",
-                rx.box(
-                    rx.hstack(
-                        rx.html("""<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>"""),
-                        rx.text(AuthState.success_message, color="#a7f3d0", font_size="0.86rem", line_height="1.5"),
-                        align="center",
-                        spacing="2",
-                    ),
-                    width="100%",
-                    background="rgba(16,185,129,0.07)",
-                    border="1px solid rgba(16,185,129,0.22)",
-                    border_radius="12px",
-                    padding="13px 16px",
-                    margin_top="4px",
-                    style={"animation": "fadeSlideUp 0.3s ease both"},
+            
+            # ── HUD Text Footer ───────────────────────────────────────
+            rx.vstack(
+                rx.text("AUTH SYSTEM PROTOCOL 7.1 // SECURE", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                rx.hstack(
+                    rx.box(width="4px", height="4px", border_radius="50%", background="#00F0FF"),
+                    rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.4)"),
+                    rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.2)"),
+                    spacing="1"
                 ),
+                align_items="center",
+                spacing="2"
             ),
 
             # ── Footer ────────────────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
-                    rx.link("Terms", href="/terms", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),
-                    rx.text(" & ", color="rgba(113,113,122,0.55)", font_size="0.72rem"),
-                    rx.link("Privacy Policy", href="/privacy", color="#818cf8", font_size="0.72rem", text_decoration="none", _hover={"text_decoration": "underline"}),
+                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
+                    rx.link("Terms", href="/terms", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
+                    rx.text(" & ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
+                    rx.link("Privacy Policy", href="/privacy", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
                     spacing="1",
                     justify="center",
                     wrap="wrap",
-                    margin_top="8px",
+                    margin_top="24px",
                 ),
                 width="100%",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both"},
             ),
 
-            # ── Card geometry ─────────────────────────────────────────
             class_name="glass-panel page-transition",
             width="100%",
-            max_width="420px",
-            border_radius="28px",
-            padding="44px 36px",
+            max_width="400px",
+            border_radius="24px",
+            padding="48px 36px",
             z_index="1",
             style={
                 "animation": "fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) both",
-                "border-animation": "borderPulse 6s ease-in-out infinite",
             },
         ),
-
         style=body_style,
     )

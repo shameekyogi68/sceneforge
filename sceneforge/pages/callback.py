@@ -1,6 +1,6 @@
 import reflex as rx
 from sceneforge.state import AuthState
-from sceneforge.styles import GLOBAL_CSS
+from sceneforge.styles import GLOBAL_CSS, BACKGROUND_COLOR, ACCENT_COLOR, TEXT_COLOR, MUTED_COLOR, FONT_FAMILY
 
 CALLBACK_KEYFRAMES = """
 @keyframes spin-slow {
@@ -10,6 +10,11 @@ CALLBACK_KEYFRAMES = """
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmerText {
+  0%   { text-shadow: 0 0 5px #00F0FF, 0 0 10px #00F0FF; }
+  50%  { text-shadow: 0 0 20px #00F0FF, 0 0 30px #00F0FF; }
+  100% { text-shadow: 0 0 5px #00F0FF, 0 0 10px #00F0FF; }
 }
 """
 
@@ -72,42 +77,52 @@ def callback_page() -> rx.Component:
             })();
             </script>
         """),
+        rx.box(
+            position="absolute",
+            top="0", left="0", right="0", bottom="0",
+            background="linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px)",
+            background_size="100% 4px",
+            z_index="0",
+            pointer_events="none",
+            opacity="0.4",
+        ),
         rx.vstack(
             rx.heading(
-                "ScriptIQ",
+                "tselaf",
                 size="8",
                 font_weight="800",
-                letter_spacing="-0.04em",
+                letter_spacing="0.1em",
+                text_transform="uppercase",
                 style={
-                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
-                    "-webkit-background-clip": "text",
-                    "-webkit-text-fill-color": "transparent",
-                    "background-clip": "text",
+                    "color": "#fff",
+                    "animation": "shimmerText 3s linear infinite",
                 },
             ),
             # Spinner
-            rx.html("""
+            rx.html(f"""
                 <div style="
                     width: 24px; height: 24px;
-                    border: 2px solid rgba(99,102,241,0.2);
-                    border-top-color: #818cf8;
-                    border-radius: 50%;
+                    border: 2px solid rgba(0,240,255,0.2);
+                    border-top-color: {ACCENT_COLOR};
+                    border-radius: 0;
                     animation: spin-slow 0.8s linear infinite;
                 "></div>
             """),
             rx.text(
-                "Completing sign-in...",
-                color="rgba(161,161,170,0.7)",
+                "SYS.AUTH_HANDSHAKE_IN_PROGRESS",
+                color=MUTED_COLOR,
                 font_size="0.88rem",
-                font_weight="500",
-                letter_spacing="0.01em",
+                font_weight="700",
+                letter_spacing="0.05em",
             ),
             align="center",
             spacing="4",
             style={"animation": "fadeIn 0.4s ease both"},
+            z_index="1",
+            position="relative",
         ),
         height="100vh",
-        background_color="#080810",
+        background_color=BACKGROUND_COLOR,
         width="100%",
-        font_family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+        font_family=FONT_FAMILY,
     )

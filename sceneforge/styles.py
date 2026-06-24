@@ -3,6 +3,8 @@ styles.py — Shared global CSS injected into every page via rx.html.
 """
 
 GLOBAL_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
@@ -14,102 +16,100 @@ html {
 
 body {
     margin: 0; padding: 0;
-    background: #06060c;
-    color: #f4f4f5;
+    background-color: #05080F;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center top;
+    color: #E2E8F0;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
 }
 
 /* Thin premium scrollbars */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(8, 8, 16, 0.3); }
-::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.03); }
-::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: rgba(5, 8, 15, 0.8); }
+::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 240, 255, 0.6); }
 
 /* Text selection */
-::selection { background: rgba(99, 102, 241, 0.35); color: #ffffff; }
+::selection { background: rgba(0, 240, 255, 0.3); color: #ffffff; }
 
 /* Radix dialog overlay */
 .rt-BaseDialogOverlay {
-    backdrop-filter: blur(16px) saturate(1.3) !important;
-    background: rgba(4, 4, 8, 0.6) !important;
+    backdrop-filter: blur(8px) saturate(1.2) !important;
+    background: rgba(5, 8, 15, 0.8) !important;
 }
 
 /* Global transitions and keyframes */
-@keyframes spin-slow {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-
-@keyframes progressGlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 @keyframes pageFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes gradientBg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Shimmer skeleton loader */
-@keyframes skeletonPulse {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Pulse glow for buttons and cards */
-@keyframes pulseGlowRing {
-    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+@keyframes pulseNeon {
+    0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
 }
 
 /* Apply fade-in to every main page content wrapper */
 .page-transition {
-    animation: pageFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* High-fidelity glassmorphic panel styling */
+/* Tech-Noir Glass Panel */
 .glass-panel {
-    background: rgba(14, 14, 24, 0.65) !important;
-    backdrop-filter: blur(24px) saturate(1.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    box-shadow: 
-        0 24px 64px -16px rgba(0, 0, 0, 0.65), 
-        0 1px 0 0 rgba(255, 255, 255, 0.08) inset,
-        0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
+    background: rgba(13, 20, 36, 0.7) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
 }
 
-/* Modern input styling */
+/* Cyber Input styling */
 .premium-input {
-    background: rgba(8, 8, 14, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    background: rgba(10, 15, 25, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #00F0FF !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem !important;
+    transition: all 0.2s ease-in-out !important;
 }
 .premium-input:focus-within {
-    border-color: rgba(99, 102, 241, 0.5) !important;
-    background: rgba(8, 8, 14, 0.95) !important;
-    box-shadow: 
-        0 0 0 3px rgba(99, 102, 241, 0.12),
-        0 4px 16px -4px rgba(99, 102, 241, 0.15) !important;
+    border-color: #00F0FF !important;
+    background: rgba(10, 15, 25, 0.95) !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.15) !important;
+    outline: none !important;
 }
 
-/* Premium Highlight style for document preview citations */
+/* Cyber Button Hover Glow */
+.cyber-button-hover:hover {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    border-color: rgba(0, 240, 255, 0.8) !important;
+}
+
+.cyber-button-purple:hover {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    border-color: rgba(139, 92, 246, 0.8) !important;
+}
+
+/* HUD Text Class */
+.hud-text {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Document preview highlights */
 .search-highlight {
-    background-color: rgba(234, 179, 8, 0.3) !important;
-    color: #ffffff !important;
-    border-radius: 4px;
-    padding: 1px 4px;
-    font-weight: 600;
-    box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
-    border: 1px solid rgba(234, 179, 8, 0.5);
+    background-color: rgba(0, 240, 255, 0.2) !important;
+    color: #00F0FF !important;
+    border-radius: 2px;
+    padding: 0 2px;
+    font-family: 'JetBrains Mono', monospace;
+    border-bottom: 1px solid #00F0FF;
 }
 """
 

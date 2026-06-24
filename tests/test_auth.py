@@ -206,7 +206,7 @@ class TestAuth(unittest.TestCase):
         mock_select_res.data = []
         mock_auth_client.table().select().eq().execute.return_value = mock_select_res
         
-        allowed = check_rate_limit("user123", "token123")
+        allowed, count = check_rate_limit("user123", "token123")
         self.assertTrue(allowed)
         
         # Verify insert is called to create profile with count=1
@@ -223,7 +223,7 @@ class TestAuth(unittest.TestCase):
         mock_select_res.data = [{"questions_today": 50, "last_question_date": "2020-01-01"}]
         mock_auth_client.table().select().eq().execute.return_value = mock_select_res
         
-        allowed = check_rate_limit("user123", "token123")
+        allowed, count = check_rate_limit("user123", "token123")
         self.assertTrue(allowed)
         
         # Verify reset update is called with count=1
@@ -242,7 +242,7 @@ class TestAuth(unittest.TestCase):
         mock_select_res.data = [{"questions_today": 5, "last_question_date": date.today().isoformat()}]
         mock_auth_client.table().select().eq().execute.return_value = mock_select_res
         
-        allowed = check_rate_limit("user123", "token123")
+        allowed, count = check_rate_limit("user123", "token123")
         self.assertTrue(allowed)
         
         # Verify count is incremented to 6
@@ -261,7 +261,7 @@ class TestAuth(unittest.TestCase):
         mock_auth_client.table().select().eq().execute.return_value = mock_select_res
         
         config.DAILY_QUESTION_LIMIT = 100
-        allowed = check_rate_limit("user123", "token123")
+        allowed, count = check_rate_limit("user123", "token123")
         self.assertFalse(allowed)
         
         # Verify update is NOT called
@@ -272,7 +272,7 @@ class TestAuth(unittest.TestCase):
         # Database raises an exception
         mock_get_auth.side_effect = Exception("DB Connection Error")
         
-        allowed = check_rate_limit("user123", "token123")
+        allowed, count = check_rate_limit("user123", "token123")
         # Should fail open and return True
         self.assertTrue(allowed)
 

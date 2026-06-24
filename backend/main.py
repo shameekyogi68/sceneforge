@@ -108,11 +108,15 @@ def get_user(token: str = Depends(get_token)) -> Any:
 # Auth Endpoints
 # ---------------------------------------------------------------------------
 
+class AuthRequest(BaseModel):
+    email: str
+    password: str
+
 @app.post("/auth/signup", response_model=AuthResponse)
-def auth_signup_endpoint(email: str, password: str):
+def auth_signup_endpoint(req: AuthRequest):
     """Sign up a new user and return tokens."""
     try:
-        res = signup(email, password)
+        res = signup(req.email, req.password)
         # Sign up might not return session immediately if email verification is enabled
         access_token = res.session.access_token if res.session else ""
         refresh_token = res.session.refresh_token if res.session else ""
@@ -128,10 +132,10 @@ def auth_signup_endpoint(email: str, password: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/auth/login", response_model=AuthResponse)
-def auth_login_endpoint(email: str, password: str):
+def auth_login_endpoint(req: AuthRequest):
     """Authenticate existing user and return tokens."""
     try:
-        res = login(email, password)
+        res = login(req.email, req.password)
         return {
             "access_token": res.session.access_token,
             "refresh_token": res.session.refresh_token,
@@ -166,18 +170,7 @@ def auth_me_endpoint(token: str = Depends(get_token), user: Any = Depends(get_us
         res = db.table("profiles").select("questions_today").eq("id", str(user.id)).execute()
         today_count = 0
         if not res.data:
-            # Initialize profile row for user
-            from datetime import date
-            today = date.today().isoformat()
-            try:
-                db.table("profiles").insert({
-                    "id": str(user.id),
-                    "email": user.email,
-                    "questions_today": 0,
-                    "last_question_date": today,
-                }).execute()
-            except Exception:
-                pass
+            today_count = 0
         else:
             res_data = res.data
             if isinstance(res_data, list) and res_data:
@@ -225,19 +218,26 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
         res = db.table("projects").select("*").eq("user_id", str(user.id)).execute()
         data_list = res.data
         projects_list = []
-        
-        # Safely count documents grouped by project_id
+        # Extract project IDs to filter document query
+        project_ids = []
+        if isinstance(data_list, list):
+            for p in data_list:
+                if isinstance(p, dict) and "id" in p:
+                    project_ids.append(str(p["id"]))
+
         document_counts = {}
-        try:
-            docs_res = db.table("documents").select("project_id").execute()
-            docs_data = docs_res.data or []
-            if isinstance(docs_data, list):
-                for d in docs_data:
-                    if isinstance(d, dict) and "project_id" in d:
-                        pid = d["project_id"]
-                        document_counts[pid] = document_counts.get(pid, 0) + 1
-        except Exception as exc:
-            logger.warning("Could not retrieve document counts: %s", exc)
+        if project_ids:
+            try:
+                # Filter to only the projects owned by this user
+                docs_res = db.table("documents").select("project_id").in_("project_id", project_ids).execute()
+                docs_data = docs_res.data or []
+                if isinstance(docs_data, list):
+                    for d in docs_data:
+                        if isinstance(d, dict) and "project_id" in d:
+                            pid = d["project_id"]
+                            document_counts[pid] = document_counts.get(pid, 0) + 1
+            except Exception as exc:
+                logger.warning("Could not retrieve document counts: %s", exc)
 
         if isinstance(data_list, list):
             for p in data_list:
@@ -250,6 +250,21 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
         return projects_list
     except Exception as e:
         logger.exception("List projects failed")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@app.get("/projects/{project_id}")
+def get_project_endpoint(project_id: str, token: str = Depends(get_token), user: Any = Depends(get_user)):
+    """Fetch a single project's details."""
+    try:
+        db = get_authenticated_client(token)
+        res = db.table("projects").select("*").eq("id", project_id).eq("user_id", str(user.id)).execute()
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Project not found or access denied")
+        return res.data[0]
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.exception("Get project failed")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.delete("/projects/{project_id}")
@@ -503,20 +518,20 @@ async def ask_endpoint(
     db = get_authenticated_client(token)
     user_id_str = str(user.id)
 
-    # 1. Verify project ownership + fetch memory in parallel
+    # 1. Verify project ownership in parallel
     proj_fut = asyncio.to_thread(
         lambda: db.table("projects").select("id")
             .eq("id", req.project_id).eq("user_id", user_id_str).execute()
     )
-    memory_fut = asyncio.to_thread(get_project_memory, req.project_id)
 
-    proj_res, memory = await asyncio.gather(proj_fut, memory_fut)
+    proj_res = await proj_fut
 
     if not proj_res.data:
         raise HTTPException(status_code=403, detail="Access denied to this project")
 
-    # 2. Check rate limits
-    if not check_rate_limit(user_id_str, token):
+    # 2. Check rate limits asynchronously
+    allowed, count = await asyncio.to_thread(check_rate_limit, user_id_str, token)
+    if not allowed:
         raise HTTPException(status_code=429, detail="Daily limit reached (100 questions). Come back tomorrow.")
 
     try:
@@ -537,9 +552,9 @@ async def ask_endpoint(
             if not conv_id:
                 raise HTTPException(status_code=500, detail="Failed to create chat conversation.")
 
-        # 4. Run RAG Pipeline (memory already fetched in parallel above)
+        # 4. Run RAG Pipeline (Mem0 removed from hot path)
         answer, sources = await asyncio.to_thread(
-            answer_with_sources, message, req.project_id, memory, token
+            answer_with_sources, message, req.project_id, "", token
         )
 
         # 5. Save memory + messages in background (do NOT block the response)
@@ -552,22 +567,8 @@ async def ask_endpoint(
             _save_messages_bg, db, str(conv_id), message, answer, sources
         )
 
-        # 6. Compute remaining from rate-limit data already in DB (avoid extra query)
-        try:
-            profile_res = await asyncio.to_thread(
-                lambda: db.table("profiles").select("questions_today")
-                    .eq("id", user_id_str).execute()
-            )
-            data_list = profile_res.data
-            today_count = 0
-            if isinstance(data_list, list) and len(data_list) > 0:
-                row = data_list[0]
-                if isinstance(row, dict):
-                    raw_val = row.get("questions_today", 0)
-                    today_count = int(raw_val) if isinstance(raw_val, (int, float, str)) else 0
-        except Exception:
-            today_count = 0
-        remaining = max(0, config.DAILY_QUESTION_LIMIT - today_count)
+        # 6. Compute remaining from rate-limit data already populated
+        remaining = max(0, config.DAILY_QUESTION_LIMIT - count)
 
         return {
             "reply": answer,

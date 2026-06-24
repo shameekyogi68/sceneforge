@@ -193,7 +193,9 @@ def refresh_supabase_token(refresh_token: str) -> tuple[str, str]:
 # Rate limiting
 # ---------------------------------------------------------------------------
 
-def check_rate_limit(user_id: str, token: str) -> bool:
+from typing import Tuple
+
+def check_rate_limit(user_id: str, token: str) -> Tuple[bool, int]:
     """
     Enforce DAILY_QUESTION_LIMIT questions per user per calendar day.
 
@@ -204,7 +206,7 @@ def check_rate_limit(user_id: str, token: str) -> bool:
     - Otherwise → increment, allow
 
     Fails open on any DB error so users are never blocked by infrastructure issues.
-    Returns True (allow) / False (deny).
+    Returns (allowed, current_count).
     """
     try:
         # Use the cached authenticated client so RLS policies are satisfied
@@ -216,12 +218,12 @@ def check_rate_limit(user_id: str, token: str) -> bool:
 
         if not rows:
             _upsert_profile(client, user_id, today, 1)
-            return True
+            return True, 1
 
         profile = rows[0]
         if not isinstance(profile, dict):
             _upsert_profile(client, user_id, today, 1)
-            return True
+            return True, 1
 
         last_date = profile.get("last_question_date", "")
         if last_date is None:
@@ -235,21 +237,21 @@ def check_rate_limit(user_id: str, token: str) -> bool:
                 "questions_today":    1,
                 "last_question_date": today,
             }).eq("id", user_id).execute()
-            return True
+            return True, 1
 
         raw_count = profile.get("questions_today", 0)
         count = raw_count if isinstance(raw_count, int) else 0
         if count >= config.DAILY_QUESTION_LIMIT:
-            return False
+            return False, count
 
         client.table("profiles").update({
             "questions_today": count + 1,
         }).eq("id", user_id).execute()
-        return True
+        return True, count + 1
 
     except Exception:
         logger.exception("check_rate_limit failed for %s — failing open", user_id)
-        return True
+        return True, 0
 
 
 def _upsert_profile(client, user_id: str, today: str, count: int) -> None:

@@ -40,7 +40,7 @@ class TestApi(unittest.TestCase):
         mock_res.session.refresh_token = "refresh-token"
         mock_signup.return_value = mock_res
         
-        response = self.client.post("/auth/signup?email=test@example.com&password=password123")
+        response = self.client.post("/auth/signup", json={"email": "test@example.com", "password": "password123"})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["access_token"], "access-token")
@@ -55,7 +55,7 @@ class TestApi(unittest.TestCase):
         mock_res.session.refresh_token = "refresh-token"
         mock_login.return_value = mock_res
         
-        response = self.client.post("/auth/login?email=test@example.com&password=password123")
+        response = self.client.post("/auth/login", json={"email": "test@example.com", "password": "password123"})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["access_token"], "access-token")
@@ -166,7 +166,7 @@ class TestApi(unittest.TestCase):
             {"project_id": "proj-1"},
             {"project_id": "proj-2"}
         ]
-        mock_documents_table.select.return_value.execute.return_value = mock_documents_select_res
+        mock_documents_table.select.return_value.in_.return_value.execute.return_value = mock_documents_select_res
         
         headers = {"Authorization": "Bearer dummy-token"}
         response = self.client.get("/projects", headers=headers)
@@ -302,16 +302,15 @@ class TestApi(unittest.TestCase):
     @patch("backend.main.get_current_user")
     @patch("backend.main.get_authenticated_client")
     @patch("backend.main.check_rate_limit")
-    @patch("backend.main.get_project_memory")
     @patch("backend.main.answer_with_sources")
     @patch("backend.main.save_conversation_memory")
-    def test_ask_endpoint_success(self, mock_save_mem, mock_answer, mock_get_mem, mock_rate_limit, mock_get_db, mock_get_user):
+    def test_ask_endpoint_success(self, mock_save_mem, mock_answer, mock_rate_limit, mock_get_db, mock_get_user):
         mock_get_user.return_value = self.dummy_user
         mock_db = MagicMock()
         mock_get_db.return_value = mock_db
         
         # Rate limit passes
-        mock_rate_limit.return_value = True
+        mock_rate_limit.return_value = (True, 3)
         
         # Project ownership check
         mock_proj_res = MagicMock()
@@ -324,7 +323,6 @@ class TestApi(unittest.TestCase):
         mock_db.table().insert().execute.return_value = mock_conv_res
         
         # RAG Pipeline mocks
-        mock_get_mem.return_value = "Memory context"
         mock_answer.return_value = ("The answer is here.", [{"filename": "doc.pdf", "page": 2, "text_preview": "some preview"}])
         
         # Profile check for remaining questions
@@ -355,7 +353,7 @@ class TestApi(unittest.TestCase):
         mock_get_db.return_value = mock_db
         
         # Rate limit hit -> returns False
-        mock_rate_limit.return_value = False
+        mock_rate_limit.return_value = (False, 100)
         
         # Project ownership check
         mock_proj_res = MagicMock()

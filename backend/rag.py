@@ -234,43 +234,52 @@ def search_documents(
         return []
 
     client = _get_client(token)
-    candidate_limit = top_k * 2
+    candidate_limit = top_k
 
-    # 1. Vector Search
+    # 1. Vector Search and Full-Text Search (FTS) concurrently
+    import concurrent.futures
+
+    def _do_vector_search():
+        try:
+            # Removed HyDE to save latency
+            query_embedding = get_embedding(question, task_type="retrieval_query")
+            result = client.rpc(
+                "match_chunks",
+                {
+                    "query_embedding": query_embedding,
+                    "project_id":      project_id,
+                    "match_count":     candidate_limit,
+                },
+            ).execute()
+            return cast(List[Dict], result.data or [])
+        except Exception as exc:
+            logger.exception("Vector search RPC failed: %s", exc)
+            return []
+
+    def _do_fts_search():
+        try:
+            fts_res = (
+                client.table("document_chunks")
+                .select("chunk_text", "filename", "page_num", "document_id")
+                .eq("project_id", project_id)
+                .wfts("chunk_text", question)
+                .limit(candidate_limit)
+                .execute()
+            )
+            return cast(List[Dict], fts_res.data or [])
+        except Exception as exc:
+            logger.warning("FTS text_search failed: %s", exc)
+            return []
+
     vector_chunks: List[Dict] = []
-    try:
-        hyde_expanded = question
-        hyde_ans = generate_hyde_response(question)
-        if hyde_ans:
-            hyde_expanded = f"{question} {hyde_ans}"
-            
-        query_embedding = get_embedding(hyde_expanded, task_type="retrieval_query")
-        result = client.rpc(
-            "match_chunks",
-            {
-                "query_embedding": query_embedding,
-                "project_id":      project_id,
-                "match_count":     candidate_limit,
-            },
-        ).execute()
-        vector_chunks = cast(List[Dict], result.data or [])
-    except Exception as exc:
-        logger.exception("Vector search RPC failed: %s", exc)
-
-    # 2. Full-Text Search (FTS)
     fts_chunks: List[Dict] = []
-    try:
-        fts_res = (
-            client.table("document_chunks")
-            .select("chunk_text", "filename", "page_num", "document_id")
-            .eq("project_id", project_id)
-            .wfts("chunk_text", question)
-            .limit(candidate_limit)
-            .execute()
-        )
-        fts_chunks = cast(List[Dict], fts_res.data or [])
-    except Exception as exc:
-        logger.warning("FTS text_search failed: %s", exc)
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        vector_future = executor.submit(_do_vector_search)
+        fts_future = executor.submit(_do_fts_search)
+        
+        vector_chunks = vector_future.result()
+        fts_chunks = fts_future.result()
 
     # 3. Reciprocal Rank Fusion (RRF)
     k_const = 60
@@ -377,6 +386,7 @@ def answer_with_sources(
         config=types.GenerateContentConfig(
             temperature=0.2,
             max_output_tokens=2048,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
         ),
     )
     answer_text = response.text or ""

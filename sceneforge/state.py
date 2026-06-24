@@ -66,6 +66,7 @@ class State(rx.State):
     user_id: str = rx.Cookie("", name="user_id", secure=True, same_site="strict")
     refresh_token: str = rx.Cookie("", name="refresh_token", secure=True, same_site="strict")
     user_email: str = ""
+    questions_today: int = 0
     router: Any = rx.State.router  # type: ignore
 
     @rx.var
@@ -135,7 +136,9 @@ class State(rx.State):
         try:
             response = await self._api_request("GET", "/auth/me")
             if response.status_code == 200:
-                self.user_email = response.json().get("email", "")
+                data = response.json()
+                self.user_email = data.get("email", "")
+                self.questions_today = data.get("questions_today", 0)
             else:
                 return self.logout()
         except Exception:
@@ -148,7 +151,9 @@ class State(rx.State):
         try:
             response = await self._api_request("GET", "/auth/me")
             if response.status_code == 200:
-                self.user_email = response.json().get("email", "")
+                data = response.json()
+                self.user_email = data.get("email", "")
+                self.questions_today = data.get("questions_today", 0)
                 return rx.redirect("/dashboard")
             else:
                 return self.logout()
@@ -161,7 +166,9 @@ class State(rx.State):
             try:
                 response = await self._api_request("GET", "/auth/me")
                 if response.status_code == 200:
-                    self.user_email = response.json().get("email", "")
+                    data = response.json()
+                    self.user_email = data.get("email", "")
+                    self.questions_today = data.get("questions_today", 0)
                     return rx.redirect("/dashboard")
             except Exception:
                 pass
@@ -252,7 +259,7 @@ class AuthState(State):
             response = await self._api_request(
                 "POST",
                 path,
-                params={"email": email_clean, "password": password_clean},
+                json={"email": email_clean, "password": password_clean},
                 auth=False
             )
             
@@ -350,13 +357,12 @@ class AuthState(State):
         try:
             # Validate token and retrieve user details using in-process transport
             # (avoids dependency on BACKEND_URL which defaults to localhost and breaks in production)
-            from backend.main import app as fastapi_app
             req_headers = {"Authorization": f"Bearer {access_token}"}
-            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fastapi_app), base_url="http://localhost", timeout=10.0) as client:
-                res = await client.get("/auth/me", headers=req_headers)
-                if res.status_code != 200:
-                    raise Exception("Verification with SceneForge backend failed.")
-                user_data = res.json()
+            client = _get_http_client()
+            res = await client.get("/auth/me", headers=req_headers)
+            if res.status_code != 200:
+                raise Exception("Verification with SceneForge backend failed.")
+            user_data = res.json()
             
             self.token = access_token
             if ref_token:
@@ -482,7 +488,7 @@ class DashboardState(State):
             logger.exception("Failed to delete project")
             rx.toast.error("An internal error occurred while deleting project.")
 
-    @rx.var
+    @rx.var(cache=True)
     def filtered_projects(self) -> List[Dict[str, Any]]:
         """Filter projects list reactively based on search input."""
         q = self.search_query.strip().lower()
@@ -498,7 +504,6 @@ class ProjectState(State):
     documents: List[Dict[str, Any]] = []
     chat_history: List[ChatMessage] = []
     input_message: str = ""
-    remaining_questions: str = "100 questions remaining today"
     is_sending: bool = False
     conversation_id: str = ""
     doc_steps: Dict[str, int] = {}
@@ -515,37 +520,12 @@ class ProjectState(State):
     def set_input_message(self, value: str):
         self.input_message = value
 
+    @rx.var
+    def remaining_questions(self) -> str:
+        """Compute remaining questions dynamically from state."""
+        return f"{max(0, 100 - self.questions_today)} questions remaining today"
+
     async def load_documents(self):
-        """Load document list for sidebar."""
-        try:
-            response = await self._api_request("GET", f"/documents/{self.project_id}")
-            if response.status_code == 200:
-                self.documents = response.json()
-                # Initialize simulated steps for any document that is processing
-                for d in self.documents:
-                    d_id = str(d.get("id", ""))
-                    if d.get("status") == "processing" and d_id not in self.doc_steps:
-                        self.doc_steps[d_id] = 1
-            else:
-                self.documents = []
-        except Exception:
-            logger.exception("Failed to load documents")
-            self.documents = []
-
-    async def load_profile(self):
-        """Load rate limit information."""
-        try:
-            response = await self._api_request("GET", "/auth/me")
-            if response.status_code == 200:
-                today_count = response.json().get("questions_today", 0)
-                self.remaining_questions = f"{max(0, 100 - today_count)} questions remaining today"
-            else:
-                self.remaining_questions = "100 questions remaining today"
-        except Exception:
-            logger.exception("Failed to load profile details")
-            self.remaining_questions = "100 questions remaining today"
-
-    async def load_chat_history(self):
         """Load messages for the last active conversation."""
         try:
             response = await self._api_request("GET", f"/projects/{self.project_id}/messages")
@@ -604,22 +584,17 @@ class ProjectState(State):
     async def load_project_details(self):
         """Query project details, document list, and chat logs from backend API."""
         try:
-            # Verify project details/ownership by listing projects
-            response = await self._api_request("GET", "/projects")
+            # Load project details securely
+            response = await self._api_request("GET", f"/projects/{self.project_id}")
             if response.status_code != 200:
                 return rx.redirect("/dashboard")
                 
-            projects = response.json()
-            matching = [p for p in projects if p["id"] == self.project_id]
-            if not matching:
-                # Unauthorized or project not found
-                return rx.redirect("/dashboard")
-            self.project_name = matching[0]["name"]
+            project_data = response.json()
+            self.project_name = project_data["name"]
 
             # Load project dependencies concurrently
             await asyncio.gather(
                 self.load_documents(),
-                self.load_profile(),
                 self.load_chat_history()
             )
 
@@ -716,7 +691,7 @@ class ProjectState(State):
                 any_processing = any(d["status"] == "processing" for d in self.documents)
                 if not any_processing:
                     break
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(3.0)
 
     async def send_message(self):
         """Send message to API, perform RAG, update UI with streamed answers, and refresh rate counts."""
@@ -729,7 +704,6 @@ class ProjectState(State):
         
         # Add user message to UI immediately for instant feedback
         self.chat_history.append(ChatMessage(role="user", content=message, sources=[]))
-        yield
         yield ProjectState.scroll_to_bottom
 
         try:
@@ -750,7 +724,6 @@ class ProjectState(State):
                     sources=[]
                 ))
                 self.is_sending = False
-                yield
                 yield ProjectState.scroll_to_bottom
                 return
             elif response.status_code != 200:
@@ -762,7 +735,7 @@ class ProjectState(State):
             answer = res_data["reply"]
             sources = res_data["sources"]
             remaining_count = res_data["remaining_questions"]
-            self.remaining_questions = f"{remaining_count} questions remaining today"
+            self.questions_today = 100 - remaining_count
 
             # Add assistant message and sources to state
             source_items = []
@@ -790,7 +763,6 @@ class ProjectState(State):
             ))
         finally:
             self.is_sending = False
-            yield
             yield ProjectState.scroll_to_bottom
 
     def use_example_question(self, text: str):

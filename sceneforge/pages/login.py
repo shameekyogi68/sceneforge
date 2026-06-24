@@ -81,7 +81,7 @@ def login_page() -> rx.Component:
         
         # Bottom left HUD element
         rx.box(
-            rx.text("PROCESSING CORE: SCRIPTIQ-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
+            rx.text("PROCESSING CORE: TSELAF-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
             position="absolute", bottom="32px", left="48px",
         ),
 
@@ -90,7 +90,7 @@ def login_page() -> rx.Component:
             rx.vstack(
                 rx.box(
                     rx.heading(
-                        "ScriptIQ",
+                        "tselaf",
                         size="8",
                         font_family="'JetBrains Mono', monospace",
                         font_weight="800",
@@ -170,7 +170,7 @@ def login_page() -> rx.Component:
             # ── Footer ────────────────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
+                    rx.text("By signing in you agree to tselaf's ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
                     rx.link("Terms", href="/terms", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
                     rx.text(" & ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
                     rx.link("Privacy Policy", href="/privacy", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),

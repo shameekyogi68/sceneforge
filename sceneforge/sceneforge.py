@@ -95,6 +95,6 @@ def index():
             spacing="4",
         ),
         height="100vh",
-        background_color="#080810",
+        background_color="transparent",
         width="100%",
     )

@@ -121,7 +121,7 @@ def login_page() -> rx.Component:
                     rx.text("Continue with Google", font_size="0.95rem", font_weight="700", letter_spacing="0.01em"),
                     background="#FFFFFF",
                     color="#05080F",
-                    border_radius="24px",
+                    border_radius="4px",
                     width="100%",
                     padding_y="22px",
                     cursor="pointer",
@@ -186,7 +186,7 @@ def login_page() -> rx.Component:
             class_name="glass-panel page-transition",
             width="100%",
             max_width="400px",
-            border_radius="24px",
+            border_radius="12px",
             padding="48px 36px",
             z_index="1",
             style={

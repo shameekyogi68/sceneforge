@@ -53,7 +53,7 @@ def ambient_background() -> rx.Component:
         rx.box(
             width="500px",
             height="500px",
-            background="radial-gradient(circle at center, rgba(255,0,85,0.1) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(139,92,246,0.1) 0%, transparent 70%)",
             position="absolute",
             border_radius="50%",
             filter="blur(80px)",
@@ -63,15 +63,6 @@ def ambient_background() -> rx.Component:
             z_index="0",
             pointer_events="none",
             style={"animation": "floatOrb2 18s ease-in-out infinite"},
-        ),
-        rx.box(
-            position="absolute",
-            top="0", left="0", right="0", bottom="0",
-            background="linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px)",
-            background_size="100% 4px",
-            z_index="0",
-            pointer_events="none",
-            opacity="0.4",
         ),
     )
 
@@ -84,7 +75,7 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
             rx.link(
                 rx.hstack(
                     rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>"""),
-                    rx.text("SYS.BACK_TO_LOGIN", font_size="0.84rem", font_weight="600"),
+                    rx.text("BACK TO LOGIN", font_size="0.84rem", font_weight="600"),
                     align="center",
                     spacing="1",
                 ),
@@ -105,7 +96,7 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
                 margin_bottom="16px",
                 style={
                     "color": "#fff",
-                    "animation": "shimmerText 3s linear infinite",
+                    "font_family": "'Plus Jakarta Sans', sans-serif",
                 }
             ),
             
@@ -125,37 +116,23 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
         ),
         width="100%",
         max_width="720px",
-        background="rgba(5,8,15,0.85)",
-        backdrop_filter="blur(10px)",
-        border=f"1px solid {ACCENT_COLOR}",
-        border_radius="4px",
+        class_name="glass-panel",
         padding="48px",
-        box_shadow=f"0 0 20px rgba(0,240,255,0.1), inset 0 0 20px rgba(0,240,255,0.05)",
         z_index="1",
         position="relative",
         style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) both"},
-        _before={
-            "content": '""',
-            "position": "absolute",
-            "top": "0", "left": "0", "right": "0", "bottom": "0",
-            "background": "linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px)",
-            "background_size": "100% 3px",
-            "pointer_events": "none",
-            "z_index": "10",
-            "opacity": "0.3",
-        }
     )
 
 def terms_page() -> rx.Component:
     terms_content = rx.vstack(
         rx.text("Welcome to ScriptIQ. By using our services, you agree to comply with and be bound by the following terms of service. Please review them carefully.", color=TEXT_COLOR, font_size="0.92rem", line_height="1.6"),
-        rx.heading("1. ACCEPTABLE_USE", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("1. Acceptable Use", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("You agree to use ScriptIQ only for lawful purposes related to research. You may not upload malicious documents or attempt to exploit the service or database.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("2. INTELLECTUAL_PROPERTY", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("2. Intellectual Property", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("The uploaded research documents are owned by their respective copyright holders. ScriptIQ processes the documents solely to provide retrieval-augmented answers to the uploading user.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("3. AI_LIMITATIONS", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("3. AI Limitations", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("While ScriptIQ incorporates zero-hallucination prompting and vector search, AI models may occasionally produce incomplete or inaccurate answers. Users should verify critical sources directly.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("4. TERMINATION", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("4. Account Use & Terms", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("We reserve the right to suspend or terminate accounts that exceed fair use policies (e.g. rate limit bypassing) or violate acceptable use guidelines.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
         spacing="4",
         align_items="start",
@@ -169,13 +146,13 @@ def terms_page() -> rx.Component:
 def privacy_page() -> rx.Component:
     privacy_content = rx.vstack(
         rx.text("At ScriptIQ, we value your privacy. This policy outlines how we handle your personal data and uploaded documents.", color=TEXT_COLOR, font_size="0.92rem", line_height="1.6"),
-        rx.heading("1. DATA_COLLECTED", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("1. Data Collected", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("We collect your email address for account authentication and user session management. Uploaded documents are stored securely in Supabase Storage.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("2. DOCUMENT_SECURITY", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("2. Document Security", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("Your documents and corresponding embedded chunks are privately linked to your user account. No other users can access your documents or view your chat history.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("3. THIRD_PARTY_APIS", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("3. Third-Party Services", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("To generate responses, queries are processed by the Gemini API. We do not share your documents with third parties for training purposes.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
-        rx.heading("4. COOKIES", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.05em"),
+        rx.heading("4. Cookies", size="4", font_weight="700", color="#fff", margin_top="16px", letter_spacing="0.02em", font_family="'Plus Jakarta Sans', sans-serif"),
         rx.text("ScriptIQ uses secure, same-site cookies to maintain your login session. No cross-site tracking cookies are utilized.", color=MUTED_COLOR, font_size="0.88rem", line_height="1.6"),
         spacing="4",
         align_items="start",

@@ -277,9 +277,17 @@ class AuthState(State):
             return rx.redirect("/login")
 
 
+@dataclass
+class Project:
+    id: str
+    name: str
+    document_count: int
+    created_date: str
+    status: str = ""
+
 class DashboardState(State):
     """State for the user projects dashboard."""
-    projects: List[Dict[str, Any]] = []
+    projects: List[Project] = []
     new_project_name: str = ""
     search_query: str = ""
     is_modal_open: bool = False
@@ -319,7 +327,15 @@ class DashboardState(State):
         try:
             response = await self._api_request("GET", "/projects")
             if response.status_code == 200:
-                self.projects = response.json()
+                self.projects = [
+                    Project(
+                        id=p.get("id", ""),
+                        name=p.get("name", ""),
+                        document_count=p.get("document_count", 0),
+                        created_date=p.get("created_date", ""),
+                        status=p.get("status", "")
+                    ) for p in response.json()
+                ]
             else:
                 self.projects = []
         except Exception as e:
@@ -387,12 +403,12 @@ class DashboardState(State):
             rx.toast.error("An internal error occurred while deleting project.")
 
     @rx.var(cache=True)
-    def filtered_projects(self) -> List[Dict[str, Any]]:
+    def filtered_projects(self) -> List[Project]:
         """Filter projects list reactively based on search input."""
         q = self.search_query.strip().lower()
         if not q:
             return self.projects
-        return [p for p in self.projects if q in p.get("name", "").lower()]
+        return [p for p in self.projects if q in p.name.lower()]
 
 
 class ProjectState(State):

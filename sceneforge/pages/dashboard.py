@@ -150,17 +150,17 @@ def render_project_card(proj: Any) -> rx.Component:
                 "background": "rgba(239,68,68,0.15)",
                 "box_shadow": "0 0 10px rgba(239,68,68,0.4)",
             },
-            on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj["id"], proj["name"])),
+            on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj.id, proj.name)),
         ),
 
         # Card content
         rx.vstack(
             rx.box(
-                rx.text(f"ID: {proj['id'][:8]}", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.5)"),
+                rx.text(f"ID: {proj.id[:8]}", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.5)"),
                 margin_bottom="4px",
             ),
             rx.text(
-                proj["name"],
+                proj.name,
                 font_size="1.1rem",
                 font_weight="700",
                 color="#E2E8F0",
@@ -171,13 +171,13 @@ def render_project_card(proj: Any) -> rx.Component:
             rx.box(
                 rx.hstack(
                     rx.text("DOC_COUNT:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    rx.text(proj["document_count"].to(str), class_name="hud-text", font_size="0.65rem", color="#00F0FF"),
+                    rx.text(proj.document_count.to(str), class_name="hud-text", font_size="0.65rem", color="#00F0FF"),
                     align="center",
                     spacing="2",
                 ),
                 rx.hstack(
                     rx.text("CREATED:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    rx.text(proj["created_date"], class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.6)"),
+                    rx.text(proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.6)"),
                     align="center",
                     spacing="2",
                 ),
@@ -198,7 +198,7 @@ def render_project_card(proj: Any) -> rx.Component:
             "border_color": "rgba(0,240,255,0.4)",
             "box_shadow": "0 8px 32px rgba(0,240,255,0.1)",
         },
-        on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj['id']}")),
+        on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj.id}")),
         style={"animation": "cardEntrance 0.4s ease both"},
     )
 
@@ -307,7 +307,7 @@ def dashboard_page() -> rx.Component:
                 rx.cond(
                     cast(Any, DashboardState.filtered_projects).length() > 0,
                     rx.grid(
-                        rx.foreach(cast(Any, DashboardState.filtered_projects).to(list[dict[str, Any]]), render_project_card),
+                        rx.foreach(DashboardState.filtered_projects, render_project_card),
                         columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
                         style={"animation": "fadeIn 0.3s ease 0.3s both"},
                     ),

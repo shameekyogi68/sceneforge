@@ -1023,10 +1023,14 @@ def preview_inspector_dialog() -> rx.Component:
 
 
 def project_page() -> rx.Component:
-    from sceneforge.pages.dashboard import loading_bar
     return rx.box(
+        rx.cond(ProjectState.is_sending, rx.box(
+            width="100%", height="2px",
+            background="linear-gradient(90deg, #00F0FF 0%, #8B5CF6 50%, #00F0FF 100%)",
+            background_size="200% 100%", position="absolute", top="0", left="0", z_index="1000",
+            style={"animation": "pulseNeon 1.5s linear infinite"}
+        ), rx.fragment()),
         rx.html(f"<style>{GLOBAL_CSS}{PROJECT_KEYFRAMES}</style>"),
-        loading_bar(cast(Any, ProjectState.is_sending)),
 
         # CRT Scanline overlay
         rx.box(

@@ -307,7 +307,7 @@ def dashboard_page() -> rx.Component:
                 rx.cond(
                     cast(Any, DashboardState.filtered_projects).length() > 0,
                     rx.grid(
-                        rx.foreach(DashboardState.filtered_projects, render_project_card),
+                        rx.foreach(cast(Any, DashboardState.filtered_projects).to(list[dict[str, Any]]), render_project_card),
                         columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
                         style={"animation": "fadeIn 0.3s ease 0.3s both"},
                     ),

@@ -158,204 +158,6 @@ def google_icon() -> rx.Component:
         </svg>"""
     )
 
-
-def email_auth_form() -> rx.Component:
-    return rx.vstack(
-        # Heading switch
-        rx.heading(
-            rx.cond(AuthState.is_signup, "Create Account", "Sign In"),
-            size="5",
-            color="#f4f4f5",
-            font_weight="800",
-            letter_spacing="-0.02em",
-            margin_bottom="12px",
-        ),
-        
-        # Email field
-        rx.vstack(
-            rx.text("Email Address", font_size="0.75rem", font_weight="600", color="rgba(161,161,170,0.8)", margin_bottom="4px"),
-            rx.hstack(
-                rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(113,113,122,0.6)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>"""),
-                rx.input(
-                    placeholder="you@example.com",
-                    value=AuthState.email,
-                    on_change=cast(Any, AuthState.set_email),
-                    border="none",
-                    outline="none",
-                    color="#f4f4f5",
-                    font_size="0.875rem",
-                    background="transparent",
-                    width="100%",
-                    style={"caret-color": "#818cf8"},
-                    _placeholder={"color": "rgba(113,113,122,0.5)"},
-                ),
-                align_items="center",
-                gap="8px",
-                width="100%",
-                background="rgba(255,255,255,0.02)",
-                border="1px solid rgba(255,255,255,0.08)",
-                border_radius="12px",
-                padding="10px 14px",
-                _focus_within={
-                    "border_color": "rgba(99,102,241,0.5)",
-                    "background": "rgba(99,102,241,0.04)",
-                },
-            ),
-            align_items="start",
-            width="100%",
-            spacing="1",
-        ),
-
-        # Password field
-        rx.vstack(
-            rx.text("Password", font_size="0.75rem", font_weight="600", color="rgba(161,161,170,0.8)", margin_bottom="4px"),
-            rx.hstack(
-                rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(113,113,122,0.6)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>"""),
-                rx.input(
-                    placeholder="••••••••",
-                    type=cast(Any, rx.cond(AuthState.show_password, "text", "password")),
-                    value=AuthState.password,
-                    on_change=cast(Any, AuthState.set_password),
-                    border="none",
-                    outline="none",
-                    color="#f4f4f5",
-                    font_size="0.875rem",
-                    background="transparent",
-                    width="100%",
-                    style={"caret-color": "#818cf8"},
-                    _placeholder={"color": "rgba(113,113,122,0.5)"},
-                ),
-                # Visibility Toggle
-                rx.button(
-                    rx.cond(
-                        AuthState.show_password,
-                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>"""),
-                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>"""),
-                    ),
-                    background="transparent",
-                    color="rgba(161,161,170,0.6)",
-                    cursor="pointer",
-                    padding="0",
-                    height="auto",
-                    _hover={"color": "white"},
-                    on_click=cast(Any, AuthState.toggle_password_visibility),
-                ),
-                align_items="center",
-                gap="8px",
-                width="100%",
-                background="rgba(255,255,255,0.02)",
-                border="1px solid rgba(255,255,255,0.08)",
-                border_radius="12px",
-                padding="10px 14px",
-                _focus_within={
-                    "border_color": "rgba(99,102,241,0.5)",
-                    "background": "rgba(99,102,241,0.04)",
-                },
-            ),
-            align_items="start",
-            width="100%",
-            spacing="1",
-        ),
-
-        # Confirm Password field (Signup only)
-        rx.cond(
-            AuthState.is_signup,
-            rx.vstack(
-                rx.text("Confirm Password", font_size="0.75rem", font_weight="600", color="rgba(161,161,170,0.8)", margin_bottom="4px"),
-                rx.hstack(
-                    rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(113,113,122,0.6)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>"""),
-                    rx.input(
-                        placeholder="••••••••",
-                        type=cast(Any, rx.cond(AuthState.show_password, "text", "password")),
-                        value=AuthState.confirm_password,
-                        on_change=cast(Any, AuthState.set_confirm_password),
-                        border="none",
-                        outline="none",
-                        color="#f4f4f5",
-                        font_size="0.875rem",
-                        background="transparent",
-                        width="100%",
-                        style={"caret-color": "#818cf8"},
-                        _placeholder={"color": "rgba(113,113,122,0.5)"},
-                    ),
-                    align_items="center",
-                    gap="8px",
-                    width="100%",
-                    background="rgba(255,255,255,0.02)",
-                    border="1px solid rgba(255,255,255,0.08)",
-                    border_radius="12px",
-                    padding="10px 14px",
-                    _focus_within={
-                        "border_color": "rgba(99,102,241,0.5)",
-                        "background": "rgba(99,102,241,0.04)",
-                    },
-                ),
-                align_items="start",
-                width="100%",
-                spacing="1",
-            ),
-        ),
-
-        # Submit Button
-        rx.button(
-            rx.cond(
-                AuthState.is_loading,
-                rx.html("""<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin-slow 0.8s linear infinite;"></div>"""),
-                rx.text(rx.cond(AuthState.is_signup, "Create Account", "Sign In"), font_size="0.95rem", font_weight="700"),
-            ),
-            background="linear-gradient(135deg, #6366f1, #4f46e5)",
-            color="white",
-            border_radius="12px",
-            width="100%",
-            padding_y="12px",
-            margin_top="12px",
-            cursor="pointer",
-            disabled=AuthState.is_loading,
-            on_click=cast(Any, AuthState.handle_auth),
-            box_shadow="0 4px 14px rgba(99,102,241,0.25)",
-            transition="all 0.2s ease",
-            _hover={
-                "box_shadow": "0 6px 20px rgba(99,102,241,0.4)",
-                "transform": "translateY(-1px)",
-            },
-        ),
-
-        # Switch signup/login link
-        rx.button(
-            rx.text(rx.cond(AuthState.is_signup, "Already have an account? Sign In", "Don't have an account? Sign Up"), font_size="0.8rem"),
-            background="transparent",
-            color="#818cf8",
-            cursor="pointer",
-            border="none",
-            _hover={"text_decoration": "underline", "color": "white"},
-            on_click=cast(Any, AuthState.toggle_mode),
-            margin_top="8px",
-        ),
-
-        # Go back to Google OAuth
-        rx.button(
-            rx.hstack(
-                rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>"""),
-                rx.text("Back to Google login", font_size="0.8rem"),
-                align="center",
-                spacing="1",
-            ),
-            background="transparent",
-            color="rgba(161,161,170,0.6)",
-            cursor="pointer",
-            border="none",
-            _hover={"color": "white"},
-            on_click=cast(Any, AuthState.toggle_email_form),
-            margin_top="16px",
-        ),
-
-        width="100%",
-        spacing="3",
-        align_items="center",
-        style={"animation": "fadeIn 0.4s ease both"},
-    )
-
-
 def login_page() -> rx.Component:
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{KEYFRAMES}</style>"),
@@ -395,53 +197,31 @@ def login_page() -> rx.Component:
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
             ),
 
-            rx.cond(
-                AuthState.show_email_form,
-                email_auth_form(),
-                rx.vstack(
-                    # ── Google CTA ────────────────────────────────────────────
-                    rx.box(
-                        rx.button(
-                            google_icon(),
-                            rx.text("Continue with Google", font_size="0.98rem", font_weight="700", letter_spacing="0.01em"),
-                            background="rgba(255, 255, 255, 0.95)",
-                            color="#09090b",
-                            border_radius="14px",
-                            width="100%",
-                            padding_y="14px",
-                            cursor="pointer",
-                            gap="12px",
-                            box_shadow="0 4px 14px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
-                            transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
-                            _hover={
-                                "background": "#ffffff",
-                                "box_shadow": "0 8px 30px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.15)",
-                                "transform": "translateY(-2px)",
-                            },
-                            _active={"transform": "translateY(0)"},
-                            on_click=cast(Any, AuthState.login_with_google),
-                            style={"position": "relative", "overflow": "hidden"},
-                        ),
-                        width="100%",
-                        margin_top="16px",
-                    ),
-
-                    # ── Switch to Email Form ──────────────────────────────────
-                    rx.button(
-                        rx.text("Or continue with email and password", font_size="0.82rem"),
-                        background="transparent",
-                        color="#818cf8",
-                        cursor="pointer",
-                        border="none",
-                        margin_top="8px",
-                        _hover={"text_decoration": "underline", "color": "white"},
-                        on_click=cast(Any, AuthState.toggle_email_form),
-                    ),
-
+            # ── Google CTA ────────────────────────────────────────────
+            rx.box(
+                rx.button(
+                    google_icon(),
+                    rx.text("Continue with Google", font_size="0.98rem", font_weight="700", letter_spacing="0.01em"),
+                    background="rgba(255, 255, 255, 0.95)",
+                    color="#09090b",
+                    border_radius="14px",
                     width="100%",
-                    align="center",
-                    spacing="3",
+                    padding_y="14px",
+                    cursor="pointer",
+                    gap="12px",
+                    box_shadow="0 4px 14px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
+                    transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                    _hover={
+                        "background": "#ffffff",
+                        "box_shadow": "0 8px 30px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.15)",
+                        "transform": "translateY(-2px)",
+                    },
+                    _active={"transform": "translateY(0)"},
+                    on_click=cast(Any, AuthState.login_with_google),
+                    style={"position": "relative", "overflow": "hidden"},
                 ),
+                width="100%",
+                margin_top="16px",
             ),
 
             # ── Error / Success alerts ────────────────────────────────

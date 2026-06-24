@@ -1,7 +1,7 @@
 import reflex as rx
 from typing import Any, cast
 from sceneforge.state import ProjectState
-from sceneforge.styles import GLOBAL_CSS, BACKGROUND_COLOR, SURFACE_COLOR, ACCENT_COLOR, TEXT_COLOR, MUTED_COLOR, ERROR_COLOR, SUCCESS_COLOR, FONT_FAMILY
+from sceneforge.styles import GLOBAL_CSS, BACKGROUND_COLOR, SURFACE_COLOR, ACCENT_COLOR, TEXT_COLOR, MUTED_COLOR, ERROR_COLOR, SUCCESS_COLOR, FONT_FAMILY, SCREENPLAY_FONT_FAMILY
 
 PROJECT_KEYFRAMES = """
 @keyframes fadeSlideUp {
@@ -83,13 +83,14 @@ def project_header() -> rx.Component:
             ),
             rx.hstack(
                 rx.text(
-                    "tselaf",
+                    "ScriptIQ",
                     font_size="1.1rem",
                     font_weight="800",
                     letter_spacing="0.1em",
                     text_transform="uppercase",
                     style={
                         "color": "#fff",
+                        "font_family": "'Plus Jakarta Sans', sans-serif",
                         "animation": "shimmerText 3s linear infinite",
                     },
                 ),
@@ -216,7 +217,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                     rx.text("✓", color=SUCCESS_COLOR, font_size="0.68rem", font_weight="700"),
                     rx.box(width="6px", height="6px", border_radius="0", background_color="#fbbf24", style={"animation": "statusPulse 1.2s infinite"}),
                 ),
-                rx.text("EXTRACTING_TEXT", font_size="0.68rem", color=rx.cond(step_val >= 1, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
+                rx.text("Extracting Script Pages...", font_size="0.68rem", color=rx.cond(step_val >= 1, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
                 align="center",
                 spacing="2",
             ),
@@ -230,7 +231,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         rx.box(width="6px", height="6px", border_radius="0", background_color=MUTED_COLOR),
                     ),
                 ),
-                rx.text("GEN_EMBEDDINGS", font_size="0.68rem", color=rx.cond(step_val >= 2, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
+                rx.text("Analyzing Characters & Plot...", font_size="0.68rem", color=rx.cond(step_val >= 2, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
                 align="center",
                 spacing="2",
             ),
@@ -244,7 +245,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         rx.box(width="6px", height="6px", border_radius="0", background_color=MUTED_COLOR),
                     ),
                 ),
-                rx.text("INDEXING_VECTORS", font_size="0.68rem", color=rx.cond(step_val >= 3, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
+                rx.text("Structuring Narrative Bible...", font_size="0.68rem", color=rx.cond(step_val >= 3, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
                 align="center",
                 spacing="2",
             ),
@@ -441,7 +442,7 @@ def sidebar() -> rx.Component:
             rx.hstack(
                 rx.html(f"""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
                 rx.text(
-                    "PROJECT FILES",
+                    "SCRIPTS & BIBLES",
                     font_size="0.68rem",
                     font_weight="700",
                     text_transform="uppercase",
@@ -611,7 +612,7 @@ def typing_indicator() -> rx.Component:
                 <div style="display:flex;align-items:center;gap:5px;padding:14px 18px;
                     background:{SURFACE_COLOR};border:1px solid rgba(0,240,255,0.3);
                     border-radius:4px;">
-                    <span style="font-size:0.8rem;color:{ACCENT_COLOR};font-weight:700;margin-right:8px;letter-spacing:0.1em;">ASTRA IS TYPING</span>
+                    <span style="font-size:0.8rem;color:{ACCENT_COLOR};font-weight:700;margin-right:8px;letter-spacing:0.1em;">ASTRA IS ANALYZING SCRIPT...</span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0s;display:inline-block;"></span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0.2s;display:inline-block;"></span>
                     <span style="width:6px;height:6px;background:{ACCENT_COLOR};border-radius:0;animation:typingDot 1.2s ease infinite 0.4s;display:inline-block;"></span>
@@ -668,12 +669,11 @@ def welcome_screen() -> rx.Component:
                 box_shadow=f"0 0 15px rgba(255,0,85,0.2)",
             ),
         ),
-        # Cyber icon
+        # Creative Pen icon
         rx.box(
             rx.html(f"""<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <line x1="3" y1="9" x2="21" y2="9"/>
-                <line x1="9" y1="21" x2="9" y2="9"/>
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
             </svg>"""),
             width="80px",
             height="80px",
@@ -689,15 +689,16 @@ def welcome_screen() -> rx.Component:
             box_shadow=f"inset 0 0 15px rgba(0,240,255,0.2)",
         ),
         rx.heading(
-            "START CREATING",
+            "CREATIVE STUDIO",
             size="5",
             color="#fff",
             font_weight="800",
             letter_spacing="0.1em",
             text_align="center",
+            font_family="'Plus Jakarta Sans', sans-serif",
         ),
         rx.text(
-            "Astra is ready. Ask questions about your script or explore ideas.",
+            "Astra is ready. Upload a screenplay or story bible to analyze characters, scenes, pacing, or dialogue.",
             color=ACCENT_COLOR,
             font_size="0.87rem",
             text_align="center",
@@ -706,10 +707,10 @@ def welcome_screen() -> rx.Component:
             letter_spacing="0.05em",
         ),
         rx.grid(
-            example_btn("Summarize the key plot points"),
-            example_btn("What are the main character arcs?"),
-            example_btn("List the primary filming locations"),
-            example_btn("Explain the themes of the script"),
+            example_btn("Analyze the narrative arc and pacing"),
+            example_btn("Extract character relationships & conflicts"),
+            example_btn("Break down scenes by location & time"),
+            example_btn("Identify core thematic elements & motifs"),
             columns="2",
             spacing="3",
             width="100%",
@@ -979,40 +980,34 @@ def preview_inspector_dialog() -> rx.Component:
                     # Extracted text pane
                     rx.box(
                         rx.html(
-                            "<div style=\"white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: 0.92rem; line-height: 1.7; color: #00F0FF; text-shadow: 0 0 2px rgba(0,240,255,0.5);\">"
+                            f"<div style=\"white-space: pre-wrap; font-family: {SCREENPLAY_FONT_FAMILY}; font-size: 0.95rem; line-height: 1.65; color: #E2E8F0;\">"
                             + ProjectState.selected_preview_text +
                             "</div>"
                         ),
                         max_height="480px",
                         overflow_y="auto",
-                        padding_right="12px",
+                        padding="24px 32px",
+                        background="rgba(10, 15, 25, 0.5)",
+                        border="1px solid rgba(255, 255, 255, 0.05)",
+                        border_radius="8px",
                         width="100%",
                         style={
-                            "::-webkit-scrollbar": {"width": "6px"},
-                            "::-webkit-scrollbar-track": {"background": "rgba(0,0,0,0.3)", "border-left": "1px solid rgba(0,240,255,0.1)"},
-                            "::-webkit-scrollbar-thumb": {"background": ACCENT_COLOR, "border-radius": "0"},
+                            "::-webkit-scrollbar": {"width": "4px"},
+                            "::-webkit-scrollbar-track": {"background": "rgba(0,0,0,0.1)"},
+                            "::-webkit-scrollbar-thumb": {"background": "rgba(0, 240, 255, 0.2)", "border-radius": "4px"},
                         },
                     ),
                 ),
 
-                background=BACKGROUND_COLOR,
-                border=f"1px solid {ACCENT_COLOR}",
-                border_radius="0",
+                background="rgba(13, 20, 36, 0.95)",
+                backdrop_filter="blur(16px)",
+                border="1px solid rgba(255, 255, 255, 0.08)",
+                border_radius="12px",
                 padding="32px",
                 max_width="720px",
                 width="90vw",
-                box_shadow=f"0 0 40px rgba(0,240,255,0.15), inset 0 0 20px rgba(0,240,255,0.1)",
+                box_shadow="0 20px 50px rgba(0,0,0,0.5)",
                 position="relative",
-                _before={
-                    "content": '""',
-                    "position": "absolute",
-                    "top": "0", "left": "0", "right": "0", "bottom": "0",
-                    "background": "linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px)",
-                    "background_size": "100% 3px",
-                    "pointer_events": "none",
-                    "z_index": "10",
-                    "opacity": "0.3",
-                }
             ),
             background="transparent",
             box_shadow="none",
@@ -1031,17 +1026,6 @@ def project_page() -> rx.Component:
             style={"animation": "pulseNeon 1.5s linear infinite"}
         ), rx.fragment()),
         rx.html(f"<style>{GLOBAL_CSS}{PROJECT_KEYFRAMES}</style>"),
-
-        # CRT Scanline overlay
-        rx.box(
-            position="absolute",
-            top="0", left="0", right="0", bottom="0",
-            background="linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px)",
-            background_size="100% 4px",
-            z_index="100",
-            pointer_events="none",
-            opacity="0.4",
-        ),
 
         project_header(),
 

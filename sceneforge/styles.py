@@ -10,11 +10,14 @@ TEXT_COLOR = "#E2E8F0"
 MUTED_COLOR = "rgba(161, 161, 170, 0.7)"
 ERROR_COLOR = "#FF0055"
 SUCCESS_COLOR = "#00FF88"
-FONT_FAMILY = "'JetBrains Mono', monospace"
+FONT_FAMILY = "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif"
+SCREENPLAY_FONT_FAMILY = "'Courier Prime', 'Courier New', Courier, monospace"
 
 GLOBAL_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 
 *, *::before, *::after { box-sizing: border-box; }
 

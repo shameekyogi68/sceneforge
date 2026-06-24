@@ -77,24 +77,16 @@ def callback_page() -> rx.Component:
             })();
             </script>
         """),
-        rx.box(
-            position="absolute",
-            top="0", left="0", right="0", bottom="0",
-            background="linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px)",
-            background_size="100% 4px",
-            z_index="0",
-            pointer_events="none",
-            opacity="0.4",
-        ),
         rx.vstack(
             rx.heading(
-                "tselaf",
+                "ScriptIQ",
                 size="8",
                 font_weight="800",
                 letter_spacing="0.1em",
                 text_transform="uppercase",
                 style={
                     "color": "#fff",
+                    "font_family": "'Plus Jakarta Sans', sans-serif",
                     "animation": "shimmerText 3s linear infinite",
                 },
             ),

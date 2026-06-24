@@ -46,9 +46,9 @@ def header_bar() -> rx.Component:
         rx.link(
             rx.hstack(
                 rx.text(
-                    "tselaf",
+                    "ScriptIQ",
                     font_size="1.2rem",
-                    font_family="'JetBrains Mono', monospace",
+                    font_family="'Plus Jakarta Sans', sans-serif",
                     font_weight="800",
                     color="#00F0FF",
                     letter_spacing="0.05em",
@@ -259,8 +259,8 @@ def dashboard_page() -> rx.Component:
         rx.vstack(
             # Header
             rx.vstack(
-                rx.text("WORKSPACE // PROJECTS", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
-                rx.heading("Active Projects", size="7", font_weight="800", color="#E2E8F0"),
+                rx.text("CREATIVE STUDIO // PROJECTS", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
+                rx.heading("Active Screenplays", size="7", font_weight="800", color="#E2E8F0"),
                 spacing="2",
                 align_items="start",
                 style={"animation": "fadeSlideUp 0.4s ease 0.1s both"},
@@ -271,11 +271,11 @@ def dashboard_page() -> rx.Component:
                 rx.hstack(
                     rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
                     rx.input(
-                        placeholder="Search projects...",
+                        placeholder="Search screenplays & bibles...",
                         value=DashboardState.search_query,
                         on_change=cast(Any, DashboardState.set_search_query),
                         border="none", outline="none", background="transparent",
-                        color="#E2E8F0", font_family="'JetBrains Mono', monospace", font_size="0.85rem",
+                        color="#E2E8F0", font_family="'Plus Jakarta Sans', sans-serif", font_size="0.85rem",
                         width="100%", style={"caret-color": "#00F0FF"},
                         _placeholder={"color": "rgba(255,255,255,0.3)"},
                     ),
@@ -283,7 +283,7 @@ def dashboard_page() -> rx.Component:
                     border_radius="4px", padding="8px 12px", width="100%", max_width="320px", align_items="center", gap="8px",
                 ),
                 rx.button(
-                    rx.text("+ NEW PROJECT", class_name="hud-text", font_size="0.8rem"),
+                    rx.text("+ NEW SCREENPLAY", class_name="hud-text", font_size="0.8rem"),
                     background="transparent",
                     color="#00F0FF",
                     border="1px solid #00F0FF",
@@ -313,11 +313,11 @@ def dashboard_page() -> rx.Component:
                     ),
                     rx.vstack(
                         rx.box(
-                            rx.text("NO PROJECTS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
+                            rx.text("NO SCREENPLAYS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
                             margin_bottom="16px",
                         ),
                         rx.button(
-                            rx.text("Start your first project", class_name="hud-text", font_size="0.8rem"),
+                            rx.text("Start your first screenplay", class_name="hud-text", font_size="0.8rem"),
                             background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
                             border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
                             on_click=cast(Any, DashboardState.open_modal),
@@ -334,12 +334,12 @@ def dashboard_page() -> rx.Component:
         rx.dialog.root(
             rx.dialog.content(
                 rx.vstack(
-                    rx.text("CREATE NEW PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
-                    rx.heading("Initialize Project", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("CREATE NEW STORY WORKSPACE", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                    rx.heading("Name your screenplay or story bible", size="6", font_weight="800", color="#E2E8F0"),
                     margin_bottom="20px", spacing="1", align_items="start",
                 ),
                 rx.input(
-                    placeholder="Enter project title...", max_length=80,
+                    placeholder="Enter title...", max_length=80,
                     value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
                     class_name="premium-input", border_radius="4px", padding="12px 16px", width="100%", margin_bottom="24px",
                 ),
@@ -356,9 +356,9 @@ def dashboard_page() -> rx.Component:
         rx.dialog.root(
             rx.dialog.content(
                 rx.vstack(
-                    rx.text("DELETE PROJECT", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
-                    rx.heading("Delete Project?", size="6", font_weight="800", color="#E2E8F0"),
-                    rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. All data will be purged.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
+                    rx.text("DELETE WORKSPACE", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
+                    rx.heading("Delete Screenplay Workspace?", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. This screenplay's analysis and files will be permanently deleted.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
                     margin_bottom="24px", spacing="1", align_items="start",
                 ),
                 rx.hstack(

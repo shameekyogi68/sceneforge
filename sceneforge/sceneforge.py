@@ -29,9 +29,9 @@ app = rx.App(
     hydrate_fallback=rx.box(
         rx.center(
             rx.heading(
-                "tselaf",
+                "ScriptIQ",
                 size="9",
-                font_family="'JetBrains Mono', monospace",
+                font_family="'Plus Jakarta Sans', sans-serif",
                 font_weight="800",
                 letter_spacing="-0.02em",
                 color="#00F0FF",
@@ -70,9 +70,10 @@ def index():
         rx.html(f"<style>{GLOBAL_CSS}</style>"),
         rx.vstack(
             rx.heading(
-                "tselaf",
+                "ScriptIQ",
                 size="8",
                 font_weight="800",
+                font_family="'Plus Jakarta Sans', sans-serif",
                 letter_spacing="-0.04em",
                 style={
                     "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",

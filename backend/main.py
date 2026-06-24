@@ -33,18 +33,6 @@ app = FastAPI(
     description="RAG-powered film research assistant API backend",
     version="1.0.0"
 )
-
-@app.get("/debug-config")
-def debug_config():
-    import rxconfig
-    return {
-        "CORS_ALLOWED_ORIGINS_env": os.getenv("CORS_ALLOWED_ORIGINS"),
-        "API_URL_env": os.getenv("API_URL"),
-        "SITE_URL_env": os.getenv("SITE_URL"),
-        "rxconfig_api_url": getattr(rxconfig.config, "api_url", None),
-        "rxconfig_cors_allowed_origins": getattr(rxconfig.config, "cors_allowed_origins", None),
-    }
-
 # CORS Middleware Setup
 cors_env = os.getenv("CORS_ALLOWED_ORIGINS")
 cors_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()] if cors_env else [

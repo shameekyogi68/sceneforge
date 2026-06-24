@@ -29,7 +29,7 @@ setup_logging()
 logger = logging.getLogger("backend.main")
 
 app = FastAPI(
-    title="SceneForge API",
+    title="ScriptIQ API",
     description="RAG-powered film research assistant API backend",
     version="1.0.0"
 )

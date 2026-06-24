@@ -99,7 +99,7 @@ class State(rx.State):
             )
         except httpx.RequestError as exc:
             logger.exception("HTTP Request to backend failed: %s", path)
-            raise RuntimeError("Cannot connect to SceneForge backend service.") from exc
+            raise RuntimeError("Cannot connect to ScriptIQ backend service.") from exc
 
         # If 401 and refresh_token exists, try refreshing
         if response.status_code == 401 and auth and self.refresh_token:
@@ -361,7 +361,7 @@ class AuthState(State):
             client = _get_http_client()
             res = await client.get("/auth/me", headers=req_headers)
             if res.status_code != 200:
-                raise Exception("Verification with SceneForge backend failed.")
+                raise Exception("Verification with ScriptIQ backend failed.")
             user_data = res.json()
             
             self.token = access_token

@@ -59,7 +59,7 @@ def header_bar() -> rx.Component:
         rx.link(
             rx.hstack(
                 rx.text(
-                    "SceneForge",
+                    "ScriptIQ",
                     font_size="1.2rem",
                     font_weight="800",
                     letter_spacing="-0.03em",

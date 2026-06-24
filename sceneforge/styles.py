@@ -2,6 +2,16 @@
 styles.py — Shared global CSS injected into every page via rx.html.
 """
 
+# Cyber Tech-Noir Theme Constants
+BACKGROUND_COLOR = "#05080F"
+SURFACE_COLOR = "rgba(10, 15, 25, 0.8)"
+ACCENT_COLOR = "#00F0FF"
+TEXT_COLOR = "#E2E8F0"
+MUTED_COLOR = "rgba(161, 161, 170, 0.7)"
+ERROR_COLOR = "#FF0055"
+SUCCESS_COLOR = "#00FF88"
+FONT_FAMILY = "'JetBrains Mono', monospace"
+
 GLOBAL_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 

@@ -391,13 +391,6 @@ def login_page() -> rx.Component:
                     text_align="center",
                     letter_spacing="0.01em",
                 ),
-                rx.text(
-                    "Upload PDFs · Ask anything · Get sourced answers",
-                    color="rgba(113,113,122,0.7)",
-                    font_size="0.78rem",
-                    text_align="center",
-                    letter_spacing="0.02em",
-                ),
                 align="center",
                 spacing="2",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
@@ -407,16 +400,6 @@ def login_page() -> rx.Component:
                 AuthState.show_email_form,
                 email_auth_form(),
                 rx.vstack(
-                    # ── Introduction & Security Info ──────────────────────────
-                    rx.text(
-                        "Sign in or register securely in one click. We verify your identity safely via Google OAuth with zero password requirements.",
-                        color="rgba(161,161,170,0.8)",
-                        font_size="0.84rem",
-                        text_align="center",
-                        line_height="1.6",
-                        margin_top="12px",
-                    ),
-                    
                     # ── Google CTA ────────────────────────────────────────────
                     rx.box(
                         rx.button(
@@ -441,7 +424,7 @@ def login_page() -> rx.Component:
                             style={"position": "relative", "overflow": "hidden"},
                         ),
                         width="100%",
-                        margin_top="8px",
+                        margin_top="16px",
                     ),
 
                     # ── Switch to Email Form ──────────────────────────────────
@@ -451,7 +434,7 @@ def login_page() -> rx.Component:
                         color="#818cf8",
                         cursor="pointer",
                         border="none",
-                        margin_top="16px",
+                        margin_top="8px",
                         _hover={"text_decoration": "underline", "color": "white"},
                         on_click=cast(Any, AuthState.toggle_email_form),
                     ),
@@ -460,28 +443,6 @@ def login_page() -> rx.Component:
                     align="center",
                     spacing="3",
                 ),
-            ),
-
-            # ── Trust & Security Badges ───────────────────────────────
-            rx.vstack(
-                rx.hstack(
-                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>"""),
-                    rx.text("Secured by Google OAuth", color="rgba(161,161,170,0.7)", font_size="0.75rem", font_weight="600"),
-                    spacing="1",
-                    align="center",
-                ),
-                rx.hstack(
-                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>"""),
-                    rx.text("Automatic secure workspace setup", color="rgba(161,161,170,0.7)", font_size="0.75rem", font_weight="600"),
-                    spacing="1",
-                    align="center",
-                ),
-                spacing="2",
-                align_items="center",
-                margin_top="12px",
-                margin_bottom="8px",
-                width="100%",
-                style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both"},
             ),
 
             # ── Error / Success alerts ────────────────────────────────
@@ -543,7 +504,7 @@ def login_page() -> rx.Component:
             width="100%",
             max_width="420px",
             border_radius="28px",
-            padding="56px 44px",
+            padding="44px 36px",
             z_index="1",
             style={
                 "animation": "fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) both",

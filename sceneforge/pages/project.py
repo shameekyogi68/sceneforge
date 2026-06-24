@@ -695,7 +695,7 @@ def welcome_screen() -> rx.Component:
             text_align="center",
         ),
         rx.text(
-            "Upload PDFs on the left, then ask questions — SceneForge answers only from your files, with exact source citations.",
+            "Upload PDFs on the left to start asking questions.",
             color="rgba(161,161,170,0.7)",
             font_size="0.87rem",
             text_align="center",

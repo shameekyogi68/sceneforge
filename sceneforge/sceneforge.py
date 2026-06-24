@@ -33,7 +33,7 @@ from typing import Any, cast
 app.add_page(login_page, route="/login", on_load=cast(Any, State.check_auth_login))
 app.add_page(dashboard_page, route="/dashboard", on_load=cast(Any, State.check_auth))
 app.add_page(project_page, route="/project")
-app.add_page(callback_page, route="/auth/v1/callback", on_load=cast(Any, AuthState.handle_callback_load))
+app.add_page(callback_page, route="/auth/v1/callback")
 app.add_page(terms_page, route="/terms")
 app.add_page(privacy_page, route="/privacy")
 

@@ -18,6 +18,60 @@ def callback_page() -> rx.Component:
     """Minimal loading screen shown briefly during OAuth token extraction."""
     return rx.center(
         rx.html(f"<style>{GLOBAL_CSS}{CALLBACK_KEYFRAMES}</style>"),
+        # Client-side hash extraction, cookie injection, and redirect
+        rx.html("""
+            <script>
+            (function() {
+                function parseJwt(token) {
+                    try {
+                        const base64Url = token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        }).join(''));
+                        return JSON.parse(jsonPayload);
+                    } catch (e) {
+                        return null;
+                    }
+                }
+
+                const hash = window.location.hash;
+                if (!hash) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
+                const params = new URLSearchParams(cleanHash);
+                const accessToken = params.get("access_token");
+                const refreshToken = params.get("refresh_token");
+
+                if (!accessToken) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const payload = parseJwt(accessToken);
+                if (!payload || !payload.sub) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const userId = payload.sub;
+
+                // Set cookies exactly as expected by Reflex rx.Cookie
+                const maxAge = 31536000; // 1 year
+                document.cookie = "token=" + encodeURIComponent(accessToken) + "; path=/; secure; SameSite=Strict; max-age=" + maxAge;
+                document.cookie = "user_id=" + encodeURIComponent(userId) + "; path=/; secure; SameSite=Strict; max-age=" + maxAge;
+                if (refreshToken) {
+                    document.cookie = "refresh_token=" + encodeURIComponent(refreshToken) + "; path=/; secure; SameSite=Strict; max-age=" + maxAge;
+                }
+
+                // Redirect to dashboard
+                window.location.href = "/dashboard";
+            })();
+            </script>
+        """),
         rx.vstack(
             # Animated logo mark
             rx.box(

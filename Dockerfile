@@ -25,7 +25,7 @@ EXPOSE 8000
 # bakes in the right WebSocket/HTTP backend host instead of localhost.
 # Without this, the browser gets a stale or localhost URL and the WebSocket
 # connection is rejected with a 403.
-ARG API_URL=https://sceneforge-aqua-ocean.reflex.run
+ARG API_URL=https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev
 ENV API_URL=${API_URL}
 RUN reflex export --frontend-only || true
 

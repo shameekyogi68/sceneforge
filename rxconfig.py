@@ -7,7 +7,7 @@ from reflex_base.plugins.sitemap import SitemapPlugin
 # app so the frontend build bakes the correct WebSocket host into env.json.
 # A wrong or missing value here causes the browser to connect to a dead host
 # and receive a 403.
-api_url = os.getenv("API_URL", "https://sceneforge-aqua-ocean.reflex.run")
+api_url = os.getenv("API_URL", "https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev")
 
 config = rx.Config(
     app_name="sceneforge",

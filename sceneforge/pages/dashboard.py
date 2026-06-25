@@ -112,7 +112,7 @@ def render_project_card(proj: Any) -> rx.Component:
             "border_color": "rgba(0,240,255,0.35)",
             "box_shadow": "0 12px 32px rgba(0,240,255,0.1), inset 0 0 10px rgba(0,240,255,0.05)",
         },
-        on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj.id}")),
+        on_click=cast(Any, lambda: cast(Any, DashboardState).go_to_project(proj.id)),
         style={"animation": "cardEntrance 0.4s ease both"},
     )
 

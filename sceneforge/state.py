@@ -315,6 +315,10 @@ class DashboardState(State):
         self.new_project_name = ""
         self.is_modal_open = True
 
+    def go_to_project(self, project_id: str):
+        """Navigate to the project workspace page."""
+        return rx.redirect(f"/project?project_id={project_id}")
+
     def close_modal(self):
         self.is_modal_open = False
 

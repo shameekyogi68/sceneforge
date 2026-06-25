@@ -191,7 +191,7 @@ def dashboard_page() -> rx.Component:
             rx.hstack(
                 rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
                 rx.input(
-                    placeholder="Search screenplays or documents...",
+                    placeholder="Search projects or documents...",
                     value=DashboardState.search_query,
                     on_change=cast(Any, DashboardState.set_search_query),
                     border="none", outline="none", background="transparent",
@@ -241,8 +241,8 @@ def dashboard_page() -> rx.Component:
 
         # Section Header
         rx.vstack(
-            rx.heading("Your Screenplays & Projects", size="5", font_weight="800", color="#fff", margin_top="16px"),
-            rx.text("Each project holds its own research documents, scripts, and AI chat history.", color="rgba(255,255,255,0.45)", font_size="0.85rem"),
+            rx.heading("Your Writing Projects", size="5", font_weight="800", color="#fff", margin_top="16px"),
+            rx.text("Each project holds its own research documents, reference files, and AI chat history.", color="rgba(255,255,255,0.45)", font_size="0.85rem"),
             spacing="1",
             align_items="start",
         ),
@@ -270,7 +270,7 @@ def dashboard_page() -> rx.Component:
                             align_items="center",
                             justify_content="center",
                         ),
-                        rx.text("NEW SCREENPLAY", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                        rx.text("NEW WRITING PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
                         spacing="3",
                         align_items="center",
                         justify_content="center",
@@ -292,11 +292,11 @@ def dashboard_page() -> rx.Component:
                 ),
                 rx.vstack(
                     rx.box(
-                        rx.text("NO SCREENPLAYS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
+                        rx.text("NO PROJECTS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
                         margin_bottom="16px",
                     ),
                     rx.button(
-                        rx.text("Start your first screenplay", class_name="hud-text", font_size="0.8rem"),
+                        rx.text("Start your first writing project", class_name="hud-text", font_size="0.8rem"),
                         background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
                         border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
                         on_click=cast(Any, DashboardState.open_modal),
@@ -360,8 +360,8 @@ def dashboard_page() -> rx.Component:
                 
                 # Title
                 rx.vstack(
-                    rx.heading("Create Screenplay Project", size="6", font_weight="800", color="#E2E8F0"),
-                    rx.text("Set up a new workspace for your screenplay and reference documents.", font_size="0.8rem", color="rgba(255,255,255,0.45)"),
+                    rx.heading("Create Writing Project", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("Set up a new workspace for your reference and research documents.", font_size="0.8rem", color="rgba(255,255,255,0.45)"),
                     margin_bottom="20px", spacing="1", align_items="start",
                 ),
 
@@ -384,7 +384,7 @@ def dashboard_page() -> rx.Component:
 
                 # Genre Tags Section
                 rx.vstack(
-                    rx.text("SCREENPLAY GENRE / CATEGORY", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.text("PROJECT GENRE / CATEGORY", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
                     rx.hstack(
                         rx.box(rx.text("DRAMA", font_size="0.75rem", font_weight="700", color="#05080F"), background_color="#00F0FF", border_radius="6px", padding="5px 12px", cursor="pointer"),
                         rx.box(rx.text("THRILLER", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
@@ -402,7 +402,7 @@ def dashboard_page() -> rx.Component:
 
                 # Upload Placeholder Section
                 rx.vstack(
-                    rx.text("UPLOAD SCREENPLAY / REFERENCE (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.text("UPLOAD RESEARCH / REFERENCE (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
                     rx.vstack(
                         rx.box(
                             rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
@@ -415,7 +415,7 @@ def dashboard_page() -> rx.Component:
                             justify_content="center",
                             box_shadow="0 0 10px rgba(0,240,255,0.3)",
                         ),
-                        rx.text("Drag screenplay PDF here", font_size="0.82rem", font_weight="700", color="#fff"),
+                        rx.text("Drag research PDF here", font_size="0.82rem", font_weight="700", color="#fff"),
                         rx.text("or click to select file from device. Max 50MB.", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
                         spacing="2",
                         align_items="center",
@@ -465,8 +465,8 @@ def dashboard_page() -> rx.Component:
             rx.dialog.content(
                 rx.vstack(
                     rx.text("DELETE PROJECT", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
-                    rx.heading("Delete Screenplay Project?", size="6", font_weight="800", color="#E2E8F0"),
-                    rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. This screenplay's analysis and files will be permanently deleted.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
+                    rx.heading("Delete Writing Project?", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. This project's research, files and chat history will be permanently deleted.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
                     margin_bottom="24px", spacing="1", align_items="start",
                 ),
                 rx.hstack(

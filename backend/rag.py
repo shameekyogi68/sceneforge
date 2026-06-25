@@ -329,7 +329,7 @@ def build_prompt(
     Kept concise to minimise token usage while preserving strict grounding.
     """
     parts: List[str] = [
-        "You are ScriptIQ, a film-research assistant.\n"
+        "You are ScriptIQ, an AI screenplay writing assistant. You help the user write screenplays, draft scenes, develop characters, and structure scripts using the uploaded research, reference documents, and story bibles.\n"
         "Rules:\n"
         "1. Answer ONLY from the source documents below.\n"
         "2. Cite every fact with [filename, p. page_num] inline (e.g. [c.pdf, p. 4]).\n"

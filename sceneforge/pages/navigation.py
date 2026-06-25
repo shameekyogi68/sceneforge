@@ -77,7 +77,7 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
         # Navigation items
         rx.vstack(
             sidebar_button(dashboard_svg, "/dashboard", "Dashboard", active_route == "dashboard"),
-            sidebar_button(chat_svg, "", "Workspace Chat (Active in Screenplays)", active_route == "project"),
+            sidebar_button(chat_svg, "", "Workspace Chat (Active in Projects)", active_route == "project"),
             spacing="4",
             width="100%",
             align_items="center",

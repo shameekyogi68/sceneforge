@@ -73,7 +73,7 @@ def login_page() -> rx.Component:
             
             rx.vstack(
                 rx.text(
-                    "Screenplay research and analysis, powered by AI",
+                    "AI Screenplay Writing Assistant powered by Research",
                     color="rgba(255,255,255,0.65)",
                     font_size="0.88rem",
                     text_align="center",

@@ -110,7 +110,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                     rx.text("✓", color=SUCCESS_COLOR, font_size="0.68rem", font_weight="700"),
                     rx.box(width="6px", height="6px", border_radius="0", background_color="#fbbf24", style={"animation": "statusPulse 1.2s infinite"}),
                 ),
-                rx.text("Extracting Script Pages...", font_size="0.68rem", color=rx.cond(step_val >= 1, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
+                rx.text("Extracting Document Content...", font_size="0.68rem", color=rx.cond(step_val >= 1, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
                 align="center",
                 spacing="2",
             ),
@@ -124,7 +124,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         rx.box(width="6px", height="6px", border_radius="0", background_color=MUTED_COLOR),
                     ),
                 ),
-                rx.text("Analyzing Characters & Plot...", font_size="0.68rem", color=rx.cond(step_val >= 2, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
+                rx.text("Indexing Reference & Research...", font_size="0.68rem", color=rx.cond(step_val >= 2, TEXT_COLOR, MUTED_COLOR), font_family=FONT_FAMILY, letter_spacing="0.05em"),
                 align="center",
                 spacing="2",
             ),
@@ -337,7 +337,7 @@ def typing_indicator() -> rx.Component:
             ),
             rx.box(
                 rx.hstack(
-                    rx.text("ANALYZING SCREENPLAY...", class_name="hud-text", font_size="0.72rem", color=ACCENT_COLOR, font_weight="700"),
+                    rx.text("CONSULTING RESEARCH...", class_name="hud-text", font_size="0.72rem", color=ACCENT_COLOR, font_weight="700"),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0s"}),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0.2s"}),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0.4s"}),
@@ -383,7 +383,7 @@ def welcome_screen() -> rx.Component:
             rx.box(
                 rx.hstack(
                     rx.html(f"""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{ERROR_COLOR}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""),
-                    rx.text("NO FILES UPLOADED. PLEASE UPLOAD A SCRIPT TO PROCEED.", font_size="0.75rem", color=ERROR_COLOR, font_weight="700", letter_spacing="0.05em"),
+                    rx.text("NO FILES UPLOADED. PLEASE UPLOAD RESEARCH OR REFERENCE DOCUMENTS TO PROCEED.", font_size="0.75rem", color=ERROR_COLOR, font_weight="700", letter_spacing="0.05em"),
                     align="center",
                     spacing="2",
                 ),
@@ -413,12 +413,12 @@ def welcome_screen() -> rx.Component:
             box_shadow="inset 0 0 12px rgba(0, 240, 255, 0.15)",
         ),
         rx.heading("CREATIVE STUDIO", size="5", color="#fff", font_weight="800", letter_spacing="0.1em", text_align="center"),
-        rx.text("ScriptIQ is ready. Select a screenplay from the panel on the right or upload a new one to begin analysis.", color=ACCENT_COLOR, font_size="0.82rem", text_align="center", max_width="430px", line_height="1.6"),
+        rx.text("ScriptIQ is ready. Select a document from the panel on the right or upload a new one to begin research-assisted writing.", color=ACCENT_COLOR, font_size="0.82rem", text_align="center", max_width="430px", line_height="1.6"),
         rx.grid(
-            example_btn("Analyze the narrative arc and pacing"),
-            example_btn("Extract character relationships & conflicts"),
-            example_btn("Break down scenes by location & time"),
-            example_btn("Identify core thematic elements & motifs"),
+            example_btn("Draft a scene using my research"),
+            example_btn("Answer questions from my reference files"),
+            example_btn("Help outline script structure"),
+            example_btn("Summarize the uploaded source materials"),
             columns="2",
             spacing="3",
             width="100%",
@@ -440,7 +440,7 @@ def chat_area() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
-                    rx.text("SCREENPLAY_WORKSPACE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
+                    rx.text("PROJECT_WORKSPACE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
                     align="center",
                     spacing="2",
                 ),
@@ -538,7 +538,7 @@ def chat_area() -> rx.Component:
                         _hover={"color": "#00F0FF"},
                     ),
                     rx.input(
-                        placeholder="Analyze specific sequence or character arc...",
+                        placeholder="Ask about research or outline screenplay sections...",
                         value=ProjectState.input_message,
                         on_change=cast(Any, ProjectState.set_input_message),
                         background="transparent",
@@ -590,12 +590,12 @@ def chat_area() -> rx.Component:
                 rx.hstack(
                     rx.hstack(
                         rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF"),
-                        rx.text("MODE: SCRIPT_EXPERT", class_name="hud-text", font_size="0.58rem", color="rgba(0,240,255,0.7)"),
+                        rx.text("MODE: WRITING_ASSISTANT", class_name="hud-text", font_size="0.58rem", color="rgba(0,240,255,0.7)"),
                         align="center",
                         spacing="1",
                     ),
                     rx.spacer(),
-                    rx.text("SHIFT + ENTER FOR MULTI-LINE ANALYSIS", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.3)"),
+                    rx.text("SHIFT + ENTER FOR MULTI-LINE INPUT", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.3)"),
                     width="100%",
                     padding_x="4px",
                 ),
@@ -618,7 +618,7 @@ def live_inspection_panel() -> rx.Component:
     # ── Upload panel (shown when selected_preview_filename == "") ─────
     upload_panel = rx.vstack(
         rx.vstack(
-            rx.text("UPLOAD SCRIPT", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700"),
+            rx.text("UPLOAD RESEARCH DOCUMENTS", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700"),
             rx.upload(
                 rx.vstack(
                     rx.box(
@@ -632,7 +632,7 @@ def live_inspection_panel() -> rx.Component:
                         justify_content="center",
                         color="#00F0FF",
                     ),
-                    rx.text("DRAG PDFs HERE", font_size="0.75rem", font_weight="700", color="#fff", letter_spacing="0.05em"),
+                    rx.text("DRAG RESEARCH PDFs HERE", font_size="0.75rem", font_weight="700", color="#fff", letter_spacing="0.05em"),
                     rx.text("MAX_SIZE: 50MB", font_size="0.68rem", color=MUTED_COLOR),
                     align="center",
                     spacing="2",
@@ -682,7 +682,7 @@ def live_inspection_panel() -> rx.Component:
 
         # Documents list
         rx.vstack(
-            rx.text("SCRIPTS & STORY BIBLES", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700"),
+            rx.text("RESEARCH & REFERENCE DOCUMENTS", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700"),
             rx.cond(
                 cast(Any, ProjectState.documents).length() > 0,
                 rx.vstack(

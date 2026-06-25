@@ -128,7 +128,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                 align="center",
                 spacing="2",
             ),
-            spacing="1.5",
+            spacing="1",
             align_items="start",
             padding_left="24px",
             margin_top="6px",

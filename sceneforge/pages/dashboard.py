@@ -320,9 +320,11 @@ def dashboard_page() -> rx.Component:
         rx.html(f"<style>{GLOBAL_CSS}{DASH_KEYFRAMES}</style>"),
         rx.cond(DashboardState.is_loading, rx.box(
             width="100%", height="2px",
+            background_color="#00F0FF",
             background="linear-gradient(90deg, #00F0FF 0%, #00B8FF 50%, #00F0FF 100%)",
             background_size="200% 100%", position="absolute", top="0", left="0", z_index="1000",
-            style={"animation": "pulseNeon 1.5s linear infinite"}
+            style={"animation": "progressGlow 1.5s linear infinite"},
+            box_shadow="0 0 10px #00F0FF, 0 0 4px #00B8FF",
         ), rx.fragment()),
 
         # Layout wrapper

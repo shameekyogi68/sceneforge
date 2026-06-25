@@ -63,6 +63,17 @@ body {
     100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
 }
 
+@keyframes progressGlow {
+    0% { background-position: 0% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes scanBar {
+    0% { transform: translateX(-50px); }
+    100% { transform: translateX(140px); }
+}
+
+
 /* Apply fade-in to every main page content wrapper */
 .page-transition {
     animation: pageFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;

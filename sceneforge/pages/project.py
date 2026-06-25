@@ -78,6 +78,33 @@ def render_doc_item(doc: Any) -> rx.Component:
         doc["status"] == "processing",
         rx.vstack(
             rx.hstack(
+                rx.box(
+                    rx.box(
+                        width=rx.cond(step_val == 1, "33%", rx.cond(step_val == 2, "66%", "100%")),
+                        height="100%",
+                        background_color="#00F0FF",
+                        box_shadow="0 0 8px rgba(0, 240, 255, 0.4)",
+                        style={"transition": "width 0.5s cubic-bezier(0.16, 1, 0.3, 1)"},
+                    ),
+                    width="100%",
+                    height="3px",
+                    background_color="rgba(255, 255, 255, 0.05)",
+                    border_radius="1.5px",
+                    overflow="hidden",
+                ),
+                rx.text(
+                    rx.cond(step_val == 1, "33%", rx.cond(step_val == 2, "66%", "100%")),
+                    font_size="0.65rem",
+                    font_weight="700",
+                    color="#00F0FF",
+                    font_family="JetBrains Mono, monospace",
+                ),
+                width="100%",
+                align="center",
+                spacing="2",
+                margin_bottom="4px",
+            ),
+            rx.hstack(
                 rx.cond(
                     step_val > 1,
                     rx.text("✓", color=SUCCESS_COLOR, font_size="0.68rem", font_weight="700"),
@@ -101,7 +128,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                 align="center",
                 spacing="2",
             ),
-            spacing="1",
+            spacing="1.5",
             align_items="start",
             padding_left="24px",
             margin_top="6px",
@@ -822,9 +849,11 @@ def project_page() -> rx.Component:
     return rx.box(
         rx.cond(ProjectState.is_sending, rx.box(
             width="100%", height="2px",
+            background_color="#00F0FF",
             background="linear-gradient(90deg, #00F0FF 0%, #00B8FF 50%, #00F0FF 100%)",
             background_size="200% 100%", position="absolute", top="0", left="0", z_index="1000",
-            style={"animation": "pulseNeon 1.5s linear infinite"}
+            style={"animation": "progressGlow 1.5s linear infinite"},
+            box_shadow="0 0 10px #00F0FF, 0 0 4px #00B8FF",
         ), rx.fragment()),
         rx.html(f"<style>{GLOBAL_CSS}{PROJECT_KEYFRAMES}</style>"),
 

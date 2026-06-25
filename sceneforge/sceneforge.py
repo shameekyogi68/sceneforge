@@ -81,10 +81,14 @@ def index():
             # Custom loading scanner bar
             rx.box(
                 rx.box(
-                    width="100%",
+                    position="absolute",
+                    top="0",
+                    left="0",
+                    width="50px",
                     height="100%",
-                    background="linear-gradient(90deg, transparent, #00F0FF, transparent)",
-                    style={"animation": "pulseNeon 1.5s linear infinite"},
+                    background_color="#00F0FF",
+                    background="linear-gradient(90deg, rgba(0, 240, 255, 0) 0%, #00F0FF 50%, rgba(0, 240, 255, 0) 100%)",
+                    style={"animation": "scanBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite"},
                 ),
                 width="140px",
                 height="2px",
@@ -92,6 +96,7 @@ def index():
                 border_radius="1px",
                 margin_top="12px",
                 overflow="hidden",
+                position="relative",
             ),
             # Simulated tech status
             rx.text(

@@ -66,35 +66,57 @@ app.add_page(privacy_page, route="/privacy")
 # Index page redirects dynamically based on session status
 @rx.page(route="/", on_load=cast(Any, State.check_auth_index))
 def index():
+    from sceneforge.pages.navigation import app_icon
     return rx.center(
         rx.html(f"<style>{GLOBAL_CSS}</style>"),
+        # Ambient background orb
+        rx.box(
+            width="600px", height="600px",
+            background="radial-gradient(circle at center, rgba(0,240,255,0.06) 0%, transparent 70%)",
+            position="absolute", border_radius="50%", filter="blur(80px)",
+            top="15%", left="20%", z_index="0", pointer_events="none",
+        ),
         rx.vstack(
+            app_icon(size="60px", icon_size="28px"),
             rx.heading(
                 "ScriptIQ",
                 size="8",
                 font_weight="800",
                 font_family="'Plus Jakarta Sans', sans-serif",
                 letter_spacing="-0.04em",
+                color="#00F0FF",
                 style={
-                    "background": "linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 40%, #c084fc 100%)",
-                    "-webkit-background-clip": "text",
-                    "-webkit-text-fill-color": "transparent",
-                    "background-clip": "text",
+                    "text_shadow": "0 0 15px rgba(0, 240, 255, 0.5)",
                 },
             ),
-            rx.html("""
-                <div style="
-                    width: 20px; height: 20px;
-                    border: 2px solid rgba(99,102,241,0.2);
-                    border-top-color: #818cf8;
-                    border-radius: 50%;
-                    animation: spin-slow 0.8s linear infinite;
-                "></div>
-            """),
+            # Custom loading scanner bar
+            rx.box(
+                rx.box(
+                    width="100%",
+                    height="100%",
+                    background="linear-gradient(90deg, transparent, #00F0FF, transparent)",
+                    style={"animation": "pulseNeon 1.5s linear infinite"},
+                ),
+                width="140px",
+                height="2px",
+                background="rgba(0, 240, 255, 0.15)",
+                border_radius="1px",
+                margin_top="12px",
+                overflow="hidden",
+            ),
+            # Simulated tech status
+            rx.text(
+                "SYS.INITIALIZE_NEURAL_CORE",
+                class_name="hud-text",
+                font_size="0.65rem",
+                color="rgba(0, 240, 255, 0.6)",
+                margin_top="8px",
+            ),
             align="center",
-            spacing="4",
+            spacing="3",
+            z_index="1",
         ),
         height="100vh",
-        background_color="transparent",
+        background_color="#05080F",
         width="100%",
     )

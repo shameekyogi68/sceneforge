@@ -2,6 +2,7 @@ import reflex as rx
 from typing import Any, cast
 from sceneforge.state import DashboardState
 from sceneforge.styles import GLOBAL_CSS
+from sceneforge.pages.navigation import sidebar_nav
 
 DASH_KEYFRAMES = """
 @keyframes fadeSlideUp {
@@ -16,119 +17,21 @@ DASH_KEYFRAMES = """
   from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  50%       { transform: translate(20px, -30px) scale(1.04); }
-}
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  50%       { transform: translate(-25px, 20px) scale(1.06); }
-}
-@keyframes skeletonShimmer {
-  0%, 100% { opacity: 0.2; }
-  50%       { opacity: 0.5; }
+@keyframes statusPulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.5; }
 }
 """
 
 body_style = {
     "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-    "background_color": "transparent",
-    "min_height": "100vh",
+    "background_color": "#05080F",
+    "height": "100vh",
+    "width": "100vw",
     "color": "#E2E8F0",
-    "position": "relative",
-    "overflow_x": "hidden",
+    "overflow": "hidden",
+    "display": "flex",
 }
-
-
-def header_bar() -> rx.Component:
-    return rx.hstack(
-        # Wordmark
-        rx.link(
-            rx.hstack(
-                rx.text(
-                    "ScriptIQ",
-                    font_size="1.2rem",
-                    font_family="'Plus Jakarta Sans', sans-serif",
-                    font_weight="800",
-                    color="#00F0FF",
-                    letter_spacing="0.05em",
-                    style={
-                        "text_shadow": "0 0 10px rgba(0,240,255,0.5)",
-                    },
-                ),
-                align="center",
-                spacing="2",
-            ),
-            href="/dashboard",
-            text_decoration="none",
-        ),
-
-        # Right side
-        rx.hstack(
-            # Avatar + email
-            rx.hstack(
-                rx.box(
-                    rx.text(
-                        DashboardState.user_avatar_char,
-                        font_weight="700",
-                        font_size="0.82rem",
-                        color="#05080F",
-                        text_transform="uppercase",
-                    ),
-                    width="34px",
-                    height="34px",
-                    border_radius="50%",
-                    background="#00F0FF",
-                    display="flex",
-                    align_items="center",
-                    justify_content="center",
-                    box_shadow="0 0 10px rgba(0,240,255,0.4)",
-                    flex_shrink="0",
-                ),
-                rx.text(
-                    DashboardState.user_email,
-                    font_size="0.82rem",
-                    color="rgba(255,255,255,0.6)",
-                    font_family="'JetBrains Mono', monospace",
-                    display=rx.breakpoints(initial="none", sm="block"),
-                ),
-                align="center",
-                spacing="3",
-            ),
-            # Sign out
-            rx.button(
-                rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>"""),
-                rx.text("LOG OUT", class_name="hud-text", display=rx.breakpoints(initial="none", sm="block")),
-                background="transparent",
-                border="1px solid rgba(239,68,68,0.4)",
-                color="#ef4444",
-                border_radius="4px",
-                padding="8px 14px",
-                font_size="0.75rem",
-                cursor="pointer",
-                gap="6px",
-                transition="all 0.2s ease",
-                _hover={
-                    "background": "rgba(239,68,68,0.1)",
-                    "box_shadow": "0 0 10px rgba(239,68,68,0.3)",
-                },
-                on_click=cast(Any, DashboardState.logout),
-            ),
-            align="center",
-            spacing="4",
-            margin_left="auto",
-        ),
-
-        width="100%",
-        padding="14px 40px",
-        background="rgba(5,8,15,0.8)",
-        backdrop_filter="blur(12px)",
-        border_bottom="1px solid rgba(0,240,255,0.2)",
-        position="sticky",
-        top="0",
-        z_index="50",
-    )
-
 
 def render_project_card(proj: Any) -> rx.Component:
     return rx.box(
@@ -139,25 +42,34 @@ def render_project_card(proj: Any) -> rx.Component:
             top="18px",
             right="18px",
             background="transparent",
-            border="1px solid rgba(239,68,68,0.3)",
-            color="#ef4444",
+            border="none",
+            color="rgba(255,255,255,0.4)",
             border_radius="4px",
             padding="7px",
             cursor="pointer",
-            z_index="2",
+            z_index="10",
             transition="all 0.2s ease",
             _hover={
-                "background": "rgba(239,68,68,0.15)",
-                "box_shadow": "0 0 10px rgba(239,68,68,0.4)",
+                "color": "#ef4444",
+                "background": "rgba(239,68,68,0.1)",
             },
             on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj.id, proj.name)),
         ),
 
         # Card content
         rx.vstack(
+            # Folder icon glowing box
             rx.box(
-                rx.text(f"ID: {proj.id[:8]}", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.5)"),
-                margin_bottom="4px",
+                rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>"""),
+                width="40px",
+                height="40px",
+                border_radius="10px",
+                background="rgba(0, 240, 255, 0.08)",
+                border="1px solid rgba(0, 240, 255, 0.2)",
+                display="flex",
+                align_items="center",
+                justify_content="center",
+                margin_bottom="12px",
             ),
             rx.text(
                 proj.name,
@@ -168,20 +80,22 @@ def render_project_card(proj: Any) -> rx.Component:
                 line_height="1.3",
             ),
             # Metadata
-            rx.box(
+            rx.vstack(
                 rx.hstack(
-                    rx.text("DOCUMENTS:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    rx.text(proj.document_count.to(str), class_name="hud-text", font_size="0.65rem", color="#00F0FF"),
+                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
+                    rx.text(proj.document_count.to(str) + " DOCUMENT" + rx.cond(proj.document_count == 1, "", "S"), class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
                     align="center",
                     spacing="2",
                 ),
                 rx.hstack(
-                    rx.text("CREATED:", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    rx.text(proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.6)"),
+                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>"""),
+                    rx.text("MODIFIED: " + proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
                     align="center",
                     spacing="2",
                 ),
                 margin_top="12px",
+                spacing="2",
+                align_items="start",
             ),
             spacing="1",
             align_items="start",
@@ -192,34 +106,35 @@ def render_project_card(proj: Any) -> rx.Component:
         padding="24px",
         cursor="pointer",
         position="relative",
-        transition="all 0.2s ease",
+        transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
         _hover={
-            "transform": "translateY(-3px)",
-            "border_color": "rgba(0,240,255,0.4)",
-            "box_shadow": "0 8px 32px rgba(0,240,255,0.1)",
+            "transform": "translateY(-4px)",
+            "border_color": "rgba(0,240,255,0.35)",
+            "box_shadow": "0 12px 32px rgba(0,240,255,0.1), inset 0 0 10px rgba(0,240,255,0.05)",
         },
         on_click=cast(Any, lambda: rx.redirect(f"/project?project_id={proj.id}")),
         style={"animation": "cardEntrance 0.4s ease both"},
     )
 
-
 def project_skeleton_card() -> rx.Component:
     return rx.box(
         rx.vstack(
             rx.box(
-                width="40%", height="10px",
-                background="rgba(0,240,255,0.1)",
-                style={"animation": "skeletonShimmer 1.5s infinite linear"},
+                width="40px", height="40px",
+                border_radius="10px",
+                background="rgba(0,240,255,0.08)",
+                style={"animation": "statusPulse 1.5s infinite"},
+                margin_bottom="12px",
             ),
             rx.box(
                 width="80%", height="18px",
                 background="rgba(255,255,255,0.05)",
-                style={"animation": "skeletonShimmer 1.5s infinite linear 0.2s"},
+                style={"animation": "statusPulse 1.5s infinite 0.2s"},
             ),
             rx.box(
                 width="60%", height="10px",
                 background="rgba(255,255,255,0.03)",
-                style={"animation": "skeletonShimmer 1.5s infinite linear 0.4s"},
+                style={"animation": "statusPulse 1.5s infinite 0.4s"},
             ),
             spacing="3",
             align_items="start",
@@ -228,127 +143,396 @@ def project_skeleton_card() -> rx.Component:
         padding="24px",
     )
 
+def stats_widget_card(title: str, subtitle: str, value: str, footer_comp: rx.Component, icon_svg: str) -> rx.Component:
+    return rx.box(
+        rx.hstack(
+            rx.vstack(
+                rx.text(title, class_name="hud-text", font_size="0.7rem", color="rgba(0,240,255,0.75)", font_weight="700"),
+                rx.text(subtitle, font_size="0.8rem", color="rgba(255,255,255,0.45)"),
+                rx.heading(value, size="8", font_weight="800", color="#fff", margin_top="12px", letter_spacing="-0.02em"),
+                footer_comp,
+                align_items="start",
+                spacing="1",
+            ),
+            rx.spacer(),
+            rx.center(
+                rx.html(icon_svg),
+                width="48px",
+                height="48px",
+                border_radius="10px",
+                background="rgba(0, 240, 255, 0.04)",
+                border="1px solid rgba(0, 240, 255, 0.1)",
+            ),
+            align_items="start",
+            width="100%",
+        ),
+        class_name="glass-panel-glow",
+        padding="24px",
+    )
 
 def dashboard_page() -> rx.Component:
+    # Card 1 Footer
+    c1_footer = rx.box(
+        rx.hstack(
+            rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
+            rx.text("ACTIVE_SESSION", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
+            align="center",
+            spacing="2",
+        ),
+        margin_top="16px",
+        background="rgba(0, 240, 255, 0.08)",
+        border="1px solid rgba(0, 240, 255, 0.15)",
+        border_radius="4px",
+        padding="3px 10px",
+    )
+
+    # Card 2 Footer
+    c2_footer = rx.box(
+        width="120px",
+        height="3px",
+        background="linear-gradient(90deg, #00F0FF 0%, #8B5CF6 100%)",
+        border_radius="2px",
+        margin_top="20px",
+        box_shadow="0 0 8px rgba(0,240,255,0.5)",
+    )
+
+    # Card 3 Footer
+    c3_footer = rx.hstack(
+        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
+        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
+        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
+        rx.box(width="12px", height="3px", background_color="#00FF88", border_radius="1px"),
+        rx.box(width="12px", height="3px", background_color="rgba(255,255,255,0.1)", border_radius="1px"),
+        margin_top="20px",
+        spacing="1",
+    )
+
+    # Icons SVGs
+    icon_doc_search = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="11.5" cy="14.5" r="2.5"/><line x1="16" y1="19" x2="13.25" y2="16.25"/></svg>"""
+    icon_brain = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.75"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-3.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-3.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2Z"/></svg>"""
+    icon_trust = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><polygon points="12 2 2 22 22 22"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""
+
+    # Dashboard Grid
+    main_dashboard_content = rx.vstack(
+        # Top Header
+        rx.hstack(
+            rx.vstack(
+                rx.hstack(
+                    rx.box(width="6px", height="6px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
+                    rx.text("DASHBOARD_ROOT", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
+                    align="center",
+                    spacing="2",
+                ),
+                rx.heading("ScriptIQ Analyst Terminal", size="6", font_weight="800", color="#fff", letter_spacing="-0.01em"),
+                spacing="1",
+                align_items="start",
+            ),
+            rx.spacer(),
+            # Search Bar input
+            rx.hstack(
+                rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
+                rx.input(
+                    placeholder="Search projects, scripts, or insights...",
+                    value=DashboardState.search_query,
+                    on_change=cast(Any, DashboardState.set_search_query),
+                    border="none", outline="none", background="transparent",
+                    color="#E2E8F0", font_family="'Plus Jakarta Sans', sans-serif", font_size="0.82rem",
+                    width="100%", style={"caret-color": "#00F0FF"},
+                    _placeholder={"color": "rgba(255,255,255,0.3)"},
+                ),
+                class_name="premium-input",
+                border_radius="100px", padding="8px 16px", width="260px", align_items="center", gap="8px",
+            ),
+            # Latency Indicator
+            rx.box(
+                rx.hstack(
+                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
+                    rx.text("CORE_LATENCY: 12ms", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.85)"),
+                    align="center",
+                    spacing="2",
+                ),
+                background="rgba(0, 240, 255, 0.08)",
+                border="1px solid rgba(0, 240, 255, 0.2)",
+                border_radius="100px",
+                padding="8px 16px",
+            ),
+            # New Project Action Pill
+            rx.button(
+                rx.text("+ New Project", font_size="0.82rem", font_weight="700"),
+                background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
+                color="#05080F",
+                border_radius="100px",
+                padding="10px 22px",
+                cursor="pointer",
+                box_shadow="0 0 15px rgba(0, 240, 255, 0.25)",
+                transition="all 0.2s ease",
+                _hover={
+                    "box_shadow": "0 0 25px rgba(0, 240, 255, 0.45)",
+                },
+                on_click=cast(Any, DashboardState.open_modal),
+            ),
+            width="100%",
+            align_items="center",
+            spacing="4",
+            padding_bottom="12px",
+        ),
+
+        # Horizontal Divider line
+        rx.box(width="100%", height="1px", background="rgba(255,255,255,0.06)", margin_y="4px"),
+
+        # Top Three Stats Cards
+        rx.grid(
+            stats_widget_card("MASTER TERMINAL VOLUME", "Real-time script analysis depth", "1,248", c1_footer, icon_doc_search),
+            stats_widget_card("AI SYNTHESIS", "Insights Generated", "8,592", c2_footer, icon_brain),
+            stats_widget_card("MODEL TRUST", "Confidence Rating", "94%", c3_footer, icon_trust),
+            columns=rx.breakpoints(initial="1", md="3"),
+            spacing="5",
+            width="100%",
+            padding_y="12px",
+        ),
+
+        # Section Header
+        rx.vstack(
+            rx.heading("Your Projects", size="5", font_weight="800", color="#fff", margin_top="16px"),
+            rx.text("Each project holds its own research documents and AI chat history.", color="rgba(255,255,255,0.45)", font_size="0.85rem"),
+            spacing="1",
+            align_items="start",
+        ),
+
+        # Projects Grid
+        rx.cond(
+            DashboardState.is_loading,
+            rx.grid(
+                project_skeleton_card(), project_skeleton_card(), project_skeleton_card(),
+                columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
+            ),
+            rx.cond(
+                cast(Any, DashboardState.filtered_projects).length() > 0,
+                rx.grid(
+                    rx.foreach(DashboardState.filtered_projects, render_project_card),
+                    # NEW SEQUENCE block
+                    rx.vstack(
+                        rx.box(
+                            rx.html("""<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(0,240,255,0.6)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
+                            width="44px",
+                            height="44px",
+                            border_radius="50%",
+                            border="1px solid rgba(0, 240, 255, 0.3)",
+                            display="flex",
+                            align_items="center",
+                            justify_content="center",
+                        ),
+                        rx.text("NEW SEQUENCE", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                        spacing="3",
+                        align_items="center",
+                        justify_content="center",
+                        height="100%",
+                        min_height="180px",
+                        border="1px dashed rgba(0, 240, 255, 0.25)",
+                        border_radius="16px",
+                        padding="32px",
+                        cursor="pointer",
+                        _hover={
+                            "border_color": "#00F0FF",
+                            "background": "rgba(0,240,255,0.02)",
+                            "box_shadow": "0 0 15px rgba(0,240,255,0.08)",
+                        },
+                        on_click=cast(Any, DashboardState.open_modal),
+                    ),
+                    columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
+                    style={"animation": "fadeIn 0.3s ease 0.3s both"},
+                ),
+                rx.vstack(
+                    rx.box(
+                        rx.text("NO SCREENPLAYS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
+                        margin_bottom="16px",
+                    ),
+                    rx.button(
+                        rx.text("Start your first screenplay", class_name="hud-text", font_size="0.8rem"),
+                        background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
+                        border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
+                        on_click=cast(Any, DashboardState.open_modal),
+                    ),
+                    class_name="glass-panel", padding="60px 24px", width="100%", align="center",
+                    style={"animation": "fadeSlideUp 0.4s ease 0.3s both"},
+                ),
+            ),
+        ),
+
+        width="100%",
+        height="100vh",
+        overflow_y="auto",
+        padding="40px",
+        spacing="6",
+        z_index="1",
+        class_name="page-transition",
+    )
+
     return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}{DASH_KEYFRAMES}</style>"),
         rx.cond(DashboardState.is_loading, rx.box(
             width="100%", height="2px",
-            background="linear-gradient(90deg, #00F0FF 0%, #8B5CF6 50%, #00F0FF 100%)",
+            background="linear-gradient(90deg, #00F0FF 0%, #00B8FF 50%, #00F0FF 100%)",
             background_size="200% 100%", position="absolute", top="0", left="0", z_index="1000",
             style={"animation": "pulseNeon 1.5s linear infinite"}
         ), rx.fragment()),
 
-        header_bar(),
-
-        # Ambient background touches
-        rx.box(
-            width="600px", height="600px",
-            background="radial-gradient(circle, rgba(0,240,255,0.05), transparent 70%)",
-            position="absolute", border_radius="50%", filter="blur(80px)",
-            top="-20%", left="-10%", z_index="0", pointer_events="none",
-        ),
-        rx.box(
-            width="500px", height="500px",
-            background="radial-gradient(circle, rgba(139,92,246,0.05), transparent 70%)",
-            position="absolute", border_radius="50%", filter="blur(80px)",
-            bottom="-10%", right="-10%", z_index="0", pointer_events="none",
-        ),
-
-        # Main content
-        rx.vstack(
-            # Header
-            rx.vstack(
-                rx.text("CREATIVE STUDIO // PROJECTS", class_name="hud-text", font_size="0.8rem", color="rgba(0,240,255,0.6)"),
-                rx.heading("Active Screenplays", size="7", font_weight="800", color="#E2E8F0"),
-                spacing="2",
-                align_items="start",
-                style={"animation": "fadeSlideUp 0.4s ease 0.1s both"},
-            ),
-
-            # Toolbar
-            rx.hstack(
-                rx.hstack(
-                    rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
-                    rx.input(
-                        placeholder="Search screenplays & bibles...",
-                        value=DashboardState.search_query,
-                        on_change=cast(Any, DashboardState.set_search_query),
-                        border="none", outline="none", background="transparent",
-                        color="#E2E8F0", font_family="'Plus Jakarta Sans', sans-serif", font_size="0.85rem",
-                        width="100%", style={"caret-color": "#00F0FF"},
-                        _placeholder={"color": "rgba(255,255,255,0.3)"},
-                    ),
-                    class_name="premium-input",
-                    border_radius="4px", padding="8px 12px", width="100%", max_width="320px", align_items="center", gap="8px",
-                ),
-                rx.button(
-                    rx.text("+ NEW SCREENPLAY", class_name="hud-text", font_size="0.8rem"),
-                    background="transparent",
-                    color="#00F0FF",
-                    border="1px solid #00F0FF",
-                    border_radius="4px",
-                    padding="10px 16px",
-                    cursor="pointer",
-                    class_name="cyber-button-hover",
-                    on_click=cast(Any, DashboardState.open_modal),
-                ),
-                width="100%", justify="between", align_items="center",
-                style={"animation": "fadeSlideUp 0.4s ease 0.2s both"},
-            ),
-
-            # Grid
-            rx.cond(
-                DashboardState.is_loading,
-                rx.grid(
-                    project_skeleton_card(), project_skeleton_card(), project_skeleton_card(),
-                    columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
-                ),
-                rx.cond(
-                    cast(Any, DashboardState.filtered_projects).length() > 0,
-                    rx.grid(
-                        rx.foreach(DashboardState.filtered_projects, render_project_card),
-                        columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
-                        style={"animation": "fadeIn 0.3s ease 0.3s both"},
-                    ),
-                    rx.vstack(
-                        rx.box(
-                            rx.text("NO SCREENPLAYS FOUND", class_name="hud-text", font_size="1rem", color="rgba(255,255,255,0.4)"),
-                            margin_bottom="16px",
-                        ),
-                        rx.button(
-                            rx.text("Start your first screenplay", class_name="hud-text", font_size="0.8rem"),
-                            background="rgba(0,240,255,0.1)", color="#00F0FF", border="1px solid #00F0FF",
-                            border_radius="4px", padding="10px 16px", cursor="pointer", class_name="cyber-button-hover",
-                            on_click=cast(Any, DashboardState.open_modal),
-                        ),
-                        class_name="glass-panel", padding="60px 24px", width="100%", align="center",
-                        style={"animation": "fadeSlideUp 0.4s ease 0.3s both"},
-                    ),
-                ),
-            ),
-            width="100%", max_width="1100px", margin="0 auto", padding="48px 40px", z_index="1", spacing="6", class_name="page-transition",
+        # Layout wrapper
+        rx.hstack(
+            sidebar_nav("dashboard", DashboardState.user_avatar_char, DashboardState.user_email, DashboardState.logout),
+            main_dashboard_content,
+            width="100%",
+            height="100vh",
+            align_items="start",
+            spacing="0",
         ),
 
         # Modals
+        # Upgraded Cyber New Project Modal matching mockup
         rx.dialog.root(
             rx.dialog.content(
+                # Modal header bar
+                rx.box(
+                    rx.hstack(
+                        rx.hstack(
+                            rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
+                            rx.text("TERMINAL ACTIVE", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
+                            align="center", spacing="2",
+                        ),
+                        rx.text("NODE: [ASTRA_MAIN_V4]", class_name="hud-text", font_size="0.6rem", color="#00F0FF", margin_left="12px"),
+                        rx.spacer(),
+                        rx.text("Protocol: SCR-IQ-091", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
+                        rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>"""),
+                        align="center", spacing="2",
+                    ),
+                    border_bottom="1px solid rgba(255,255,255,0.06)",
+                    padding_bottom="12px",
+                    margin_bottom="20px",
+                    width="100%",
+                ),
+                
+                # Title
                 rx.vstack(
-                    rx.text("CREATE NEW STORY WORKSPACE", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
-                    rx.heading("Name your screenplay or story bible", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.heading("Initialize New Research", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("Enter project parameters to start the deep-scan neural analysis sequence.", font_size="0.8rem", color="rgba(255,255,255,0.45)"),
                     margin_bottom="20px", spacing="1", align_items="start",
                 ),
-                rx.input(
-                    placeholder="Enter title...", max_length=80,
-                    value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
-                    class_name="premium-input", border_radius="4px", padding="12px 16px", width="100%", margin_bottom="24px",
+
+                # Input Section
+                rx.vstack(
+                    rx.hstack(
+                        rx.text("PROJECT TITLE", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                        rx.spacer(),
+                        rx.text("REFERENCE: [AUTO_GEN]", class_name="hud-text", font_size="0.62rem", color="rgba(255,255,255,0.3)"),
+                        width="100%",
+                    ),
+                    rx.input(
+                        placeholder="e.g. Project Astra", max_length=80,
+                        value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
+                        class_name="premium-input", border_radius="6px", padding="12px 16px", width="100%",
+                    ),
+                    align_items="start",
+                    spacing="2",
+                    width="100%",
+                    margin_bottom="18px",
                 ),
+
+                # Genre Tags Section
+                rx.vstack(
+                    rx.text("CONTEXT MATRICES / GENRES", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.hstack(
+                        rx.box(rx.text("SCI-FI", font_size="0.75rem", font_weight="700", color="#05080F"), background_color="#00F0FF", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("THRILLER", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("NOIR", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("CYBERPUNK", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("+ ADD", font_size="0.75rem", font_weight="600", color="rgba(0,240,255,0.5)"), border="1px dashed rgba(0,240,255,0.3)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        spacing="2",
+                        wrap="wrap",
+                    ),
+                    align_items="start",
+                    spacing="2",
+                    width="100%",
+                    margin_bottom="18px",
+                ),
+
+                # Upload Placeholder Section
+                rx.vstack(
+                    rx.text("DOCUMENT INGEST (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.vstack(
+                        rx.box(
+                            rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
+                            width="38px",
+                            height="38px",
+                            border_radius="50%",
+                            background="rgba(0,240,255,0.08)",
+                            display="flex",
+                            align_items="center",
+                            justify_content="center",
+                            box_shadow="0 0 10px rgba(0,240,255,0.3)",
+                        ),
+                        rx.text("Drop data-unit into matrix", font_size="0.82rem", font_weight="700", color="#fff"),
+                        rx.text("Click to link local filesystem or drag PDF. Max 50MB.", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
+                        spacing="2",
+                        align_items="center",
+                        justify_content="center",
+                        width="100%",
+                        padding="24px",
+                        border="1px dashed rgba(0, 240, 255, 0.2)",
+                        border_radius="10px",
+                        background="rgba(0, 240, 255, 0.01)",
+                    ),
+                    align_items="start",
+                    spacing="2",
+                    width="100%",
+                    margin_bottom="24px",
+                ),
+
+                # Bottom action buttons
                 rx.hstack(
-                    rx.dialog.close(rx.button("CANCEL", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid rgba(255,255,255,0.2)", color="rgba(255,255,255,0.6)", padding="8px 16px", border_radius="4px", cursor="pointer")),
-                    rx.button("CREATE", class_name="hud-text", font_size="0.75rem", background="transparent", border="1px solid #00F0FF", color="#00F0FF", padding="8px 16px", border_radius="4px", cursor="pointer", _hover={"box_shadow": "0 0 10px rgba(0,240,255,0.4)"}, on_click=cast(Any, DashboardState.create_project)),
-                    spacing="3", justify="end",
+                    rx.vstack(
+                        rx.text("SECURITY CLEARANCE:", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.4)"),
+                        rx.text("AUTHORIZED LVL_3", class_name="hud-text", font_size="0.65rem", color="#00FF88", font_weight="700"),
+                        align_items="start",
+                        spacing="1",
+                    ),
+                    rx.spacer(),
+                    rx.button("ABORT INITIALIZATION", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.45)", padding="8px 16px", cursor="pointer", _hover={"color": "#fff"}, on_click=cast(Any, DashboardState.close_modal)),
+                    rx.button(
+                        rx.hstack(
+                            rx.text("INITIALIZE", class_name="hud-text", font_size="0.75rem", font_weight="700"),
+                            rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>"""),
+                            align="center", spacing="2",
+                        ),
+                        background="#00F0FF",
+                        color="#05080F",
+                        padding="10px 20px",
+                        border_radius="8px",
+                        cursor="pointer",
+                        box_shadow="0 0 15px rgba(0, 240, 255, 0.4)",
+                        _hover={"box_shadow": "0 0 25px rgba(0, 240, 255, 0.6)"},
+                        on_click=cast(Any, DashboardState.create_project)
+                    ),
+                    spacing="4",
+                    width="100%",
+                    align_items="center",
                 ),
-                class_name="glass-panel", padding="32px", max_width="400px",
+                
+                # Bottom modal status bar
+                rx.box(
+                    rx.hstack(
+                        rx.text("STATUS: SYNCING...", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
+                        rx.box(width="40px", height="2px", background="linear-gradient(90deg, #00F0FF, transparent)", border_radius="1px", margin_left="8px"),
+                        rx.spacer(),
+                        rx.text("V2.4.0-ASTRA_CORE", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.25)"),
+                        align_items="center",
+                    ),
+                    border_top="1px solid rgba(255,255,255,0.06)",
+                    padding_top="12px",
+                    margin_top="24px",
+                    width="100%",
+                ),
+                
+                class_name="glass-panel-glow", padding="28px", max_width="480px",
             ),
             open=DashboardState.is_modal_open, on_open_change=cast(Any, DashboardState.set_is_modal_open),
         ),

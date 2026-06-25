@@ -53,7 +53,7 @@ def ambient_background() -> rx.Component:
         rx.box(
             width="500px",
             height="500px",
-            background="radial-gradient(circle at center, rgba(139,92,246,0.1) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(0,180,255,0.06) 0%, transparent 70%)",
             position="absolute",
             border_radius="50%",
             filter="blur(80px)",
@@ -116,7 +116,7 @@ def legal_card(title: str, content: rx.Component) -> rx.Component:
         ),
         width="100%",
         max_width="720px",
-        class_name="glass-panel",
+        class_name="glass-panel-glow",
         padding="48px",
         z_index="1",
         position="relative",

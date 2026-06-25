@@ -2,10 +2,11 @@ import reflex as rx
 from typing import Any, cast
 from sceneforge.state import AuthState
 from sceneforge.styles import GLOBAL_CSS
+from sceneforge.pages.navigation import app_icon
 
 body_style = {
     "font_family": "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-    "background_color": "transparent",
+    "background_color": "#05080F",
     "min_height": "100vh",
     "color": "#f4f4f5",
     "position": "relative",
@@ -32,14 +33,14 @@ def ambient_orbs() -> rx.Component:
     return rx.fragment(
         rx.box(
             width="600px", height="600px",
-            background="radial-gradient(circle at center, rgba(0,240,255,0.1) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(0,240,255,0.08) 0%, transparent 70%)",
             position="absolute", border_radius="50%", filter="blur(80px)",
             top="-20%", left="-10%", z_index="0", pointer_events="none",
             style={"animation": "floatOrb 18s ease-in-out infinite"},
         ),
         rx.box(
             width="700px", height="700px",
-            background="radial-gradient(circle at center, rgba(139,92,246,0.1) 0%, transparent 70%)",
+            background="radial-gradient(circle at center, rgba(0,180,255,0.06) 0%, transparent 70%)",
             position="absolute", border_radius="50%", filter="blur(90px)",
             bottom="-20%", right="-10%", z_index="0", pointer_events="none",
             style={"animation": "floatOrb 22s ease-in-out infinite reverse"},
@@ -65,28 +66,49 @@ def login_page() -> rx.Component:
         # Top HUD elements
         rx.box(
             rx.hstack(
-                rx.text("// STUDIO WORKSPACE", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
+                rx.text("+  AUTH_TERMINAL_01", class_name="hud-text", font_size="0.72rem", color="rgba(0, 240, 255, 0.4)", font_weight="600"),
                 rx.spacer(),
-                rx.vstack(
-                    rx.text("PRODUCTION DESK: ACTIVE", class_name="hud-text", font_size="0.75rem", color="rgba(255,255,255,0.5)"),
-                    rx.text("10:14:38 UTC", class_name="hud-text", font_size="0.75rem", color="#00F0FF"),
-                    spacing="1",
-                    align_items="flex-end"
+                rx.hstack(
+                    rx.vstack(
+                        rx.text("STATUS: OPERATIONAL", class_name="hud-text", font_size="0.7rem", color="rgba(0, 240, 255, 0.5)"),
+                        rx.text("10:14:38 UTC", class_name="hud-text", font_size="0.7rem", color="#00F0FF"),
+                        spacing="1",
+                        align_items="flex-end"
+                    ),
+                    rx.box(
+                        rx.box(
+                            width="5px", height="5px", border_radius="50%", background_color="#00F0FF",
+                            style={"animation": "statusPulse 1.2s infinite"},
+                        ),
+                        width="16px", height="16px",
+                        border="1px solid rgba(0, 240, 255, 0.3)",
+                        display="flex", align_items="center", justify_content="center",
+                        border_radius="2px",
+                        margin_left="8px",
+                    ),
+                    align="center",
                 ),
                 width="100%",
             ),
             position="absolute", top="32px", left="0", right="0", padding_x="48px",
-            z_index="0"
+            z_index="10"
         ),
         
         # Bottom left HUD element
         rx.box(
-            rx.text("SCREENPLAY COMPANION: SCRIPTIQ", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.3)"),
+            rx.text("PROCESSING CORE: SCRIPTIQ-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.25)"),
             position="absolute", bottom="32px", left="48px",
+            z_index="10"
         ),
 
         # Card
         rx.vstack(
+            # App icon container matching mockup
+            rx.center(
+                app_icon(size="64px", icon_size="28px"),
+                margin_bottom="12px",
+            ),
+            
             rx.vstack(
                 rx.box(
                     rx.heading(
@@ -97,15 +119,14 @@ def login_page() -> rx.Component:
                         letter_spacing="-0.02em",
                         color="#E2E8F0",
                         style={
-                            "text_shadow": "0 0 15px rgba(139, 92, 246, 0.4)",
+                            "text_shadow": "0 0 15px rgba(0, 240, 255, 0.4)",
                         }
                     ),
-                    margin_top="18px",
                 ),
                 rx.text(
-                    "Narrative analysis & screenplay companion powered by AI",
-                    color="rgba(255,255,255,0.6)",
-                    font_size="0.85rem",
+                    "Film research, powered by AI",
+                    color="rgba(255,255,255,0.65)",
+                    font_size="0.88rem",
                     text_align="center",
                     letter_spacing="0.02em",
                 ),
@@ -121,47 +142,47 @@ def login_page() -> rx.Component:
                     rx.text("Continue with Google", font_size="0.95rem", font_weight="700", letter_spacing="0.01em"),
                     background="#FFFFFF",
                     color="#05080F",
-                    border_radius="4px",
+                    border_radius="100px",  # Rounded button pill matching mock
                     width="100%",
                     padding_y="22px",
                     cursor="pointer",
                     gap="12px",
-                    box_shadow="0 0 20px rgba(0, 240, 255, 0.15)",
+                    box_shadow="0 0 20px rgba(0, 240, 255, 0.25)",
                     transition="all 0.2s ease-in-out",
                     _hover={
-                        "box_shadow": "0 0 30px rgba(0, 240, 255, 0.4)",
+                        "box_shadow": "0 0 32px rgba(0, 240, 255, 0.55)",
                         "transform": "translateY(-1px)",
                     },
                     _active={"transform": "translateY(0)"},
                     on_click=cast(Any, AuthState.login_with_google),
                 ),
                 width="100%",
-                margin_top="32px",
+                margin_top="36px",
             ),
             
             # ── Decorative Divider ────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(255,255,255,0.1))"),
-                    rx.text("SECURE ACCESS", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)", white_space="nowrap"),
-                    rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(255,255,255,0.1))"),
+                    rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(0,240,255,0.2))"),
+                    rx.text("ENCRYPTION ENABLED", class_name="hud-text", font_size="0.6rem", color="rgba(0,240,255,0.5)", white_space="nowrap"),
+                    rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(0,240,255,0.2))"),
                     spacing="3",
                     align_items="center",
                     width="100%",
                 ),
-                margin_top="32px",
-                margin_bottom="16px",
+                margin_top="36px",
+                margin_bottom="24px",
                 width="100%",
             ),
             
             # ── HUD Text Footer ───────────────────────────────────────
             rx.vstack(
-                rx.text("STUDIO GATEWAY STAGED", class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                rx.text("AUTH SYSTEM PROTOCOL 7.1 // SECURE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.55)"),
                 rx.hstack(
                     rx.box(width="4px", height="4px", border_radius="50%", background="#00F0FF"),
                     rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.4)"),
                     rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.2)"),
-                    spacing="1"
+                    spacing="2"
                 ),
                 align_items="center",
                 spacing="2"
@@ -170,23 +191,23 @@ def login_page() -> rx.Component:
             # ── Footer ────────────────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
-                    rx.link("Terms", href="/terms", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
-                    rx.text(" & ", color="rgba(255,255,255,0.4)", font_size="0.7rem"),
-                    rx.link("Privacy Policy", href="/privacy", color="#00F0FF", font_size="0.7rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
+                    rx.text("By signing in you agree to ScriptIQ's ", color="rgba(255,255,255,0.45)", font_size="0.72rem"),
+                    rx.link("Terms", href="/terms", color="#00F0FF", font_size="0.72rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
+                    rx.text(" & ", color="rgba(255,255,255,0.45)", font_size="0.72rem"),
+                    rx.link("Privacy Policy", href="/privacy", color="#00F0FF", font_size="0.72rem", text_decoration="none", _hover={"text_shadow": "0 0 8px rgba(0,240,255,0.5)"}),
                     spacing="1",
                     justify="center",
                     wrap="wrap",
-                    margin_top="24px",
+                    margin_top="28px",
                 ),
                 width="100%",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.55s both"},
             ),
 
-            class_name="glass-panel page-transition",
+            class_name="glass-panel-glow page-transition",
             width="100%",
-            max_width="400px",
-            border_radius="12px",
+            max_width="430px",
+            border_radius="24px",
             padding="48px 36px",
             z_index="1",
             style={

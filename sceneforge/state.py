@@ -439,6 +439,16 @@ class ProjectState(State):
         """Compute remaining questions dynamically from state."""
         return f"{max(0, 100 - self.questions_today)} questions remaining today"
 
+    @rx.var
+    def queries_remaining(self) -> int:
+        """Compute remaining queries dynamically from state."""
+        return max(0, 100 - self.questions_today)
+
+    @rx.var
+    def preview_page_label(self) -> str:
+        """Label for the current document page preview."""
+        return f"ID: DOC_{self.project_id[:6].upper()} // PAGE {self.selected_preview_page}"
+
     async def load_documents(self):
         """Load document list for sidebar."""
         try:

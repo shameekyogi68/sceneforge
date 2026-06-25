@@ -382,55 +382,7 @@ def dashboard_page() -> rx.Component:
                     margin_bottom="18px",
                 ),
 
-                # Genre Tags Section
-                rx.vstack(
-                    rx.text("PROJECT GENRE / CATEGORY", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
-                    rx.hstack(
-                        rx.box(rx.text("DRAMA", font_size="0.75rem", font_weight="700", color="#05080F"), background_color="#00F0FF", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("THRILLER", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("COMEDY", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("SCI-FI", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("+ ADD", font_size="0.75rem", font_weight="600", color="rgba(0,240,255,0.5)"), border="1px dashed rgba(0,240,255,0.3)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        spacing="2",
-                        wrap="wrap",
-                    ),
-                    align_items="start",
-                    spacing="2",
-                    width="100%",
-                    margin_bottom="18px",
-                ),
 
-                # Upload Placeholder Section
-                rx.vstack(
-                    rx.text("UPLOAD RESEARCH / REFERENCE (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
-                    rx.vstack(
-                        rx.box(
-                            rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
-                            width="38px",
-                            height="38px",
-                            border_radius="50%",
-                            background="rgba(0,240,255,0.08)",
-                            display="flex",
-                            align_items="center",
-                            justify_content="center",
-                            box_shadow="0 0 10px rgba(0,240,255,0.3)",
-                        ),
-                        rx.text("Drag research PDF here", font_size="0.82rem", font_weight="700", color="#fff"),
-                        rx.text("or click to select file from device. Max 50MB.", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
-                        spacing="2",
-                        align_items="center",
-                        justify_content="center",
-                        width="100%",
-                        padding="24px",
-                        border="1px dashed rgba(0, 240, 255, 0.2)",
-                        border_radius="10px",
-                        background="rgba(0, 240, 255, 0.01)",
-                    ),
-                    align_items="start",
-                    spacing="2",
-                    width="100%",
-                    margin_bottom="24px",
-                ),
 
                 # Bottom action buttons
                 rx.hstack(

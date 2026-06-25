@@ -474,6 +474,7 @@ def chat_area() -> rx.Component:
                     color="rgba(255,255,255,0.6)",
                     cursor="pointer",
                     _hover={"color": "#00F0FF", "border_color": "#00F0FF"},
+                    on_click=cast(Any, ProjectState.share_project),
                 ),
                 # Clear chat (New Chat) Button
                 rx.box(
@@ -873,6 +874,29 @@ def project_page() -> rx.Component:
             height="100vh",
             align_items="start",
             spacing="0",
+        ),
+
+        # Floating Share Link Copied Toast
+        rx.cond(
+            ProjectState.show_share_toast,
+            rx.box(
+                rx.hstack(
+                    rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>"""),
+                    rx.text("PROJECT LINK COPIED TO CLIPBOARD", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700"),
+                    align_items="center",
+                    spacing="2",
+                ),
+                position="fixed",
+                bottom="24px",
+                right="24px",
+                background="rgba(4, 6, 12, 0.95)",
+                border="1px solid #00F0FF",
+                box_shadow="0 0 15px rgba(0, 240, 255, 0.25)",
+                border_radius="6px",
+                padding="12px 18px",
+                z_index="2000",
+                style={"animation": "fadeSlideUp 0.3s cubic-bezier(0.16,1,0.3,1) both"},
+            ),
         ),
 
         style=body_style,

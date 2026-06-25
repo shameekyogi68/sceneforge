@@ -4,7 +4,7 @@ from sceneforge.pages.dashboard import dashboard_page
 from sceneforge.pages.project import project_page
 from sceneforge.pages.callback import callback_page
 from sceneforge.pages.legal import terms_page, privacy_page
-from sceneforge.state import State, AuthState
+from sceneforge.state import State, AuthState, ProjectState
 
 from sceneforge.styles import GLOBAL_CSS
 
@@ -57,7 +57,7 @@ from typing import Any, cast
 # Register pages
 app.add_page(login_page, route="/login", on_load=cast(Any, State.check_auth_login))
 app.add_page(dashboard_page, route="/dashboard", on_load=cast(Any, State.check_auth))
-app.add_page(project_page, route="/project")
+app.add_page(project_page, route="/project", on_load=cast(Any, ProjectState.on_load_project))
 app.add_page(callback_page, route="/auth/v1/callback")
 app.add_page(terms_page, route="/terms")
 app.add_page(privacy_page, route="/privacy")

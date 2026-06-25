@@ -433,6 +433,7 @@ class ProjectState(State):
     selected_preview_highlight: str = ""
     is_preview_modal_open: bool = False
     is_preview_loading: bool = False
+    show_share_toast: bool = False
 
     # Explicit setter (replacing deprecated state_auto_setters)
     def set_input_message(self, value: str):
@@ -812,3 +813,12 @@ class ProjectState(State):
             logger.exception("Failed to clear chat")
             rx.toast.error("An error occurred while clearing chat.")
         yield
+
+    async def share_project(self):
+        """Share project link by copying to clipboard and triggering a floating success notification."""
+        project_url = f"https://sceneforge-aqua-ocean.reflex.run/project?project_id={self.project_id}"
+        yield rx.set_clipboard(project_url)
+        self.show_share_toast = True
+        yield
+        await asyncio.sleep(3.0)
+        self.show_share_toast = False

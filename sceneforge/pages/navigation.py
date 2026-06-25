@@ -3,16 +3,25 @@ from typing import Any, cast
 from sceneforge.styles import ACCENT_COLOR, BACKGROUND_COLOR, SURFACE_COLOR, MUTED_COLOR
 
 def app_icon(size: str = "42px", icon_size: str = "18px") -> rx.Component:
+    is_compact = (size == "42px")
+    text_content = "S·IQ" if is_compact else "ScriptIQ"
+    font_size = "1.2rem" if is_compact else "2.2rem"
+    
     return rx.box(
-        rx.html(f"""<svg width="{icon_size}" height="{icon_size}" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>"""),
-        width=size,
-        height=size,
-        border_radius="10px",
-        background="linear-gradient(135deg, #00F0FF 0%, #8B5CF6 100%)",
+        rx.text(
+            text_content,
+            font_family="'Courier Prime', 'Courier New', Courier, monospace",
+            font_weight="800",
+            font_size=font_size,
+            color="#00F0FF",
+            letter_spacing="-0.03em" if not is_compact else "0.02em",
+            style={
+                "text_shadow": "0 0 15px rgba(0, 240, 255, 0.45)",
+            }
+        ),
         display="flex",
         align_items="center",
         justify_content="center",
-        box_shadow="0 0 16px rgba(0, 240, 255, 0.35)",
         flex_shrink="0",
     )
 

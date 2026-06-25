@@ -31,7 +31,7 @@ app = rx.App(
             rx.heading(
                 "ScriptIQ",
                 size="9",
-                font_family="'Plus Jakarta Sans', sans-serif",
+                font_family="'Courier Prime', 'Courier New', Courier, monospace",
                 font_weight="800",
                 letter_spacing="-0.02em",
                 color="#00F0FF",
@@ -78,17 +78,6 @@ def index():
         ),
         rx.vstack(
             app_icon(size="60px", icon_size="28px"),
-            rx.heading(
-                "ScriptIQ",
-                size="8",
-                font_weight="800",
-                font_family="'Plus Jakarta Sans', sans-serif",
-                letter_spacing="-0.04em",
-                color="#00F0FF",
-                style={
-                    "text_shadow": "0 0 15px rgba(0, 240, 255, 0.5)",
-                },
-            ),
             # Custom loading scanner bar
             rx.box(
                 rx.box(
@@ -106,7 +95,7 @@ def index():
             ),
             # Simulated tech status
             rx.text(
-                "SYS.INITIALIZE_NEURAL_CORE",
+                "LOADING WORKSPACE...",
                 class_name="hud-text",
                 font_size="0.65rem",
                 color="rgba(0, 240, 255, 0.6)",

@@ -63,44 +63,6 @@ def login_page() -> rx.Component:
         rx.html(f"<style>{GLOBAL_CSS}{KEYFRAMES}</style>"),
         ambient_orbs(),
         
-        # Top HUD elements
-        rx.box(
-            rx.hstack(
-                rx.text("+  AUTH_TERMINAL_01", class_name="hud-text", font_size="0.72rem", color="rgba(0, 240, 255, 0.4)", font_weight="600"),
-                rx.spacer(),
-                rx.hstack(
-                    rx.vstack(
-                        rx.text("STATUS: OPERATIONAL", class_name="hud-text", font_size="0.7rem", color="rgba(0, 240, 255, 0.5)"),
-                        rx.text("10:14:38 UTC", class_name="hud-text", font_size="0.7rem", color="#00F0FF"),
-                        spacing="1",
-                        align_items="flex-end"
-                    ),
-                    rx.box(
-                        rx.box(
-                            width="5px", height="5px", border_radius="50%", background_color="#00F0FF",
-                            style={"animation": "statusPulse 1.2s infinite"},
-                        ),
-                        width="16px", height="16px",
-                        border="1px solid rgba(0, 240, 255, 0.3)",
-                        display="flex", align_items="center", justify_content="center",
-                        border_radius="2px",
-                        margin_left="8px",
-                    ),
-                    align="center",
-                ),
-                width="100%",
-            ),
-            position="absolute", top="32px", left="0", right="0", padding_x="48px",
-            z_index="10"
-        ),
-        
-        # Bottom left HUD element
-        rx.box(
-            rx.text("PROCESSING CORE: SCRIPTIQ-V4", class_name="hud-text", font_size="0.7rem", color="rgba(255,255,255,0.25)"),
-            position="absolute", bottom="32px", left="48px",
-            z_index="10"
-        ),
-
         # Card
         rx.vstack(
             # App icon container matching mockup
@@ -110,21 +72,8 @@ def login_page() -> rx.Component:
             ),
             
             rx.vstack(
-                rx.box(
-                    rx.heading(
-                        "ScriptIQ",
-                        size="8",
-                        font_family="'Plus Jakarta Sans', sans-serif",
-                        font_weight="800",
-                        letter_spacing="-0.02em",
-                        color="#E2E8F0",
-                        style={
-                            "text_shadow": "0 0 15px rgba(0, 240, 255, 0.4)",
-                        }
-                    ),
-                ),
                 rx.text(
-                    "Film research, powered by AI",
+                    "Screenplay research and analysis, powered by AI",
                     color="rgba(255,255,255,0.65)",
                     font_size="0.88rem",
                     text_align="center",
@@ -163,9 +112,9 @@ def login_page() -> rx.Component:
             # ── Decorative Divider ────────────────────────────────────
             rx.box(
                 rx.hstack(
-                    rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(0,240,255,0.2))"),
-                    rx.text("ENCRYPTION ENABLED", class_name="hud-text", font_size="0.6rem", color="rgba(0,240,255,0.5)", white_space="nowrap"),
-                    rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(0,240,255,0.2))"),
+                    rx.box(height="1px", width="100%", background="linear-gradient(90deg, transparent, rgba(0,240,255,0.15))"),
+                    rx.text("SECURE WRITER ACCESS", class_name="hud-text", font_size="0.6rem", color="rgba(0,240,255,0.5)", white_space="nowrap"),
+                    rx.box(height="1px", width="100%", background="linear-gradient(-90deg, transparent, rgba(0,240,255,0.15))"),
                     spacing="3",
                     align_items="center",
                     width="100%",
@@ -173,19 +122,6 @@ def login_page() -> rx.Component:
                 margin_top="36px",
                 margin_bottom="24px",
                 width="100%",
-            ),
-            
-            # ── HUD Text Footer ───────────────────────────────────────
-            rx.vstack(
-                rx.text("AUTH SYSTEM PROTOCOL 7.1 // SECURE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.55)"),
-                rx.hstack(
-                    rx.box(width="4px", height="4px", border_radius="50%", background="#00F0FF"),
-                    rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.4)"),
-                    rx.box(width="4px", height="4px", border_radius="50%", background="rgba(0,240,255,0.2)"),
-                    spacing="2"
-                ),
-                align_items="center",
-                spacing="2"
             ),
 
             # ── Footer ────────────────────────────────────────────────

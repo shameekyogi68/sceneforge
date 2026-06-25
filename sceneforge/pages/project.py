@@ -310,7 +310,7 @@ def typing_indicator() -> rx.Component:
             ),
             rx.box(
                 rx.hstack(
-                    rx.text("ASTRA IS ANALYZING SCRIPT...", class_name="hud-text", font_size="0.72rem", color=ACCENT_COLOR, font_weight="700"),
+                    rx.text("ANALYZING SCREENPLAY...", class_name="hud-text", font_size="0.72rem", color=ACCENT_COLOR, font_weight="700"),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0s"}),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0.2s"}),
                     rx.box(width="4px", height="4px", background=ACCENT_COLOR, style={"animation": "typingDot 1.2s ease infinite 0.4s"}),
@@ -386,7 +386,7 @@ def welcome_screen() -> rx.Component:
             box_shadow="inset 0 0 12px rgba(0, 240, 255, 0.15)",
         ),
         rx.heading("CREATIVE STUDIO", size="5", color="#fff", font_weight="800", letter_spacing="0.1em", text_align="center"),
-        rx.text("Astra is ready. Select a script from the inspector panel on the right or upload a new one to begin deep analysis.", color=ACCENT_COLOR, font_size="0.82rem", text_align="center", max_width="430px", line_height="1.6"),
+        rx.text("ScriptIQ is ready. Select a screenplay from the panel on the right or upload a new one to begin analysis.", color=ACCENT_COLOR, font_size="0.82rem", text_align="center", max_width="430px", line_height="1.6"),
         rx.grid(
             example_btn("Analyze the narrative arc and pacing"),
             example_btn("Extract character relationships & conflicts"),
@@ -413,7 +413,7 @@ def chat_area() -> rx.Component:
             rx.hstack(
                 rx.hstack(
                     rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
-                    rx.text("TERMINAL_ACTIVE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
+                    rx.text("SCREENPLAY_WORKSPACE", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
                     align="center",
                     spacing="2",
                 ),
@@ -424,7 +424,7 @@ def chat_area() -> rx.Component:
                     rx.hstack(
                         rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/></svg>"""),
                         rx.text(
-                            rx.text("A.I. QUERIES: ", color="rgba(255,255,255,0.45)", as_="span"),
+                            rx.text("DAILY LIMIT: ", color="rgba(255,255,255,0.45)", as_="span"),
                             ProjectState.queries_remaining.to(str) + "/100",
                             font_size="0.68rem",
                             color="#00F0FF",
@@ -799,63 +799,6 @@ def live_inspection_panel() -> rx.Component:
             overflow="hidden",
             display="flex",
             flex_direction="column",
-        ),
-
-        # Context Footer Card
-        rx.box(
-            rx.vstack(
-                rx.hstack(
-                    # Context Cube Icon
-                    rx.center(
-                        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>"""),
-                        width="34px", height="34px", border_radius="8px", background="rgba(0,240,255,0.06)", border="1px solid rgba(0,240,255,0.2)",
-                    ),
-                    rx.vstack(
-                        rx.text("PROJECT CONTEXT", class_name="hud-text", font_size="0.58rem", color="rgba(0,240,255,0.7)"),
-                        rx.text(ProjectState.selected_preview_filename, font_size="0.8rem", font_weight="700", color="#fff", max_width="200px", overflow="hidden", text_overflow="ellipsis", white_space="nowrap"),
-                        align_items="start", spacing="1",
-                    ),
-                    rx.spacer(),
-                    # Stack of avatars representation
-                    rx.hstack(
-                        rx.box(rx.center(rx.text("A", font_size="0.65rem", font_weight="800", color="#05080F"), width="22px", height="22px", border_radius="50%", background_color="#00F0FF")),
-                        rx.box(rx.center(rx.text("B", font_size="0.65rem", font_weight="800", color="#05080F"), width="22px", height="22px", border_radius="50%", background_color="#00B8FF", margin_left="-6px")),
-                        rx.box(rx.center(rx.text("+3", font_size="0.6rem", font_weight="800", color="#fff"), width="22px", height="22px", border_radius="50%", background_color="rgba(255,255,255,0.1)", border="1px solid rgba(255,255,255,0.15)", margin_left="-6px")),
-                        spacing="0",
-                    ),
-                    align_items="center",
-                    width="100%",
-                ),
-                # Progress line
-                rx.hstack(
-                    rx.vstack(
-                        rx.text("ANALYSIS PROGRESS", class_name="hud-text", font_size="0.55rem", color="rgba(255,255,255,0.3)"),
-                        # Glowing cyan progress line bar
-                        rx.box(
-                            rx.box(width="82%", height="100%", background_color="#00F0FF", box_shadow="0 0 6px #00F0FF"),
-                            width="100%", height="2px", background_color="rgba(255,255,255,0.06)", border_radius="1px",
-                        ),
-                        align_items="start", spacing="1", flex="1",
-                    ),
-                    rx.text("82%", class_name="hud-text", font_size="0.6rem", color="#00F0FF", margin_left="12px", margin_top="8px"),
-                    # Details Button
-                    rx.button(
-                        "DETAILS", class_name="hud-text", font_size="0.6rem", font_weight="700",
-                        background="transparent", border="1px solid rgba(255,255,255,0.15)", color="rgba(255,255,255,0.6)",
-                        padding="6px 12px", border_radius="4px", cursor="pointer", _hover={"color": "#00F0FF", "border_color": "#00F0FF"},
-                        margin_left="14px",
-                    ),
-                    align_items="center",
-                    width="100%",
-                    margin_top="10px",
-                ),
-                width="100%",
-                spacing="1",
-            ),
-            class_name="glass-panel",
-            padding="16px",
-            width="100%",
-            margin_top="16px",
         ),
 
         width="100%",

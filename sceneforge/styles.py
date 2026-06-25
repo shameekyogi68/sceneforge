@@ -31,11 +31,6 @@ html {
 body {
     margin: 0; padding: 0;
     background-color: #05080F;
-    background-image: 
-        linear-gradient(rgba(0, 240, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.015) 1px, transparent 1px);
-    background-size: 32px 32px;
-    background-position: center top;
     color: #E2E8F0;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;

@@ -82,12 +82,11 @@ def callback_page() -> rx.Component:
                 "ScriptIQ",
                 size="8",
                 font_weight="800",
-                letter_spacing="0.1em",
-                text_transform="uppercase",
+                letter_spacing="-0.02em",
                 style={
                     "color": "#fff",
-                    "font_family": "'Plus Jakarta Sans', sans-serif",
-                    "animation": "shimmerText 3s linear infinite",
+                    "font_family": "'Courier Prime', 'Courier New', Courier, monospace",
+                    "text_shadow": "0 0 15px rgba(0, 240, 255, 0.45)",
                 },
             ),
             # Spinner
@@ -101,7 +100,7 @@ def callback_page() -> rx.Component:
                 "></div>
             """),
             rx.text(
-                "SYS.AUTH_HANDSHAKE_IN_PROGRESS",
+                "AUTHORIZING ACCESS...",
                 color=MUTED_COLOR,
                 font_size="0.88rem",
                 font_weight="700",

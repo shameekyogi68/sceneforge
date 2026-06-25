@@ -171,59 +171,18 @@ def stats_widget_card(title: str, subtitle: str, value: str, footer_comp: rx.Com
     )
 
 def dashboard_page() -> rx.Component:
-    # Card 1 Footer
-    c1_footer = rx.box(
-        rx.hstack(
-            rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
-            rx.text("ACTIVE_SESSION", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
-            align="center",
-            spacing="2",
-        ),
-        margin_top="16px",
-        background="rgba(0, 240, 255, 0.08)",
-        border="1px solid rgba(0, 240, 255, 0.15)",
-        border_radius="4px",
-        padding="3px 10px",
-    )
-
-    # Card 2 Footer
-    c2_footer = rx.box(
-        width="120px",
-        height="3px",
-        background="linear-gradient(90deg, #00F0FF 0%, #8B5CF6 100%)",
-        border_radius="2px",
-        margin_top="20px",
-        box_shadow="0 0 8px rgba(0,240,255,0.5)",
-    )
-
-    # Card 3 Footer
-    c3_footer = rx.hstack(
-        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
-        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
-        rx.box(width="12px", height="3px", background_color="#00F0FF", border_radius="1px"),
-        rx.box(width="12px", height="3px", background_color="#00FF88", border_radius="1px"),
-        rx.box(width="12px", height="3px", background_color="rgba(255,255,255,0.1)", border_radius="1px"),
-        margin_top="20px",
-        spacing="1",
-    )
-
-    # Icons SVGs
-    icon_doc_search = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="11.5" cy="14.5" r="2.5"/><line x1="16" y1="19" x2="13.25" y2="16.25"/></svg>"""
-    icon_brain = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.75"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-3.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-3.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2Z"/></svg>"""
-    icon_trust = """<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><polygon points="12 2 2 22 22 22"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>"""
-
-    # Dashboard Grid
+    # Dashboard Content
     main_dashboard_content = rx.vstack(
         # Top Header
         rx.hstack(
             rx.vstack(
                 rx.hstack(
                     rx.box(width="6px", height="6px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
-                    rx.text("DASHBOARD_ROOT", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
+                    rx.text("PROJECTS_LIBRARY", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.7)"),
                     align="center",
                     spacing="2",
                 ),
-                rx.heading("ScriptIQ Analyst Terminal", size="6", font_weight="800", color="#fff", letter_spacing="-0.01em"),
+                rx.heading("ScriptIQ Writer Studio", size="6", font_weight="800", color="#fff", letter_spacing="-0.01em"),
                 spacing="1",
                 align_items="start",
             ),
@@ -232,7 +191,7 @@ def dashboard_page() -> rx.Component:
             rx.hstack(
                 rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>"""),
                 rx.input(
-                    placeholder="Search projects, scripts, or insights...",
+                    placeholder="Search screenplays or documents...",
                     value=DashboardState.search_query,
                     on_change=cast(Any, DashboardState.set_search_query),
                     border="none", outline="none", background="transparent",
@@ -246,8 +205,8 @@ def dashboard_page() -> rx.Component:
             # Latency Indicator
             rx.box(
                 rx.hstack(
-                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
-                    rx.text("CORE_LATENCY: 12ms", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.85)"),
+                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19A3.5 3.5 0 0 0 21 15.5c0-2.79-2.54-4.5-5-4.5-.42-1.02-1.39-2.5-3-2.5a5 5 0 0 0-5 5c0 .64.11 1.26.31 1.83A3.25 3.25 0 0 0 5 19.5h12.5z"/></svg>"""),
+                    rx.text("CLOUD_SYNC: AUTO", class_name="hud-text", font_size="0.65rem", color="rgba(0,240,255,0.85)"),
                     align="center",
                     spacing="2",
                 ),
@@ -280,21 +239,10 @@ def dashboard_page() -> rx.Component:
         # Horizontal Divider line
         rx.box(width="100%", height="1px", background="rgba(255,255,255,0.06)", margin_y="4px"),
 
-        # Top Three Stats Cards
-        rx.grid(
-            stats_widget_card("MASTER TERMINAL VOLUME", "Real-time script analysis depth", "1,248", c1_footer, icon_doc_search),
-            stats_widget_card("AI SYNTHESIS", "Insights Generated", "8,592", c2_footer, icon_brain),
-            stats_widget_card("MODEL TRUST", "Confidence Rating", "94%", c3_footer, icon_trust),
-            columns=rx.breakpoints(initial="1", md="3"),
-            spacing="5",
-            width="100%",
-            padding_y="12px",
-        ),
-
         # Section Header
         rx.vstack(
-            rx.heading("Your Projects", size="5", font_weight="800", color="#fff", margin_top="16px"),
-            rx.text("Each project holds its own research documents and AI chat history.", color="rgba(255,255,255,0.45)", font_size="0.85rem"),
+            rx.heading("Your Screenplays & Projects", size="5", font_weight="800", color="#fff", margin_top="16px"),
+            rx.text("Each project holds its own research documents, scripts, and AI chat history.", color="rgba(255,255,255,0.45)", font_size="0.85rem"),
             spacing="1",
             align_items="start",
         ),
@@ -322,7 +270,7 @@ def dashboard_page() -> rx.Component:
                             align_items="center",
                             justify_content="center",
                         ),
-                        rx.text("NEW SEQUENCE", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                        rx.text("NEW SCREENPLAY", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
                         spacing="3",
                         align_items="center",
                         justify_content="center",
@@ -388,7 +336,6 @@ def dashboard_page() -> rx.Component:
         ),
 
         # Modals
-        # Upgraded Cyber New Project Modal matching mockup
         rx.dialog.root(
             rx.dialog.content(
                 # Modal header bar
@@ -396,13 +343,11 @@ def dashboard_page() -> rx.Component:
                     rx.hstack(
                         rx.hstack(
                             rx.box(width="5px", height="5px", border_radius="50%", background_color="#00F0FF", style={"animation": "statusPulse 1.2s infinite"}),
-                            rx.text("TERMINAL ACTIVE", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
+                            rx.text("NEW PROJECT", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
                             align="center", spacing="2",
                         ),
-                        rx.text("NODE: [ASTRA_MAIN_V4]", class_name="hud-text", font_size="0.6rem", color="#00F0FF", margin_left="12px"),
                         rx.spacer(),
-                        rx.text("Protocol: SCR-IQ-091", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
-                        rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>"""),
+                        rx.text("ScriptIQ v4.0", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
                         align="center", spacing="2",
                     ),
                     border_bottom="1px solid rgba(255,255,255,0.06)",
@@ -413,8 +358,8 @@ def dashboard_page() -> rx.Component:
                 
                 # Title
                 rx.vstack(
-                    rx.heading("Initialize New Research", size="6", font_weight="800", color="#E2E8F0"),
-                    rx.text("Enter project parameters to start the deep-scan neural analysis sequence.", font_size="0.8rem", color="rgba(255,255,255,0.45)"),
+                    rx.heading("Create Screenplay Project", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("Set up a new workspace for your screenplay and reference documents.", font_size="0.8rem", color="rgba(255,255,255,0.45)"),
                     margin_bottom="20px", spacing="1", align_items="start",
                 ),
 
@@ -422,8 +367,6 @@ def dashboard_page() -> rx.Component:
                 rx.vstack(
                     rx.hstack(
                         rx.text("PROJECT TITLE", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
-                        rx.spacer(),
-                        rx.text("REFERENCE: [AUTO_GEN]", class_name="hud-text", font_size="0.62rem", color="rgba(255,255,255,0.3)"),
                         width="100%",
                     ),
                     rx.input(
@@ -439,12 +382,12 @@ def dashboard_page() -> rx.Component:
 
                 # Genre Tags Section
                 rx.vstack(
-                    rx.text("CONTEXT MATRICES / GENRES", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.text("SCREENPLAY GENRE / CATEGORY", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
                     rx.hstack(
-                        rx.box(rx.text("SCI-FI", font_size="0.75rem", font_weight="700", color="#05080F"), background_color="#00F0FF", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("DRAMA", font_size="0.75rem", font_weight="700", color="#05080F"), background_color="#00F0FF", border_radius="6px", padding="5px 12px", cursor="pointer"),
                         rx.box(rx.text("THRILLER", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("NOIR", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
-                        rx.box(rx.text("CYBERPUNK", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("COMEDY", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
+                        rx.box(rx.text("SCI-FI", font_size="0.75rem", font_weight="600", color="rgba(255,255,255,0.6)"), border="1px solid rgba(255,255,255,0.12)", border_radius="6px", padding="5px 12px", cursor="pointer"),
                         rx.box(rx.text("+ ADD", font_size="0.75rem", font_weight="600", color="rgba(0,240,255,0.5)"), border="1px dashed rgba(0,240,255,0.3)", border_radius="6px", padding="5px 12px", cursor="pointer"),
                         spacing="2",
                         wrap="wrap",
@@ -457,7 +400,7 @@ def dashboard_page() -> rx.Component:
 
                 # Upload Placeholder Section
                 rx.vstack(
-                    rx.text("DOCUMENT INGEST (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
+                    rx.text("UPLOAD SCREENPLAY / REFERENCE (.PDF)", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
                     rx.vstack(
                         rx.box(
                             rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>"""),
@@ -470,8 +413,8 @@ def dashboard_page() -> rx.Component:
                             justify_content="center",
                             box_shadow="0 0 10px rgba(0,240,255,0.3)",
                         ),
-                        rx.text("Drop data-unit into matrix", font_size="0.82rem", font_weight="700", color="#fff"),
-                        rx.text("Click to link local filesystem or drag PDF. Max 50MB.", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
+                        rx.text("Drag screenplay PDF here", font_size="0.82rem", font_weight="700", color="#fff"),
+                        rx.text("or click to select file from device. Max 50MB.", font_size="0.75rem", color="rgba(255,255,255,0.4)"),
                         spacing="2",
                         align_items="center",
                         justify_content="center",
@@ -489,17 +432,11 @@ def dashboard_page() -> rx.Component:
 
                 # Bottom action buttons
                 rx.hstack(
-                    rx.vstack(
-                        rx.text("SECURITY CLEARANCE:", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.4)"),
-                        rx.text("AUTHORIZED LVL_3", class_name="hud-text", font_size="0.65rem", color="#00FF88", font_weight="700"),
-                        align_items="start",
-                        spacing="1",
-                    ),
                     rx.spacer(),
-                    rx.button("ABORT INITIALIZATION", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.45)", padding="8px 16px", cursor="pointer", _hover={"color": "#fff"}, on_click=cast(Any, DashboardState.close_modal)),
+                    rx.button("CANCEL", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.45)", padding="8px 16px", cursor="pointer", _hover={"color": "#fff"}, on_click=cast(Any, DashboardState.close_modal)),
                     rx.button(
                         rx.hstack(
-                            rx.text("INITIALIZE", class_name="hud-text", font_size="0.75rem", font_weight="700"),
+                            rx.text("CREATE PROJECT", class_name="hud-text", font_size="0.75rem", font_weight="700"),
                             rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>"""),
                             align="center", spacing="2",
                         ),
@@ -517,21 +454,6 @@ def dashboard_page() -> rx.Component:
                     align_items="center",
                 ),
                 
-                # Bottom modal status bar
-                rx.box(
-                    rx.hstack(
-                        rx.text("STATUS: SYNCING...", class_name="hud-text", font_size="0.6rem", color="#00F0FF"),
-                        rx.box(width="40px", height="2px", background="linear-gradient(90deg, #00F0FF, transparent)", border_radius="1px", margin_left="8px"),
-                        rx.spacer(),
-                        rx.text("V2.4.0-ASTRA_CORE", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.25)"),
-                        align_items="center",
-                    ),
-                    border_top="1px solid rgba(255,255,255,0.06)",
-                    padding_top="12px",
-                    margin_top="24px",
-                    width="100%",
-                ),
-                
                 class_name="glass-panel-glow", padding="28px", max_width="480px",
             ),
             open=DashboardState.is_modal_open, on_open_change=cast(Any, DashboardState.set_is_modal_open),
@@ -540,8 +462,8 @@ def dashboard_page() -> rx.Component:
         rx.dialog.root(
             rx.dialog.content(
                 rx.vstack(
-                    rx.text("DELETE WORKSPACE", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
-                    rx.heading("Delete Screenplay Workspace?", size="6", font_weight="800", color="#E2E8F0"),
+                    rx.text("DELETE PROJECT", class_name="hud-text", font_size="0.75rem", color="#ef4444"),
+                    rx.heading("Delete Screenplay Project?", size="6", font_weight="800", color="#E2E8F0"),
                     rx.text(f"Confirm deletion of '{DashboardState.project_to_delete_name}'. This screenplay's analysis and files will be permanently deleted.", font_size="0.85rem", color="rgba(255,255,255,0.6)", margin_top="8px"),
                     margin_bottom="24px", spacing="1", align_items="start",
                 ),

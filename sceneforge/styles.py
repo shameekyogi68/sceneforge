@@ -81,21 +81,21 @@ body {
 
 /* Tech-Noir Glass Panel */
 .glass-panel {
-    background: rgba(8, 12, 22, 0.75) !important;
-    backdrop-filter: blur(16px) saturate(1.2) !important;
+    background: rgba(8, 12, 22, 0.85) !important;
+    backdrop-filter: blur(6px) saturate(1.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .glass-panel-glow {
-    background: rgba(8, 12, 22, 0.75) !important;
-    backdrop-filter: blur(16px) saturate(1.2) !important;
+    background: rgba(8, 12, 22, 0.85) !important;
+    backdrop-filter: blur(6px) saturate(1.2) !important;
     border: 1px solid rgba(0, 240, 255, 0.15) !important;
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.05), inset 0 0 12px rgba(0, 240, 255, 0.05) !important;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 /* Cyber Input styling */
@@ -105,7 +105,7 @@ body {
     color: #E2E8F0 !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     font-size: 0.9rem !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 .premium-input:focus-within {
     border-color: #00F0FF !important;

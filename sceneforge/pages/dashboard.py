@@ -56,55 +56,61 @@ def render_project_card(proj: Any) -> rx.Component:
             on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj.id, proj.name)),
         ),
 
-        # Card content
-        rx.vstack(
-            # Folder icon glowing box
-            rx.box(
-                rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>"""),
-                width="40px",
-                height="40px",
-                border_radius="10px",
-                background="rgba(0, 240, 255, 0.08)",
-                border="1px solid rgba(0, 240, 255, 0.2)",
-                display="flex",
-                align_items="center",
-                justify_content="center",
-                margin_bottom="12px",
-            ),
-            rx.text(
-                proj.name,
-                font_size="1.1rem",
-                font_weight="700",
-                color="#E2E8F0",
-                word_break="break-all",
-                line_height="1.3",
-            ),
-            # Metadata
+        # Link wrapping only the card content
+        rx.link(
             rx.vstack(
-                rx.hstack(
-                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
-                    rx.text(proj.document_count.to(str) + " DOCUMENT" + rx.cond(proj.document_count == 1, "", "S"), class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    align="center",
-                    spacing="2",
+                # Folder icon glowing box
+                rx.box(
+                    rx.html("""<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>"""),
+                    width="40px",
+                    height="40px",
+                    border_radius="10px",
+                    background="rgba(0, 240, 255, 0.08)",
+                    border="1px solid rgba(0, 240, 255, 0.2)",
+                    display="flex",
+                    align_items="center",
+                    justify_content="center",
+                    margin_bottom="12px",
                 ),
-                rx.hstack(
-                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>"""),
-                    rx.text("MODIFIED: " + proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
-                    align="center",
-                    spacing="2",
+                rx.text(
+                    proj.name,
+                    font_size="1.1rem",
+                    font_weight="700",
+                    color="#E2E8F0",
+                    word_break="break-all",
+                    line_height="1.3",
                 ),
-                margin_top="12px",
-                spacing="2",
+                # Metadata
+                rx.vstack(
+                    rx.hstack(
+                        rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>"""),
+                        rx.text(proj.document_count.to(str) + " DOCUMENT" + rx.cond(proj.document_count == 1, "", "S"), class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                        align="center",
+                        spacing="2",
+                    ),
+                    rx.hstack(
+                        rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>"""),
+                        rx.text("MODIFIED: " + proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                        align="center",
+                        spacing="2",
+                    ),
+                    margin_top="12px",
+                    spacing="2",
+                    align_items="start",
+                ),
+                spacing="1",
                 align_items="start",
+                width="100%",
             ),
-            spacing="1",
-            align_items="start",
+            href=f"/project?project_id={proj.id}",
+            text_decoration="none",
+            width="100%",
+            display="block",
         ),
 
         # Styling
         class_name="glass-panel",
         padding="24px",
-        cursor="pointer",
         position="relative",
         transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
         _hover={
@@ -112,7 +118,6 @@ def render_project_card(proj: Any) -> rx.Component:
             "border_color": "rgba(0,240,255,0.35)",
             "box_shadow": "0 12px 32px rgba(0,240,255,0.1), inset 0 0 10px rgba(0,240,255,0.05)",
         },
-        on_click=cast(Any, lambda: cast(Any, DashboardState).go_to_project(proj.id)),
         style={"animation": "cardEntrance 0.4s ease both"},
     )
 

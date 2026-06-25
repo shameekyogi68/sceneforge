@@ -133,6 +133,8 @@ class State(rx.State):
         """Redirect to login page if token is missing, otherwise retrieve user email."""
         if not self.token:
             return rx.redirect("/login")
+        if self.user_email:
+            return None
         try:
             response = await self._api_request("GET", "/auth/me")
             if response.status_code == 200:
@@ -148,6 +150,8 @@ class State(rx.State):
         """Redirect to dashboard if already logged in, otherwise redirect to login."""
         if not self.token:
             return rx.redirect("/login")
+        if self.user_email:
+            return rx.redirect("/dashboard")
         try:
             response = await self._api_request("GET", "/auth/me")
             if response.status_code == 200:
@@ -163,6 +167,8 @@ class State(rx.State):
     async def check_auth_login(self) -> Optional[rx.event.EventSpec]:
         """Redirect to dashboard if already logged in."""
         if self.token:
+            if self.user_email:
+                return rx.redirect("/dashboard")
             try:
                 response = await self._api_request("GET", "/auth/me")
                 if response.status_code == 200:

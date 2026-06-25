@@ -32,27 +32,48 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
         opacity = rx.cond(is_active, "1.0", "0.5")
         color = rx.cond(is_active, "#00F0FF", "#E2E8F0")
         
-        btn = rx.box(
-            rx.html(icon_svg),
-            padding="12px",
-            border_left=border_left,
-            color=color,
-            style={
-                "opacity": opacity,
-                "cursor": "pointer",
-                "transition": "all 0.25s cubic-bezier(0.16,1,0.3,1)",
-                "display": "flex",
-                "align_items": "center",
-                "justify_content": "center",
-                "width": "100%",
-            },
-            _hover={
-                "opacity": "1.0",
-                "color": "#00F0FF",
-                "background": "rgba(0, 240, 255, 0.05)",
-            },
-            on_click=rx.redirect(route) if route else None,
-        )
+        if route:
+            btn = rx.link(
+                rx.box(
+                    rx.html(icon_svg),
+                    padding="12px",
+                    border_left=border_left,
+                    color=color,
+                    style={
+                        "opacity": opacity,
+                        "cursor": "pointer",
+                        "transition": "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                        "display": "flex",
+                        "align_items": "center",
+                        "justify_content": "center",
+                        "width": "100%",
+                    },
+                    _hover={
+                        "opacity": "1.0",
+                        "color": "#00F0FF",
+                        "background": "rgba(0, 240, 255, 0.05)",
+                    },
+                ),
+                href=route,
+                width="100%",
+                text_decoration="none",
+            )
+        else:
+            btn = rx.box(
+                rx.html(icon_svg),
+                padding="12px",
+                border_left=border_left,
+                color=color,
+                style={
+                    "opacity": opacity,
+                    "cursor": "default",
+                    "transition": "all 0.25s cubic-bezier(0.16,1,0.3,1)",
+                    "display": "flex",
+                    "align_items": "center",
+                    "justify_content": "center",
+                    "width": "100%",
+                },
+            )
         return rx.tooltip(
             btn,
             content=tooltip,

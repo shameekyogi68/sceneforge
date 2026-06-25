@@ -519,7 +519,7 @@ def chat_area() -> rx.Component:
             padding="24px 28px",
             width="100%",
             style={
-                "scroll-behavior": "smooth",
+                "scroll-behavior": "auto",
                 "::-webkit-scrollbar": {"width": "4px"},
                 "::-webkit-scrollbar-track": {"background": "rgba(0,0,0,0.1)"},
                 "::-webkit-scrollbar-thumb": {"background": "rgba(0,240,255,0.2)", "border-radius": "2px"},

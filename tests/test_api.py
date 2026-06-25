@@ -140,33 +140,21 @@ class TestApi(unittest.TestCase):
         
         # Mock table specifically depending on arguments to list document counts
         mock_projects_table = MagicMock()
-        mock_documents_table = MagicMock()
         
         def table_side_effect(table_name):
             if table_name == "projects":
                 return mock_projects_table
-            elif table_name == "documents":
-                return mock_documents_table
             return MagicMock()
             
         mock_db.table.side_effect = table_side_effect
         
-        # Set up projects table query mock
+        # Set up projects table query mock with nested documents counts
         mock_projects_select_res = MagicMock()
         mock_projects_select_res.data = [
-            {"id": "proj-1", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z"},
-            {"id": "proj-2", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z"}
+            {"id": "proj-1", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z", "documents": [{"count": 2}]},
+            {"id": "proj-2", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z", "documents": [{"count": 1}]}
         ]
         mock_projects_table.select.return_value.eq.return_value.execute.return_value = mock_projects_select_res
-        
-        # Set up documents table query mock
-        mock_documents_select_res = MagicMock()
-        mock_documents_select_res.data = [
-            {"project_id": "proj-1"},
-            {"project_id": "proj-1"},
-            {"project_id": "proj-2"}
-        ]
-        mock_documents_table.select.return_value.in_.return_value.execute.return_value = mock_documents_select_res
         
         headers = {"Authorization": "Bearer dummy-token"}
         response = self.client.get("/projects", headers=headers)

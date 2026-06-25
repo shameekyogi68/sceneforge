@@ -534,21 +534,54 @@ class ProjectState(State):
             return ProjectState.start_document_polling
 
     async def load_project_details(self):
-        """Query project details, document list, and chat logs from backend API."""
+        """Query project details, document list, and chat logs from backend API in a single request."""
         try:
-            # Load project details securely
+            # Load project details securely, including nested documents and messages
             response = await self._api_request("GET", f"/projects/{self.project_id}")
             if response.status_code != 200:
                 return rx.redirect("/dashboard")
                 
             project_data = response.json()
-            self.project_name = project_data["name"]
+            self.project_name = project_data.get("name", "")
 
-            # Load project dependencies concurrently
-            await asyncio.gather(
-                self.load_documents(),
-                self.load_chat_history()
-            )
+            # Extract documents directly
+            self.documents = project_data.get("documents", []) or []
+            # Initialize simulated steps for any document that is processing
+            for d in self.documents:
+                d_id = str(d.get("id", ""))
+                if d.get("status") == "processing" and d_id not in self.doc_steps:
+                    self.doc_steps[d_id] = 1
+
+            # Extract conversations and messages directly
+            conversations = project_data.get("conversations", []) or []
+            if conversations:
+                conv = conversations[0]
+                self.conversation_id = conv.get("id", "")
+                chat_history = []
+                for m in (conv.get("messages", []) or []):
+                    srcs = []
+                    raw_srcs = m.get("sources")
+                    if raw_srcs and isinstance(raw_srcs, list):
+                        for s in raw_srcs:
+                            if isinstance(s, dict):
+                                srcs.append(
+                                    SourceItem(
+                                        filename=s.get("filename", ""),
+                                        page=int(s.get("page", 0)),
+                                        text_preview=s.get("text_preview", "")
+                                    )
+                                )
+                    chat_history.append(
+                        ChatMessage(
+                           role=m.get("role", ""),
+                           content=m.get("content", ""),
+                           sources=srcs
+                        )
+                    )
+                self.chat_history = chat_history
+            else:
+                self.conversation_id = ""
+                self.chat_history = []
 
         except Exception as e:
             logger.exception("Failed to load project details")

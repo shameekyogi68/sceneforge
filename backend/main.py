@@ -215,29 +215,9 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
     """List all projects belonging to the authenticated user."""
     try:
         db = get_authenticated_client(token)
-        res = db.table("projects").select("*").eq("user_id", str(user.id)).execute()
+        res = db.table("projects").select("*, documents(count)").eq("user_id", str(user.id)).execute()
         data_list = res.data
         projects_list = []
-        # Extract project IDs to filter document query
-        project_ids = []
-        if isinstance(data_list, list):
-            for p in data_list:
-                if isinstance(p, dict) and "id" in p:
-                    project_ids.append(str(p["id"]))
-
-        document_counts = {}
-        if project_ids:
-            try:
-                # Filter to only the projects owned by this user
-                docs_res = db.table("documents").select("project_id").in_("project_id", project_ids).execute()
-                docs_data = docs_res.data or []
-                if isinstance(docs_data, list):
-                    for d in docs_data:
-                        if isinstance(d, dict) and "project_id" in d:
-                            pid = d["project_id"]
-                            document_counts[pid] = document_counts.get(pid, 0) + 1
-            except Exception as exc:
-                logger.warning("Could not retrieve document counts: %s", exc)
 
         if isinstance(data_list, list):
             for p in data_list:
@@ -245,7 +225,10 @@ def list_projects_endpoint(token: str = Depends(get_token), user: Any = Depends(
                     created = str(p.get("created_at", ""))
                     p_copy = dict(p)
                     p_copy["created_date"] = created.split("T")[0] if "T" in created else created
-                    p_copy["document_count"] = document_counts.get(p.get("id"), 0)
+                    
+                    docs_list = p.get("documents", [])
+                    doc_count = docs_list[0].get("count", 0) if isinstance(docs_list, list) and docs_list else 0
+                    p_copy["document_count"] = doc_count
                     projects_list.append(p_copy)
         return projects_list
     except Exception as e:
@@ -257,7 +240,17 @@ def get_project_endpoint(project_id: str, token: str = Depends(get_token), user:
     """Fetch a single project's details."""
     try:
         db = get_authenticated_client(token)
-        res = db.table("projects").select("*").eq("id", project_id).eq("user_id", str(user.id)).execute()
+        res = (
+            db.table("projects")
+            .select("id, name, created_at, user_id, documents(*), conversations(id, messages(role, content, sources))")
+            .eq("id", project_id)
+            .eq("user_id", str(user.id))
+            .order("created_at", desc=True, foreign_table="conversations")
+            .limit(1, foreign_table="conversations")
+            .order("created_at", desc=False, foreign_table="conversations.messages")
+            .limit(50, foreign_table="conversations.messages")
+            .execute()
+        )
         if not res.data:
             raise HTTPException(status_code=404, detail="Project not found or access denied")
         return res.data[0]

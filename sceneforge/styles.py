@@ -43,8 +43,14 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 240, 255, 0.55); }
 
+/* Hide Reflex watermark badge */
+a[href="https://reflex.dev"] {
+    display: none !important;
+}
+
 /* Text selection */
 ::selection { background: rgba(0, 240, 255, 0.25); color: #ffffff; }
+
 
 /* Radix dialog overlay */
 .rt-BaseDialogOverlay {

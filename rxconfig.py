@@ -26,5 +26,6 @@ config = rx.Config(
     api_url=api_url,
     cors_allowed_origins=cors_allowed_origins,
     plugins=[RadixThemesPlugin(), SitemapPlugin()],
-    show_reflex_badge=False,
+    show_built_with_reflex=False,
 )
+

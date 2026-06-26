@@ -5,10 +5,21 @@ import sys
 import uuid
 import logging
 import asyncio
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from supabase import create_client
 from dataclasses import dataclass, field
+
+def format_friendly_date(date_str: str) -> str:
+    if not date_str:
+        return ""
+    try:
+        clean_str = date_str.split("T")[0]
+        dt = datetime.strptime(clean_str, "%Y-%m-%d")
+        day = int(dt.strftime("%d"))
+        return dt.strftime(f"Modified %B {day}, %Y")
+    except Exception:
+        return f"Modified {date_str}"
 
 @dataclass
 class SourceItem:
@@ -290,6 +301,7 @@ class Project:
     document_count: int
     created_date: str
     status: str = ""
+    friendly_date: str = ""
 
 class DashboardState(State):
     """State for the user projects dashboard."""
@@ -343,7 +355,8 @@ class DashboardState(State):
                         name=p.get("name", ""),
                         document_count=p.get("document_count", 0),
                         created_date=p.get("created_date", ""),
-                        status=p.get("status", "")
+                        status=p.get("status", ""),
+                        friendly_date=format_friendly_date(p.get("created_date", ""))
                     ) for p in response.json()
                 ]
             else:
@@ -440,6 +453,7 @@ class ProjectState(State):
     is_preview_modal_open: bool = False
     is_preview_loading: bool = False
     show_share_toast: bool = False
+    doc_to_delete_id: str = ""
 
     # Explicit setter (replacing deprecated state_auto_setters)
     def set_input_message(self, value: str):
@@ -467,10 +481,15 @@ class ProjectState(State):
             if response.status_code == 200:
                 self.documents = response.json()
                 # Initialize simulated steps for any document that is processing
+                doc_steps_copy = self.doc_steps.copy()
+                has_changed = False
                 for d in self.documents:
                     d_id = str(d.get("id", ""))
-                    if d.get("status") == "processing" and d_id not in self.doc_steps:
-                        self.doc_steps[d_id] = 1
+                    if d.get("status") == "processing" and d_id not in doc_steps_copy:
+                        doc_steps_copy[d_id] = 1
+                        has_changed = True
+                if has_changed:
+                    self.doc_steps = doc_steps_copy
             else:
                 self.documents = []
         except Exception:
@@ -547,10 +566,15 @@ class ProjectState(State):
             # Extract documents directly
             self.documents = project_data.get("documents", []) or []
             # Initialize simulated steps for any document that is processing
+            doc_steps_copy = self.doc_steps.copy()
+            has_changed = False
             for d in self.documents:
                 d_id = str(d.get("id", ""))
-                if d.get("status") == "processing" and d_id not in self.doc_steps:
-                    self.doc_steps[d_id] = 1
+                if d.get("status") == "processing" and d_id not in doc_steps_copy:
+                    doc_steps_copy[d_id] = 1
+                    has_changed = True
+            if has_changed:
+                self.doc_steps = doc_steps_copy
 
             # Extract conversations and messages directly
             conversations = project_data.get("conversations", []) or []
@@ -587,11 +611,20 @@ class ProjectState(State):
             logger.exception("Failed to load project details")
             rx.toast.error("Failed to load project details.")
 
+    def confirm_delete_doc(self, doc_id: str):
+        """Set doc_to_delete_id to trigger inline confirmation."""
+        self.doc_to_delete_id = doc_id
+
+    def cancel_delete_doc(self):
+        """Clear doc_to_delete_id."""
+        self.doc_to_delete_id = ""
+
     async def delete_document(self, doc_id: str, filename: str):
         """Delete document from database and cascade chunks."""
         try:
             response = await self._api_request("DELETE", f"/documents/{doc_id}")
             if response.status_code == 200:
+                self.doc_to_delete_id = ""
                 await self.load_documents()
                 rx.toast.success(f"Document '{filename}' deleted.")
             else:
@@ -662,16 +695,22 @@ class ProjectState(State):
         while True:
             async with self:
                 await self.load_documents()
+                doc_steps_copy = self.doc_steps.copy()
+                has_changed = False
                 # Increment steps for documents that are still processing
                 for d in self.documents:
                     d_id = str(d.get("id", ""))
                     if d.get("status") == "processing":
-                        current_step = self.doc_steps.get(d_id, 1)
+                        current_step = doc_steps_copy.get(d_id, 1)
                         if current_step < 3:
-                            self.doc_steps[d_id] = current_step + 1
-                    elif d_id in self.doc_steps:
+                            doc_steps_copy[d_id] = current_step + 1
+                            has_changed = True
+                    elif d_id in doc_steps_copy:
                         # Clean up completed documents
-                        del self.doc_steps[d_id]
+                        del doc_steps_copy[d_id]
+                        has_changed = True
+                if has_changed:
+                    self.doc_steps = doc_steps_copy
                 
                 any_processing = any(d["status"] == "processing" for d in self.documents)
                 if not any_processing:
@@ -855,9 +894,28 @@ class ProjectState(State):
 
     async def share_project(self):
         """Share project link by copying to clipboard and triggering a floating success notification."""
-        project_url = f"https://sceneforge-aqua-ocean.reflex.run/project?project_id={self.project_id}"
+        site_url = os.environ.get("SITE_URL", "").rstrip("/")
+        if not site_url:
+            try:
+                page_host = self.router.page.host or ""
+                if page_host:
+                    if "localhost" in page_host or "127.0.0.1" in page_host:
+                        site_url = f"http://{page_host}"
+                    else:
+                        site_url = f"https://{page_host}"
+            except Exception:
+                pass
+        if not site_url:
+            site_url = "https://sceneforge-aqua-ocean.reflex.run"
+
+        project_url = f"{site_url}/project?project_id={self.project_id}"
         yield rx.set_clipboard(project_url)
         self.show_share_toast = True
         yield
         await asyncio.sleep(3.0)
         self.show_share_toast = False
+        yield
+
+    def download_response(self, content: str):
+        """Trigger browser download of the response text."""
+        return rx.download(data=content, filename="scriptiq_response.txt")

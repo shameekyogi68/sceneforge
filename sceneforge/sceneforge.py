@@ -67,50 +67,72 @@ app.add_page(privacy_page, route="/privacy")
 @rx.page(route="/", on_load=cast(Any, State.check_auth_index))
 def index():
     from sceneforge.pages.navigation import app_icon
-    return rx.center(
+    from sceneforge.pages.dashboard import project_skeleton_card
+    
+    return rx.box(
         rx.html(f"<style>{GLOBAL_CSS}</style>"),
-        # Ambient background orb
-        rx.box(
-            width="600px", height="600px",
-            background="radial-gradient(circle at center, rgba(0,240,255,0.06) 0%, transparent 70%)",
-            position="absolute", border_radius="50%", filter="blur(80px)",
-            top="15%", left="20%", z_index="0", pointer_events="none",
-        ),
-        rx.vstack(
-            app_icon(size="60px", icon_size="28px"),
-            # Custom loading scanner bar
-            rx.box(
-                rx.box(
-                    position="absolute",
-                    top="0",
-                    left="0",
-                    width="50px",
-                    height="100%",
-                    background_color="#00F0FF",
-                    background="linear-gradient(90deg, rgba(0, 240, 255, 0) 0%, #00F0FF 50%, rgba(0, 240, 255, 0) 100%)",
-                    style={"animation": "scanBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite"},
+        rx.hstack(
+            # Skeleton Sidebar
+            rx.vstack(
+                rx.center(
+                    app_icon(size="42px", icon_size="18px"),
+                    padding_y="28px",
+                    width="100%",
                 ),
-                width="140px",
-                height="2px",
-                background="rgba(0, 240, 255, 0.15)",
-                border_radius="1px",
-                margin_top="12px",
+                rx.vstack(
+                    rx.box(width="40px", height="40px", border_radius="10px", background="rgba(255,255,255,0.03)", style={"animation": "statusPulse 1.5s infinite"}),
+                    rx.box(width="40px", height="40px", border_radius="10px", background="rgba(255,255,255,0.03)", style={"animation": "statusPulse 1.5s infinite 0.25s"}),
+                    spacing="4",
+                    width="100%",
+                    align_items="center",
+                ),
+                rx.spacer(),
+                rx.box(width="34px", height="34px", border_radius="50%", background="rgba(255,255,255,0.03)", style={"animation": "statusPulse 1.5s infinite 0.5s"}),
+                width="68px",
+                height="100vh",
+                background="rgba(4, 6, 12, 0.95)",
+                border_right="1px solid rgba(255, 255, 255, 0.05)",
+                align_items="center",
+                flex_shrink="0",
+                padding_bottom="16px",
+            ),
+            # Main Content Skeleton
+            rx.vstack(
+                # Top header skeleton
+                rx.hstack(
+                    rx.box(width="240px", height="32px", background="rgba(255,255,255,0.03)", border_radius="4px", style={"animation": "statusPulse 1.5s infinite"}),
+                    rx.spacer(),
+                    rx.box(width="260px", height="40px", background="rgba(255,255,255,0.02)", border_radius="20px", style={"animation": "statusPulse 1.5s infinite"}),
+                    rx.box(width="120px", height="40px", background="rgba(255,255,255,0.02)", border_radius="20px", style={"animation": "statusPulse 1.5s infinite 0.25s"}),
+                    rx.box(width="120px", height="40px", background="rgba(255,255,255,0.02)", border_radius="20px", style={"animation": "statusPulse 1.5s infinite 0.5s"}),
+                    width="100%",
+                    align_items="center",
+                    spacing="4",
+                    padding_bottom="12px",
+                ),
+                rx.box(width="100%", height="1px", background="rgba(255,255,255,0.06)", margin_y="4px"),
+                # Section title skeleton
+                rx.box(width="200px", height="24px", background="rgba(255,255,255,0.03)", border_radius="4px", style={"animation": "statusPulse 1.5s infinite 0.25s"}, margin_top="16px"),
+                rx.box(width="380px", height="14px", background="rgba(255,255,255,0.02)", border_radius="4px", style={"animation": "statusPulse 1.5s infinite 0.4s"}),
+                # Skeleton grid
+                rx.grid(
+                    project_skeleton_card(), project_skeleton_card(), project_skeleton_card(),
+                    columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
+                    margin_top="24px",
+                ),
+                width="100%",
+                height="100vh",
+                padding="40px",
+                spacing="6",
                 overflow="hidden",
-                position="relative",
             ),
-            # Simulated tech status
-            rx.text(
-                "LOADING WORKSPACE...",
-                class_name="hud-text",
-                font_size="0.65rem",
-                color="rgba(0, 240, 255, 0.6)",
-                margin_top="8px",
-            ),
-            align="center",
-            spacing="3",
-            z_index="1",
+            width="100%",
+            height="100vh",
+            align_items="start",
+            spacing="0",
         ),
-        height="100vh",
         background_color="#05080F",
-        width="100%",
+        width="100vw",
+        height="100vh",
+        overflow="hidden",
     )

@@ -1,7 +1,7 @@
 import reflex as rx
 from typing import Any, cast
 from sceneforge.state import AuthState
-from sceneforge.styles import GLOBAL_CSS
+from sceneforge.styles import GLOBAL_CSS, SCREENPLAY_FONT_FAMILY
 from sceneforge.pages.navigation import app_icon
 
 body_style = {
@@ -75,40 +75,16 @@ def login_page() -> rx.Component:
                 rx.text(
                     "AI Screenplay Writing Assistant powered by Research",
                     color="rgba(255,255,255,0.65)",
-                    font_size="0.88rem",
+                    font_size="0.82rem",
                     text_align="center",
-                    letter_spacing="0.02em",
+                    letter_spacing="0.04em",
+                    font_family=SCREENPLAY_FONT_FAMILY,
                 ),
                 align="center",
                 spacing="2",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
             ),
 
-            # ── Google CTA ────────────────────────────────────────────
-            rx.box(
-                rx.button(
-                    google_icon(),
-                    rx.text("Continue with Google", font_size="0.95rem", font_weight="700", letter_spacing="0.01em"),
-                    background="#FFFFFF",
-                    color="#05080F",
-                    border_radius="100px",  # Rounded button pill matching mock
-                    width="100%",
-                    padding_y="22px",
-                    cursor="pointer",
-                    gap="12px",
-                    box_shadow="0 0 20px rgba(0, 240, 255, 0.25)",
-                    transition="all 0.2s ease-in-out",
-                    _hover={
-                        "box_shadow": "0 0 32px rgba(0, 240, 255, 0.55)",
-                        "transform": "translateY(-1px)",
-                    },
-                    _active={"transform": "translateY(0)"},
-                    on_click=cast(Any, AuthState.login_with_google),
-                ),
-                width="100%",
-                margin_top="36px",
-            ),
-            
             # ── Decorative Divider ────────────────────────────────────
             rx.box(
                 rx.hstack(
@@ -120,10 +96,38 @@ def login_page() -> rx.Component:
                     width="100%",
                 ),
                 margin_top="36px",
-                margin_bottom="24px",
+                margin_bottom="12px",
                 width="100%",
             ),
 
+            # ── Google CTA ────────────────────────────────────────────
+            rx.box(
+                rx.button(
+                    google_icon(),
+                    rx.text("Continue with Google", font_size="0.95rem", font_weight="700", letter_spacing="0.01em"),
+                    background="rgba(0, 240, 255, 0.05)",
+                    color="#E2E8F0",
+                    border="1px solid rgba(0, 240, 255, 0.25)",
+                    border_radius="100px",  # Rounded button pill matching mock
+                    width="100%",
+                    padding_y="22px",
+                    cursor="pointer",
+                    gap="12px",
+                    box_shadow="0 0 15px rgba(0, 240, 255, 0.15)",
+                    transition="all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                    _hover={
+                        "box_shadow": "0 0 25px rgba(0, 240, 255, 0.45)",
+                        "background": "rgba(0, 240, 255, 0.12)",
+                        "border_color": "#00F0FF",
+                        "transform": "translateY(-1px)",
+                    },
+                    _active={"transform": "scale(0.98)"},
+                    on_click=cast(Any, AuthState.login_with_google),
+                ),
+                width="100%",
+                margin_top="12px",
+            ),
+            
             # ── Footer ────────────────────────────────────────────────
             rx.box(
                 rx.hstack(
@@ -148,6 +152,7 @@ def login_page() -> rx.Component:
             z_index="1",
             style={
                 "animation": "fadeSlideUp 0.7s cubic-bezier(0.16,1,0.3,1) both",
+                "box_shadow": "0 20px 50px rgba(0,0,0,0.7), 0 0 40px rgba(0, 240, 255, 0.07)",
             },
         ),
         style=body_style,

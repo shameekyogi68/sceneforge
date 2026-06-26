@@ -186,22 +186,55 @@ def render_doc_item(doc: Any) -> rx.Component:
                 min_width="0",
             ),
             rx.spacer(),
-            # Delete button
-            rx.button(
-                rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>"""),
-                background="transparent",
-                border="none",
-                color="rgba(255,255,255,0.4)",
-                cursor="pointer",
-                padding="6px",
-                border_radius="4px",
-                flex_shrink="0",
-                transition="all 0.2s ease",
-                _hover={
-                    "color": ERROR_COLOR,
-                    "background": "rgba(255,0,85,0.1)",
-                },
-                on_click=cast(Any, lambda: cast(Any, ProjectState).delete_document(doc["id"], doc["filename"])),
+            # Delete / Confirm Button Group
+            rx.cond(
+                ProjectState.doc_to_delete_id == doc["id"],
+                rx.hstack(
+                    rx.button(
+                        rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>"""),
+                        background=ERROR_COLOR,
+                        color="#fff",
+                        cursor="pointer",
+                        padding="5px",
+                        border_radius="4px",
+                        flex_shrink="0",
+                        _active={"transform": "scale(0.95)"},
+                        on_click=cast(Any, lambda: cast(Any, ProjectState).delete_document(doc["id"], doc["filename"])),
+                        style={"animation": "messageIn 0.2s ease both"},
+                    ),
+                    rx.button(
+                        rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>"""),
+                        background="rgba(255,255,255,0.05)",
+                        color="rgba(255,255,255,0.6)",
+                        cursor="pointer",
+                        padding="5px",
+                        border_radius="4px",
+                        flex_shrink="0",
+                        _hover={"color": "#fff", "background": "rgba(255,255,255,0.1)"},
+                        _active={"transform": "scale(0.95)"},
+                        on_click=cast(Any, ProjectState.cancel_delete_doc),
+                        style={"animation": "messageIn 0.2s ease both"},
+                    ),
+                    spacing="1",
+                    flex_shrink="0",
+                ),
+                rx.button(
+                    rx.html("""<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>"""),
+                    background="transparent",
+                    border="none",
+                    color="rgba(255,255,255,0.4)",
+                    cursor="pointer",
+                    padding="6px",
+                    border_radius="4px",
+                    flex_shrink="0",
+                    transition="all 0.2s ease",
+                    _hover={
+                        "color": ERROR_COLOR,
+                        "background": "rgba(255,0,85,0.1)",
+                    },
+                    _active={"transform": "scale(0.95)"},
+                    on_click=cast(Any, lambda: cast(Any, ProjectState).confirm_delete_doc(doc["id"])),
+                ),
             ),
             width="100%",
             align_items="center",
@@ -209,7 +242,7 @@ def render_doc_item(doc: Any) -> rx.Component:
         ),
         stepper_view,
         width="100%",
-        padding="12px 14px",
+        padding="12px 18px",
         border_radius="10px",
         background="rgba(255, 255, 255, 0.02)",
         border="1px solid rgba(255, 255, 255, 0.05)",
@@ -253,7 +286,7 @@ def render_chat_message(msg: Any) -> rx.Component:
     is_user = msg.role == "user"
 
     ai_avatar = rx.box(
-        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>"""),
+        rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>"""),
         width="28px",
         height="28px",
         border_radius="6px",
@@ -265,6 +298,58 @@ def render_chat_message(msg: Any) -> rx.Component:
         flex_shrink="0",
         margin_right="12px",
         margin_top="4px",
+    )
+
+    is_not_found = (
+        msg.content.lower().contains("cannot find") |
+        msg.content.lower().contains("not found") |
+        msg.content.lower().contains("unable to find") |
+        msg.content.lower().contains("no information")
+    )
+
+    copy_export_buttons = rx.cond(
+        ~is_user,
+        rx.hstack(
+            rx.button(
+                rx.hstack(
+                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>"""),
+                    rx.text("Copy", font_size="0.65rem", font_weight="600"),
+                    spacing="1",
+                    align_items="center",
+                ),
+                background="transparent",
+                border="1px solid rgba(0, 240, 255, 0.15)",
+                color="rgba(0, 240, 255, 0.7)",
+                border_radius="4px",
+                padding="4px 8px",
+                cursor="pointer",
+                height="24px",
+                _hover={"background": "rgba(0, 240, 255, 0.08)", "color": "#00F0FF", "border_color": "#00F0FF"},
+                _active={"transform": "scale(0.95)"},
+                on_click=rx.set_clipboard(msg.content),
+            ),
+            rx.button(
+                rx.hstack(
+                    rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>"""),
+                    rx.text("Export TXT", font_size="0.65rem", font_weight="600"),
+                    spacing="1",
+                    align_items="center",
+                ),
+                background="transparent",
+                border="1px solid rgba(255, 255, 255, 0.1)",
+                color="rgba(255, 255, 255, 0.5)",
+                border_radius="4px",
+                padding="4px 8px",
+                cursor="pointer",
+                height="24px",
+                _hover={"background": "rgba(255, 255, 255, 0.05)", "color": "#fff", "border_color": "rgba(255, 255, 255, 0.3)"},
+                _active={"transform": "scale(0.95)"},
+                on_click=cast(Any, lambda: cast(Any, ProjectState).download_response(msg.content)),
+            ),
+            spacing="2",
+            margin_top="12px",
+            padding_left="20px",
+        )
     )
 
     message_content = rx.box(
@@ -289,18 +374,31 @@ def render_chat_message(msg: Any) -> rx.Component:
                 margin_left=rx.cond(is_user, "0", "4px"),
                 width="100%",
             ),
-            # Source pills
+            # Source pills with conditional header
             rx.cond(
                 cast(Any, msg.sources).length() > 0,
-                rx.flex(
-                    rx.foreach(msg.sources, render_source_pill),
-                    flex_wrap="wrap",
-                    gap="6px",
+                rx.vstack(
+                    rx.cond(
+                        is_not_found,
+                        rx.text("RELEVANT SOURCES INSPECTED (NO MATCH FOUND)", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.35)", font_weight="700", margin_bottom="6px"),
+                        rx.text("CITED SOURCES", class_name="hud-text", font_size="0.58rem", color="#00F0FF", font_weight="700", margin_bottom="6px")
+                    ),
+                    rx.flex(
+                        rx.foreach(msg.sources, render_source_pill),
+                        flex_wrap="wrap",
+                        gap="6px",
+                        width="100%",
+                    ),
+                    align_items="start",
+                    spacing="1",
                     margin_top="14px",
                     padding_left=rx.cond(is_user, "0", "20px"),
+                    width="100%",
                 ),
                 rx.fragment(),
             ),
+            # Action buttons (Copy / Export)
+            copy_export_buttons,
             align_items="start",
             spacing="1",
             width="100%",
@@ -331,7 +429,7 @@ def typing_indicator() -> rx.Component:
     return rx.box(
         rx.hstack(
             rx.box(
-                rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>"""),
+                rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>"""),
                 width="28px", height="28px", border_radius="6px", background="rgba(0, 240, 255, 0.08)", border="1px solid rgba(0, 240, 255, 0.2)",
                 display="flex", align_items="center", justify_content="center", margin_right="12px",
             ),
@@ -415,10 +513,10 @@ def welcome_screen() -> rx.Component:
         rx.heading("CREATIVE STUDIO", size="5", color="#fff", font_weight="800", letter_spacing="0.1em", text_align="center"),
         rx.text("ScriptIQ is ready. Select a document from the panel on the right or upload a new one to begin research-assisted writing.", color=ACCENT_COLOR, font_size="0.82rem", text_align="center", max_width="430px", line_height="1.6"),
         rx.grid(
-            example_btn("Draft a scene using my research"),
-            example_btn("Answer questions from my reference files"),
-            example_btn("Help outline script structure"),
-            example_btn("Summarize the uploaded source materials"),
+            example_btn("Analyze arc of character X"),
+            example_btn("Generate character profile from scene 1"),
+            example_btn("Check screenplay formatting rules"),
+            example_btn("Summarize key themes in document"),
             columns="2",
             spacing="3",
             width="100%",
@@ -538,7 +636,7 @@ def chat_area() -> rx.Component:
                         cursor="pointer",
                         _hover={"color": "#00F0FF"},
                     ),
-                    rx.input(
+                    rx.text_area(
                         placeholder="Ask about research or outline screenplay sections...",
                         value=ProjectState.input_message,
                         on_change=cast(Any, ProjectState.set_input_message),
@@ -549,7 +647,14 @@ def chat_area() -> rx.Component:
                         font_size="0.9rem",
                         font_family=FONT_FAMILY,
                         width="100%",
-                        style={"caret-color": ACCENT_COLOR},
+                        style={
+                            "caret-color": ACCENT_COLOR,
+                            "resize": "none",
+                            "min_height": "24px",
+                            "max_height": "120px",
+                            "padding": "6px 0",
+                        },
+                        rows="1",
                         _placeholder={"color": MUTED_COLOR},
                         on_key_down=cast(Any, ProjectState.handle_key_down),
                     ),
@@ -560,7 +665,7 @@ def chat_area() -> rx.Component:
                             rx.spinner(size="1"),
                             rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>"""),
                         ),
-                        background="linear-gradient(135deg, #00F0FF 0%, #8B5CF6 100%)",
+                        background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
                         color="#ffffff",
                         border="none",
                         border_radius="6px",
@@ -576,10 +681,11 @@ def chat_area() -> rx.Component:
                             "box_shadow": "0 0 18px rgba(0,240,255,0.45)",
                             "transform": "scale(1.05)",
                         },
+                        _active={"transform": "scale(0.95)"},
                         on_click=cast(Any, ProjectState.send_message),
                     ),
                     width="100%",
-                    align_items="center",
+                    align_items="end",
                     gap="12px",
                     background="rgba(6, 9, 16, 0.75)",
                     border="1px solid rgba(255,255,255,0.06)",
@@ -645,6 +751,11 @@ def live_inspection_panel() -> rx.Component:
                 padding="24px 16px",
                 width="100%",
                 cursor="pointer",
+                transition="all 0.3s ease-in-out",
+                _hover={
+                    "animation": "borderPulse 1.5s infinite",
+                    "background": "rgba(0, 240, 255, 0.02)",
+                },
             ),
             rx.cond(
                 cast(Any, rx.selected_files("workspace_pdf_upload")),
@@ -833,6 +944,7 @@ def live_inspection_panel() -> rx.Component:
         height="100%",
         spacing="3",
         padding="28px 24px",
+        style={"animation": "slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) both"},
     )
 
     return rx.box(
@@ -860,7 +972,7 @@ def project_page() -> rx.Component:
 
         # Main Layout container
         rx.hstack(
-            sidebar_nav("project", ProjectState.user_avatar_char, ProjectState.user_email, ProjectState.logout),
+            sidebar_nav("project", ProjectState.user_avatar_char, ProjectState.user_email, ProjectState.questions_today, ProjectState.logout),
             # Workspace splitscreen
             rx.hstack(
                 chat_area(),

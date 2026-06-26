@@ -1,7 +1,7 @@
 import reflex as rx
 from typing import Any, cast
 from sceneforge.state import DashboardState
-from sceneforge.styles import GLOBAL_CSS
+from sceneforge.styles import GLOBAL_CSS, APP_VERSION
 from sceneforge.pages.navigation import sidebar_nav
 
 DASH_KEYFRAMES = """
@@ -53,6 +53,7 @@ def render_project_card(proj: Any) -> rx.Component:
                 "color": "#ef4444",
                 "background": "rgba(239,68,68,0.1)",
             },
+            _active={"transform": "scale(0.95)"},
             on_click=cast(Any, lambda: cast(Any, DashboardState).confirm_delete_project(proj.id, proj.name)),
         ),
 
@@ -90,7 +91,7 @@ def render_project_card(proj: Any) -> rx.Component:
                     ),
                     rx.hstack(
                         rx.html("""<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>"""),
-                        rx.text("MODIFIED: " + proj.created_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
+                        rx.text(proj.friendly_date, class_name="hud-text", font_size="0.65rem", color="rgba(255,255,255,0.4)"),
                         align="center",
                         spacing="2",
                     ),
@@ -112,7 +113,7 @@ def render_project_card(proj: Any) -> rx.Component:
         class_name="glass-panel",
         padding="24px",
         position="relative",
-        transition="all 0.25s cubic-bezier(0.16,1,0.3,1)",
+        transition="all 0.3s cubic-bezier(0.16,1,0.3,1)",
         _hover={
             "transform": "translateY(-4px)",
             "border_color": "rgba(0,240,255,0.35)",
@@ -205,7 +206,8 @@ def dashboard_page() -> rx.Component:
                     _placeholder={"color": "rgba(255,255,255,0.3)"},
                 ),
                 class_name="premium-input",
-                border_radius="100px", padding="8px 16px", width="260px", align_items="center", gap="8px",
+                border_radius="100px", padding="0 16px", width="260px", align_items="center", gap="8px",
+                height="40px",
             ),
             # Latency Indicator
             rx.box(
@@ -218,7 +220,10 @@ def dashboard_page() -> rx.Component:
                 background="rgba(0, 240, 255, 0.08)",
                 border="1px solid rgba(0, 240, 255, 0.2)",
                 border_radius="100px",
-                padding="8px 16px",
+                padding="0 16px",
+                height="40px",
+                display="flex",
+                align_items="center",
             ),
             # New Project Action Pill
             rx.button(
@@ -226,13 +231,15 @@ def dashboard_page() -> rx.Component:
                 background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
                 color="#05080F",
                 border_radius="100px",
-                padding="10px 22px",
+                padding="0 22px",
                 cursor="pointer",
                 box_shadow="0 0 15px rgba(0, 240, 255, 0.25)",
                 transition="all 0.2s ease",
+                height="40px",
                 _hover={
                     "box_shadow": "0 0 25px rgba(0, 240, 255, 0.45)",
                 },
+                _active={"transform": "scale(0.98)"},
                 on_click=cast(Any, DashboardState.open_modal),
             ),
             width="100%",
@@ -266,30 +273,30 @@ def dashboard_page() -> rx.Component:
                     # NEW SEQUENCE block
                     rx.vstack(
                         rx.box(
-                            rx.html("""<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(0,240,255,0.6)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
+                            rx.html("""<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5" style="transition: stroke 0.3s ease;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>"""),
                             width="44px",
                             height="44px",
                             border_radius="50%",
-                            border="1px solid rgba(0, 240, 255, 0.3)",
                             display="flex",
                             align_items="center",
                             justify_content="center",
+                            class_name="dashed-icon-holder",
+                            style={
+                                "border": "1px solid rgba(255, 255, 255, 0.15)",
+                                "transition": "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+                            },
                         ),
-                        rx.text("NEW WRITING PROJECT", class_name="hud-text", font_size="0.75rem", color="rgba(0,240,255,0.6)"),
+                        rx.text("NEW WRITING PROJECT", class_name="hud-text", font_size="0.75rem", style={"transition": "color 0.3s ease"}),
                         spacing="3",
                         align_items="center",
                         justify_content="center",
                         height="100%",
                         min_height="180px",
-                        border="1px dashed rgba(0, 240, 255, 0.25)",
                         border_radius="16px",
                         padding="32px",
                         cursor="pointer",
-                        _hover={
-                            "border_color": "#00F0FF",
-                            "background": "rgba(0,240,255,0.02)",
-                            "box_shadow": "0 0 15px rgba(0,240,255,0.08)",
-                        },
+                        class_name="dashed-new-project-card",
+                        _active={"transform": "scale(0.98)"},
                         on_click=cast(Any, DashboardState.open_modal),
                     ),
                     columns=rx.breakpoints(initial="1", sm="2", md="3"), spacing="5", width="100%",
@@ -334,7 +341,7 @@ def dashboard_page() -> rx.Component:
 
         # Layout wrapper
         rx.hstack(
-            sidebar_nav("dashboard", DashboardState.user_avatar_char, DashboardState.user_email, DashboardState.logout),
+            sidebar_nav("dashboard", DashboardState.user_avatar_char, DashboardState.user_email, DashboardState.questions_today, DashboardState.logout),
             main_dashboard_content,
             width="100%",
             height="100vh",
@@ -354,7 +361,7 @@ def dashboard_page() -> rx.Component:
                             align="center", spacing="2",
                         ),
                         rx.spacer(),
-                        rx.text("ScriptIQ v4.0", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
+                        rx.text(f"ScriptIQ v{APP_VERSION}", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
                         align="center", spacing="2",
                     ),
                     border_bottom="1px solid rgba(255,255,255,0.06)",
@@ -376,10 +383,18 @@ def dashboard_page() -> rx.Component:
                         rx.text("PROJECT TITLE", class_name="hud-text", font_size="0.68rem", color="#00F0FF", font_weight="700"),
                         width="100%",
                     ),
-                    rx.input(
-                        placeholder="e.g. Project Astra", max_length=80,
-                        value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
-                        class_name="premium-input", border_radius="6px", padding="12px 16px", width="100%",
+                    rx.hstack(
+                        rx.html("""<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>"""),
+                        rx.input(
+                            placeholder="e.g. Project Astra", max_length=80,
+                            value=DashboardState.new_project_name, on_change=cast(Any, DashboardState.set_new_project_name),
+                            border="none", outline="none", background="transparent",
+                            color="#E2E8F0", font_family="'Plus Jakarta Sans', sans-serif", font_size="0.9rem",
+                            width="100%", style={"caret-color": "#00F0FF"},
+                            _placeholder={"color": "rgba(255,255,255,0.3)"},
+                        ),
+                        class_name="premium-input",
+                        border_radius="8px", padding="10px 14px", width="100%", align_items="center", gap="10px",
                     ),
                     align_items="start",
                     spacing="2",
@@ -387,12 +402,10 @@ def dashboard_page() -> rx.Component:
                     margin_bottom="18px",
                 ),
 
-
-
                 # Bottom action buttons
                 rx.hstack(
                     rx.spacer(),
-                    rx.button("CANCEL", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.45)", padding="8px 16px", cursor="pointer", _hover={"color": "#fff"}, on_click=cast(Any, DashboardState.close_modal)),
+                    rx.button("CANCEL", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.65)", padding="8px 16px", cursor="pointer", _hover={"color": "#00F0FF", "text_shadow": "0 0 8px rgba(0,240,255,0.5)"}, _active={"transform": "scale(0.95)"}, on_click=cast(Any, DashboardState.close_modal)),
                     rx.button(
                         rx.hstack(
                             rx.text("CREATE PROJECT", class_name="hud-text", font_size="0.75rem", font_weight="700"),
@@ -406,6 +419,7 @@ def dashboard_page() -> rx.Component:
                         cursor="pointer",
                         box_shadow="0 0 15px rgba(0, 240, 255, 0.4)",
                         _hover={"box_shadow": "0 0 25px rgba(0, 240, 255, 0.6)"},
+                        _active={"transform": "scale(0.98)"},
                         on_click=cast(Any, DashboardState.create_project)
                     ),
                     spacing="4",

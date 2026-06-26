@@ -12,6 +12,7 @@ ERROR_COLOR = "#FF0055"
 SUCCESS_COLOR = "#00FF88"
 FONT_FAMILY = "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif"
 SCREENPLAY_FONT_FAMILY = "'Courier Prime', 'Courier New', Courier, monospace"
+APP_VERSION = "4.0"
 
 GLOBAL_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
@@ -71,6 +72,21 @@ body {
 @keyframes scanBar {
     0% { transform: translateX(-50px); }
     100% { transform: translateX(140px); }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(0, 240, 255, 0.25); box-shadow: 0 0 10px rgba(0, 240, 255, 0.05); }
+  50%      { border-color: rgba(0, 240, 255, 0.7); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
 }
 
 
@@ -159,5 +175,25 @@ body {
     padding: 0 2px;
     font-family: 'JetBrains Mono', monospace;
     border-bottom: 1px solid #00F0FF;
+}
+
+/* Muted dashed card that glows on hover */
+.dashed-new-project-card {
+    border: 1px dashed rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.dashed-new-project-card:hover {
+    border-color: #00F0FF !important;
+    background: rgba(0, 240, 255, 0.03) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15) !important;
+    color: #00F0FF !important;
+}
+.dashed-new-project-card:hover svg {
+    stroke: #00F0FF !important;
+}
+.dashed-new-project-card:hover .dashed-icon-holder {
+    border-color: #00F0FF !important;
+    background: rgba(0, 240, 255, 0.08) !important;
 }
 """

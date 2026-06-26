@@ -667,6 +667,14 @@ def health_endpoint():
         "gemini_configured": has_gemini
     }
 
+@app.get("/env-check")
+def env_check_endpoint():
+    return {
+        "CORS_ALLOWED_ORIGINS": os.getenv("CORS_ALLOWED_ORIGINS"),
+        "API_URL": os.getenv("API_URL"),
+        "SITE_URL": os.getenv("SITE_URL"),
+    }
+
 # ---------------------------------------------------------------------------
 # Static Files Catch-all (For frontend files when served directly)
 # ---------------------------------------------------------------------------

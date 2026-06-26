@@ -25,7 +25,7 @@ def app_icon(size: str = "42px", icon_size: str = "18px") -> rx.Component:
         flex_shrink="0",
     )
 
-def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_email: rx.Var[str] | str, on_logout: Any) -> rx.Component:
+def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_email: rx.Var[str] | str, questions_today: rx.Var[int] | int, on_logout: Any) -> rx.Component:
     def sidebar_button(icon_svg: str, route: str, tooltip: str, is_active: bool) -> rx.Component:
         # Hover indicator logic
         border_left = rx.cond(is_active, "3px solid #00F0FF", "3px solid transparent")
@@ -113,9 +113,9 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
                 rx.box(
                     rx.html(logout_svg),
                     padding="12px",
-                    color="#ef4444",
+                    color=MUTED_COLOR,
                     style={
-                        "opacity": "0.6",
+                        "opacity": "0.65",
                         "cursor": "pointer",
                         "transition": "all 0.2s ease",
                         "display": "flex",
@@ -125,37 +125,87 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
                     },
                     _hover={
                         "opacity": "1.0",
+                        "color": "#ef4444",
                         "background": "rgba(239, 68, 68, 0.08)",
                     },
+                    _active={"transform": "scale(0.95)"},
                     on_click=on_logout,
                 ),
                 content="Log Out",
                 side="right",
             ),
-            # User Avatar initials
-            rx.tooltip(
-                rx.box(
-                    rx.center(
-                        rx.text(
-                            user_avatar_char,
-                            font_weight="800",
-                            font_size="0.85rem",
-                            color="#05080F",
-                            text_transform="uppercase",
+            # User Avatar initials wrapped in Popover Menu
+            rx.popover.root(
+                rx.popover.trigger(
+                    rx.box(
+                        rx.center(
+                            rx.text(
+                                user_avatar_char,
+                                font_weight="800",
+                                font_size="0.85rem",
+                                color="#05080F",
+                                text_transform="uppercase",
+                            ),
+                            width="34px",
+                            height="34px",
+                            border_radius="50%",
+                            background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
+                            box_shadow="0 0 10px rgba(0,240,255,0.4)",
+                            cursor="pointer",
                         ),
-                        width="34px",
-                        height="34px",
-                        border_radius="50%",
-                        background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
-                        box_shadow="0 0 10px rgba(0,240,255,0.4)",
-                    ),
-                    padding_y="16px",
-                    width="100%",
-                    display="flex",
-                    justify_content="center",
+                        padding_y="16px",
+                        width="100%",
+                        display="flex",
+                        justify_content="center",
+                        _active={"transform": "scale(0.95)"},
+                    )
                 ),
-                content=user_email,
-                side="right",
+                rx.popover.content(
+                    rx.vstack(
+                        rx.text("USER PROFILE", class_name="hud-text", font_size="0.6rem", color="#00F0FF", font_weight="700"),
+                        rx.text(user_email, font_size="0.8rem", color="#fff", font_weight="600", font_family="JetBrains Mono, monospace", word_break="break-all"),
+                        rx.box(width="100%", height="1px", background="rgba(255,255,255,0.06)", margin_y="8px"),
+                        
+                        rx.hstack(
+                            rx.text("DAILY QUERIES", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.4)"),
+                            rx.spacer(),
+                            rx.text(questions_today.to(str) + "/100 used", font_size="0.65rem", color="#00F0FF", font_weight="700", font_family="JetBrains Mono, monospace"),
+                            width="100%",
+                        ),
+                        # Quota progress bar
+                        rx.box(
+                            rx.box(
+                                width=questions_today.to(str) + "%",
+                                height="100%",
+                                background="linear-gradient(90deg, #00F0FF, #0072FF)",
+                                border_radius="2px",
+                            ),
+                            width="100%",
+                            height="4px",
+                            background="rgba(255, 255, 255, 0.05)",
+                            border_radius="2px",
+                            margin_top="4px",
+                        ),
+                        
+                        rx.box(width="100%", height="1px", background="rgba(255,255,255,0.06)", margin_y="8px"),
+                        rx.hstack(
+                            rx.text("THEME MODE", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.4)"),
+                            rx.spacer(),
+                            rx.badge("DARK_ONLY", color_scheme="cyan", variant="solid", font_size="0.55rem"),
+                            width="100%",
+                            align_items="center",
+                        ),
+                        align_items="start",
+                        spacing="1",
+                    ),
+                    background="rgba(8, 12, 22, 0.96) !important",
+                    backdrop_filter="blur(12px) saturate(140%) !important",
+                    border="1px solid rgba(0, 240, 255, 0.25) !important",
+                    box_shadow="0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,240,255,0.08) !important",
+                    border_radius="10px !important",
+                    padding="16px",
+                    width="220px",
+                ),
             ),
             spacing="1",
             width="100%",

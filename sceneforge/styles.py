@@ -15,6 +15,7 @@ SCREENPLAY_FONT_FAMILY = "'Courier Prime', 'Courier New', Courier, monospace"
 APP_VERSION = "4.0"
 
 GLOBAL_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
@@ -305,5 +306,34 @@ a[href*="reflex.dev"],
     font-weight: 700;
     margin: 10px 0 4px;
     letter-spacing: -0.01em;
+}
+
+/* Skeleton loader animations */
+@keyframes skeletonPulse {
+    0%, 100% { opacity: 0.35; background-color: rgba(255, 255, 255, 0.03); }
+    50% { opacity: 0.7; background-color: rgba(0, 240, 255, 0.08); }
+}
+.skeleton-pulse {
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* Accessible focus ring */
+.accessible-focus-ring:focus-visible {
+    outline: 2px solid #00F0FF !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+}
+
+/* Responsive layout breakpoints */
+@media (max-width: 768px) {
+    .responsive-split {
+        flex-direction: column !important;
+    }
+    .responsive-hide {
+        display: none !important;
+    }
+    .responsive-width-100 {
+        width: 100% !important;
+    }
 }
 """

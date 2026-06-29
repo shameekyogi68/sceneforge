@@ -127,6 +127,11 @@ CREATE INDEX IF NOT EXISTS project_memories_project_id_idx ON project_memories (
 CREATE INDEX IF NOT EXISTS document_chunks_fts_idx ON document_chunks
     USING gin (to_tsvector('english', chunk_text));
 
+-- Missing performance indexes
+CREATE INDEX IF NOT EXISTS profiles_last_question_date_idx ON profiles (last_question_date);
+CREATE INDEX IF NOT EXISTS messages_conversation_created_idx ON messages (conversation_id, created_at);
+CREATE INDEX IF NOT EXISTS conversations_project_created_idx ON conversations (project_id, created_at DESC);
+
 -- =========================================================================
 -- Updated-at triggers
 -- =========================================================================

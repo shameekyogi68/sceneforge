@@ -17,8 +17,10 @@ from fastapi import (
     HTTPException,
     Request,
     UploadFile,
+    Response,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -85,6 +87,31 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
 )
+
+# 1. Gzip compression middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# 2. Security headers middleware
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response: Response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+# 3. Request body size limit middleware (10MB)
+MAX_REQUEST_SIZE = 10 * 1024 * 1024  # 10MB
+@app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            if int(content_length) > MAX_REQUEST_SIZE:
+                return Response("Request entity too large", status_code=413)
+        except ValueError:
+            pass
+    return await call_next(request)
 
 # Setup uploads temp directory
 UPLOADS_DIR = Path("uploads")
@@ -509,10 +536,12 @@ def process_pdf_background_task(temp_path_str: str, filename: str, project_id: s
             document_id=doc_id,
             token=None,  # service client handles authorization
         )
+        if chunk_count == 0:
+            raise ValueError("PDF contains no selectable text")
         db.table("documents").update({"status": "ready"}).eq("id", doc_id).execute()
         logger.info("Background processing succeeded for file: %s. Chunks: %d", filename, chunk_count)
     except Exception as e:
-        logger.exception("Background processing failed for file: %s", filename)
+        logger.exception("Background processing failed for file: %s. Error: %s", filename, str(e))
         db.table("documents").update({"status": "error"}).eq("id", doc_id).execute()
     finally:
         try:
@@ -790,11 +819,24 @@ def api_config_endpoint():
 # ---------------------------------------------------------------------------
 @app.get("/health")
 def health_endpoint():
-    """Return health check statistics."""
-    has_gemini = bool(config.GEMINI_API_KEY)
+    """Return health check statistics including database and model details."""
+    db_status = "unconfigured"
+    if config.SUPABASE_URL and config.SUPABASE_SERVICE_KEY:
+        try:
+            # Query profiles table with a limit of 1 to verify database connectivity
+            client = get_service_client()
+            client.table("profiles").select("id").limit(1).execute()
+            db_status = "connected"
+        except Exception as exc:
+            logger.warning("Health check database query failed: %s", exc)
+            db_status = f"error: {str(exc)}"
+
     return {
-        "status": "healthy",
-        "gemini_configured": has_gemini
+        "status": "healthy" if db_status == "connected" else "degraded",
+        "database": db_status,
+        "active_model": config.GEMINI_MODEL,
+        "embedding_model": config.EMBEDDING_MODEL,
+        "gemini_configured": bool(config.GEMINI_API_KEY),
     }
 
 

@@ -198,7 +198,7 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
                         # Quota progress bar
                         rx.box(
                             rx.box(
-                                width=questions_today.to(str) + "%",
+                                width=rx.cond(questions_today > 100, "100%", questions_today.to(str) + "%"),
                                 height="100%",
                                 background="linear-gradient(90deg, #00F0FF, #0072FF)",
                                 border_radius="2px",

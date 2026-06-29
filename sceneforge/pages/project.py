@@ -48,7 +48,7 @@ body_style = {
 
 def macos_dots(on_close: Any) -> rx.Component:
     return rx.hstack(
-        rx.box(class_name="macos-dot", background_color="#ff5f56", border="1px solid #e0443e", cursor="pointer", on_click=on_close),
+        rx.box(class_name="macos-dot", background_color="#ff5f56", border="1px solid #e0443e", cursor="pointer", on_click=on_close, role="button", aria_label="Close preview"),
         rx.box(class_name="macos-dot", background_color="#ffbd2e", border="1px solid #dfa123"),
         rx.box(class_name="macos-dot", background_color="#27c93f", border="1px solid #1aab29"),
         spacing="2",
@@ -201,6 +201,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         _active={"transform": "scale(0.95)"},
                         on_click=cast(Any, lambda: cast(Any, ProjectState).delete_document(doc["id"], doc["filename"])),
                         style={"animation": "messageIn 0.2s ease both"},
+                        aria_label="Confirm delete document",
                     ),
                     rx.button(
                         rx.html("""<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>"""),
@@ -214,6 +215,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                         _active={"transform": "scale(0.95)"},
                         on_click=cast(Any, ProjectState.cancel_delete_doc),
                         style={"animation": "messageIn 0.2s ease both"},
+                        aria_label="Cancel delete document",
                     ),
                     spacing="1",
                     flex_shrink="0",
@@ -234,6 +236,7 @@ def render_doc_item(doc: Any) -> rx.Component:
                     },
                     _active={"transform": "scale(0.95)"},
                     on_click=cast(Any, lambda: cast(Any, ProjectState).confirm_delete_doc(doc["id"])),
+                    aria_label="Delete document",
                 ),
             ),
             width="100%",
@@ -242,7 +245,7 @@ def render_doc_item(doc: Any) -> rx.Component:
         ),
         stepper_view,
         width="100%",
-        padding="12px 18px",
+        padding="12px 24px 12px 18px",
         border_radius="10px",
         background="rgba(255, 255, 255, 0.02)",
         border="1px solid rgba(255, 255, 255, 0.05)",
@@ -652,7 +655,10 @@ def chat_area() -> rx.Component:
                         },
                         rows="1",
                         _placeholder={"color": MUTED_COLOR},
-                        on_key_down=cast(Any, ProjectState.handle_key_down),
+                        on_key_down=lambda e: rx.cond(
+                            (e.key == "Enter") & ~e.shift_key,
+                            ProjectState.send_message
+                        ).prevent_default,
                     ),
                     # Send button
                     rx.button(
@@ -662,6 +668,7 @@ def chat_area() -> rx.Component:
                             rx.html("""<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>"""),
                         ),
                         background="linear-gradient(135deg, #00F0FF 0%, #0072FF 100%)",
+                        aria_label="Send message",
                         color="#ffffff",
                         border="none",
                         border_radius="6px",
@@ -851,6 +858,8 @@ def live_inspection_panel() -> rx.Component:
                     display="flex", align_items="center", justify_content="center",
                     on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(ProjectState.selected_preview_filename, ProjectState.selected_preview_page - 1)),
                     _hover=rx.cond(ProjectState.selected_preview_page > 1, {"border_color": "#00F0FF", "background": "rgba(0,240,255,0.06)"}, {}),
+                    role="button",
+                    aria_label="Previous page",
                 ),
                 rx.box(
                     rx.html("""<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>"""),
@@ -861,6 +870,8 @@ def live_inspection_panel() -> rx.Component:
                     display="flex", align_items="center", justify_content="center",
                     on_click=cast(Any, lambda: cast(Any, ProjectState).open_document_preview(ProjectState.selected_preview_filename, ProjectState.selected_preview_page + 1)),
                     _hover={"border_color": "#00F0FF", "background": "rgba(0,240,255,0.06)"},
+                    role="button",
+                    aria_label="Next page",
                 ),
                 spacing="2",
             ),

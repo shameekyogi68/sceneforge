@@ -811,11 +811,6 @@ class ProjectState(State):
         self.input_message = text
         return self.send_message()
 
-    def handle_key_down(self, key: str, key_info: Dict[str, bool]):
-        """Handle key down event and trigger send message on Enter without Shift."""
-        if key == "Enter" and not key_info.get("shift_key", False):
-            return self.send_message()
-
     def set_is_preview_modal_open(self, val: bool):
         self.is_preview_modal_open = val
 
@@ -908,6 +903,7 @@ class ProjectState(State):
             logger.exception("Failed to clear chat")
             yield rx.toast.error("An error occurred while clearing chat.")
 
+    @rx.event(background=True)
     async def share_project(self):
         """Share project link by copying to clipboard and triggering a floating success notification."""
         site_url = os.environ.get("SITE_URL", "").rstrip("/")
@@ -926,11 +922,11 @@ class ProjectState(State):
 
         project_url = f"{site_url}/project?project_id={self.project_id}"
         yield rx.set_clipboard(project_url)
-        self.show_share_toast = True
-        yield
+        async with self:
+            self.show_share_toast = True
         await asyncio.sleep(3.0)
-        self.show_share_toast = False
-        yield
+        async with self:
+            self.show_share_toast = False
 
     def download_response(self, content: str):
         """Trigger browser download of the response text."""

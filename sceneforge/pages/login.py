@@ -72,6 +72,14 @@ def login_page() -> rx.Component:
             ),
             
             rx.vstack(
+                rx.heading(
+                    "ScriptIQ",
+                    size="8",
+                    color="#fff",
+                    font_weight="800",
+                    letter_spacing="0.08em",
+                    margin_bottom="4px",
+                ),
                 rx.text(
                     "AI Screenplay Writing Assistant powered by Research",
                     color="rgba(255,255,255,0.65)",
@@ -81,7 +89,7 @@ def login_page() -> rx.Component:
                     font_family=SCREENPLAY_FONT_FAMILY,
                 ),
                 align="center",
-                spacing="2",
+                spacing="1",
                 style={"animation": "fadeSlideUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both"},
             ),
 

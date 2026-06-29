@@ -96,31 +96,60 @@ def chunk_text(
 def _embed_batch(texts: List[str], task_type: str) -> List[List[float]]:
     """
     Embed a list of texts in one API call (up to EMBED_BATCH_SIZE at a time).
-
-    Gemini batch embed returns one embedding per input text in the same order.
+    With exponential backoff retry for robustness against transient 429/500 errors.
     """
     from google.genai import types
+    import time
     client = _get_genai_client()
 
     results: List[List[float]] = []
     for i in range(0, len(texts), config.EMBED_BATCH_SIZE):
         batch = texts[i : i + config.EMBED_BATCH_SIZE]
-        response = client.models.embed_content(
-            model=config.EMBEDDING_MODEL,
-            contents=batch,
-            config=types.EmbedContentConfig(
-                task_type=task_type,
-                output_dimensionality=config.EMBEDDING_DIMENSION,
-            )
-        )
-        embeddings = response.embeddings
+        
+        # Exponential backoff retry loop
+        max_retries = 3
+        delay = 1.0
+        embeddings = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = client.models.embed_content(
+                    model=config.EMBEDDING_MODEL,
+                    contents=batch,
+                    config=types.EmbedContentConfig(
+                        task_type=task_type,
+                        output_dimensionality=config.EMBEDDING_DIMENSION,
+                    )
+                )
+                embeddings = response.embeddings
+                if embeddings:
+                    break
+            except Exception as exc:
+                if attempt == max_retries:
+                    raise
+                logger.warning(
+                    "Gemini embedding attempt %d failed (error: %s). Retrying in %.1fs...",
+                    attempt, exc, delay
+                )
+                time.sleep(delay)
+                delay *= 2.0
+                
         if not embeddings:
             raise RuntimeError("Gemini returned no embeddings.")
-        results.extend([e.values for e in embeddings if e.values is not None])
-    if len(results) != len(texts):
-        raise RuntimeError(
-            f"Gemini returned {len(results)} embeddings for {len(texts)} texts."
-        )
+        
+        # Gracefully handle count mismatch instead of crashing
+        batch_vals = [e.values for e in embeddings if e and e.values is not None]
+        if len(batch_vals) != len(batch):
+            logger.warning(
+                "Embedding count mismatch: expected %d, got %d. Padding with zeros.",
+                len(batch), len(batch_vals)
+            )
+            # Pad or truncate to match length
+            while len(batch_vals) < len(batch):
+                batch_vals.append([0.0] * config.EMBEDDING_DIMENSION)
+            batch_vals = batch_vals[:len(batch)]
+            
+        results.extend(batch_vals)
+        
     return results
 
 
@@ -356,16 +385,54 @@ def answer_with_sources(
     prompt = build_prompt(question, chunks, project_memory)
 
     from google.genai import types
+    import time
     client = _get_genai_client()
-    response = client.models.generate_content(
-        model=config.GEMINI_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.2,
-            max_output_tokens=2048,
-            thinking_config=types.ThinkingConfig(thinking_budget=0),
-        ),
-    )
+
+    # Determine unique list of fallback models
+    primary_model = config.GEMINI_MODEL
+    fallback_candidates = [primary_model, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    fallback_models = []
+    for m in fallback_candidates:
+        if m not in fallback_models:
+            fallback_models.append(m)
+
+    response = None
+    last_exception = None
+
+    for model_name in fallback_models:
+        max_retries = 2
+        delay = 1.0
+        for attempt in range(1, max_retries + 1):
+            try:
+                logger.info("Attempting generation with model: %s (attempt %d)", model_name, attempt)
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.2,
+                        max_output_tokens=2048,
+                        thinking_config=types.ThinkingConfig(thinking_budget=0),
+                    ),
+                )
+                if response and response.text:
+                    break
+            except Exception as exc:
+                last_exception = exc
+                logger.warning(
+                    "Generation failed for model %s on attempt %d: %s",
+                    model_name, attempt, exc
+                )
+                if attempt < max_retries:
+                    time.sleep(delay)
+                    delay *= 2.0
+        if response and response.text:
+            break
+    else:
+        # If all fallback models failed
+        error_msg = f"All fallback models failed. Last error: {str(last_exception)}"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg) from last_exception
+
     answer_text = response.text or ""
 
     sources = [

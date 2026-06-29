@@ -26,11 +26,17 @@ class TestApi(unittest.TestCase):
         self.dummy_user.id = "user-123"
         self.dummy_user.email = "test@example.com"
 
-    def test_health_check(self):
+    @patch("backend.main.get_service_client")
+    def test_health_check(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_get_client.return_value = mock_client
+        mock_client.table.return_value.select.return_value.limit.return_value.execute.return_value = MagicMock(data=[{"id": "1"}])
+
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["status"], "healthy")
-        self.assertTrue(response.json()["gemini_configured"])
+        data = response.json()
+        self.assertEqual(data["status"], "healthy")
+        self.assertTrue(data["gemini_configured"])
 
     @patch("backend.main.signup")
     def test_signup_endpoint(self, mock_signup):

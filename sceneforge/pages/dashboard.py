@@ -341,7 +341,7 @@ def dashboard_page() -> rx.Component:
 
         # Layout wrapper
         rx.hstack(
-            sidebar_nav("dashboard", DashboardState.user_avatar_char, DashboardState.user_email, DashboardState.questions_today, DashboardState.logout),
+            sidebar_nav("dashboard", DashboardState.user_avatar_char, DashboardState.user_email, DashboardState.questions_today, DashboardState.logout, DashboardState.is_online),
             main_dashboard_content,
             width="100%",
             height="100vh",
@@ -361,7 +361,6 @@ def dashboard_page() -> rx.Component:
                             align="center", spacing="2",
                         ),
                         rx.spacer(),
-                        rx.text(f"ScriptIQ v{APP_VERSION}", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.3)"),
                         align="center", spacing="2",
                     ),
                     border_bottom="1px solid rgba(255,255,255,0.06)",
@@ -405,7 +404,7 @@ def dashboard_page() -> rx.Component:
                 # Bottom action buttons
                 rx.hstack(
                     rx.spacer(),
-                    rx.button("CANCEL", class_name="hud-text", font_size="0.72rem", background="transparent", border="none", color="rgba(255,255,255,0.65)", padding="8px 16px", cursor="pointer", _hover={"color": "#00F0FF", "text_shadow": "0 0 8px rgba(0,240,255,0.5)"}, _active={"transform": "scale(0.95)"}, on_click=cast(Any, DashboardState.close_modal)),
+                    rx.button("CANCEL", class_name="hud-text", font_size="0.72rem", background="rgba(255,255,255,0.05)", border="1px solid rgba(255,255,255,0.15)", color="#E2E8F0", border_radius="6px", padding="8px 16px", cursor="pointer", _hover={"color": "#00F0FF", "border_color": "rgba(0,240,255,0.3)", "background": "rgba(0,240,255,0.05)"}, _active={"transform": "scale(0.95)"}, on_click=cast(Any, DashboardState.close_modal)),
                     rx.button(
                         rx.hstack(
                             rx.text("CREATE PROJECT", class_name="hud-text", font_size="0.75rem", font_weight="700"),

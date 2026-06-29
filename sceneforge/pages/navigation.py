@@ -1,6 +1,8 @@
 import reflex as rx
 from typing import Any, cast
 from sceneforge.styles import ACCENT_COLOR, BACKGROUND_COLOR, SURFACE_COLOR, MUTED_COLOR
+from sceneforge.state import State
+
 
 def app_icon(size: str = "42px", icon_size: str = "18px") -> rx.Component:
     is_compact = (size == "42px")
@@ -25,7 +27,7 @@ def app_icon(size: str = "42px", icon_size: str = "18px") -> rx.Component:
         flex_shrink="0",
     )
 
-def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_email: rx.Var[str] | str, questions_today: rx.Var[int] | int, on_logout: Any) -> rx.Component:
+def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_email: rx.Var[str] | str, questions_today: rx.Var[int] | int, on_logout: Any, is_online: rx.Var[bool] | bool = True) -> rx.Component:
     def sidebar_button(icon_svg: str, route: str, tooltip: str, is_active: bool) -> rx.Component:
         # Hover indicator logic
         border_left = rx.cond(is_active, "3px solid #00F0FF", "3px solid transparent")
@@ -98,7 +100,9 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
         # Navigation items
         rx.vstack(
             sidebar_button(dashboard_svg, "/dashboard", "Dashboard", active_route == "dashboard"),
-            sidebar_button(chat_svg, "", "Workspace Chat (Active in Projects)", active_route == "project"),
+            # Chat is context-sensitive (only meaningful inside a project); keep it as a
+            # non-interactive indicator so users don't click a dead link.
+            sidebar_button(chat_svg, "", "Workspace Chat (Active in Projects)", False),
             spacing="4",
             width="100%",
             align_items="center",
@@ -108,6 +112,25 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
         
         # Bottom controls
         rx.vstack(
+            # Connection status indicator
+            rx.box(
+                rx.hstack(
+                    rx.box(class_name="connection-dot"),
+                    rx.text(
+                        rx.cond(is_online, "online", "offline"),
+                        class_name="hud-text",
+                        font_size="0.55rem",
+                    ),
+                    spacing="2",
+                    align_items="center",
+                ),
+                class_name=rx.cond(
+                    is_online,
+                    "connection-indicator online",
+                    "connection-indicator offline",
+                ),
+                on_mount=State.check_connection,
+            ),
             # Logout
             rx.tooltip(
                 rx.box(

@@ -99,14 +99,14 @@ class TestApi(unittest.TestCase):
         mock_get_db.return_value = mock_db
         
         mock_insert_res = MagicMock()
-        mock_insert_res.data = [{"id": "proj-111", "name": "FilmTest", "user_id": "user-123"}]
+        mock_insert_res.data = [{"id": "33333333-3333-3333-3333-333333333333", "name": "FilmTest", "user_id": "user-123"}]
         mock_db.table().insert().execute.return_value = mock_insert_res
         
         headers = {"Authorization": "Bearer dummy-token"}
         response = self.client.post("/projects", json={"name": "FilmTest"}, headers=headers)
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data["id"], "proj-111")
+        self.assertEqual(data["id"], "33333333-3333-3333-3333-333333333333")
         self.assertEqual(data["name"], "FilmTest")
 
     @patch("backend.main.get_current_user")
@@ -118,8 +118,8 @@ class TestApi(unittest.TestCase):
         
         mock_select_res = MagicMock()
         mock_select_res.data = [
-            {"id": "proj-1", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z"},
-            {"id": "proj-2", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z"}
+            {"id": "11111111-1111-1111-1111-111111111111", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z"},
+            {"id": "22222222-2222-2222-2222-222222222222", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z"}
         ]
         mock_db.table().select().eq().execute.return_value = mock_select_res
         
@@ -151,8 +151,8 @@ class TestApi(unittest.TestCase):
         # Set up projects table query mock with nested documents counts
         mock_projects_select_res = MagicMock()
         mock_projects_select_res.data = [
-            {"id": "proj-1", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z", "documents": [{"count": 2}]},
-            {"id": "proj-2", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z", "documents": [{"count": 1}]}
+            {"id": "11111111-1111-1111-1111-111111111111", "name": "Project Alpha", "created_at": "2026-06-15T10:00:00Z", "documents": [{"count": 2}]},
+            {"id": "22222222-2222-2222-2222-222222222222", "name": "Project Beta", "created_at": "2026-06-15T12:00:00Z", "documents": [{"count": 1}]}
         ]
         mock_projects_table.select.return_value.eq.return_value.execute.return_value = mock_projects_select_res
         
@@ -176,14 +176,14 @@ class TestApi(unittest.TestCase):
         
         # Mock project ownership check succeeds
         mock_select_res = MagicMock()
-        mock_select_res.data = [{"id": "proj-1"}]
+        mock_select_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_select_res
         
         headers = {"Authorization": "Bearer dummy-token"}
-        response = self.client.delete("/projects/proj-1", headers=headers)
+        response = self.client.delete("/projects/11111111-1111-1111-1111-111111111111", headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Project and all cascading items deleted successfully")
-        mock_clear_mem.assert_called_with("proj-1")
+        mock_clear_mem.assert_called_with("11111111-1111-1111-1111-111111111111")
 
     @patch("backend.main.get_current_user")
     @patch("backend.main.get_authenticated_client")
@@ -194,20 +194,20 @@ class TestApi(unittest.TestCase):
         
         # Mock project ownership check
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         
         # Mock documents select query
         mock_doc_res = MagicMock()
         mock_doc_res.data = [
-            {"id": "doc-1", "filename": "script.pdf", "status": "ready"},
-            {"id": "doc-2", "filename": "research.pdf", "status": "processing"}
+            {"id": "44444444-4444-4444-4444-444444444444", "filename": "script.pdf", "status": "ready"},
+            {"id": "55555555-5555-5555-5555-555555555555", "filename": "research.pdf", "status": "processing"}
         ]
         
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
         mock_db.table().select().eq().order().execute.return_value = mock_doc_res
         
         headers = {"Authorization": "Bearer dummy-token"}
-        response = self.client.get("/documents/proj-1", headers=headers)
+        response = self.client.get("/documents/11111111-1111-1111-1111-111111111111", headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.json()[0]["filename"], "script.pdf")
@@ -221,16 +221,16 @@ class TestApi(unittest.TestCase):
         
         # Mock document query returning project_id
         mock_doc_res = MagicMock()
-        mock_doc_res.data = [{"project_id": "proj-1", "filename": "script.pdf"}]
+        mock_doc_res.data = [{"project_id": "11111111-1111-1111-1111-111111111111", "filename": "script.pdf"}]
         mock_db.table().select().eq().execute.return_value = mock_doc_res
         
         # Mock project ownership check succeeds
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
         
         headers = {"Authorization": "Bearer dummy-token"}
-        response = self.client.delete("/documents/doc-1", headers=headers)
+        response = self.client.delete("/documents/44444444-4444-4444-4444-444444444444", headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Document 'script.pdf' deleted successfully")
 
@@ -244,7 +244,7 @@ class TestApi(unittest.TestCase):
         
         # 1. Project ownership mock
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
         
         # 2. Document count check mock (under limit of 30)
@@ -255,12 +255,12 @@ class TestApi(unittest.TestCase):
         
         # 3. Document insertion mock
         mock_insert_res = MagicMock()
-        mock_insert_res.data = [{"id": "new-doc-id"}]
+        mock_insert_res.data = [{"id": "66666666-6666-6666-6666-666666666666"}]
         mock_db.table().insert().execute.return_value = mock_insert_res
         
         pdf_content = b"%PDF-1.4\n%..."
         file_data = {"file": ("script.pdf", io.BytesIO(pdf_content), "application/pdf")}
-        data_data = {"project_id": "proj-1"}
+        data_data = {"project_id": "11111111-1111-1111-1111-111111111111"}
         
         headers = {"Authorization": "Bearer dummy-token"}
         
@@ -270,7 +270,7 @@ class TestApi(unittest.TestCase):
             
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["success"])
-        self.assertEqual(response.json()["document_id"], "new-doc-id")
+        self.assertEqual(response.json()["document_id"], "66666666-6666-6666-6666-666666666666")
 
     @patch("backend.main.get_current_user")
     @patch("backend.main.get_authenticated_client")
@@ -280,7 +280,7 @@ class TestApi(unittest.TestCase):
         # Plain text content instead of %PDF magic bytes
         invalid_content = b"This is not a PDF file."
         file_data = {"file": ("script.pdf", io.BytesIO(invalid_content), "application/pdf")}
-        data_data = {"project_id": "proj-1"}
+        data_data = {"project_id": "11111111-1111-1111-1111-111111111111"}
         
         headers = {"Authorization": "Bearer dummy-token"}
         response = self.client.post("/upload", files=file_data, data=data_data, headers=headers)
@@ -302,12 +302,12 @@ class TestApi(unittest.TestCase):
         
         # Project ownership check
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
         
         # Conversation creation/selection mock
         mock_conv_res = MagicMock()
-        mock_conv_res.data = [{"id": "conv-789"}]
+        mock_conv_res.data = [{"id": "77777777-7777-7777-7777-777777777777"}]
         mock_db.table().insert().execute.return_value = mock_conv_res
         
         # RAG Pipeline mocks
@@ -321,7 +321,7 @@ class TestApi(unittest.TestCase):
         headers = {"Authorization": "Bearer dummy-token"}
         chat_request = {
             "message": "Where is the scene shot?",
-            "project_id": "proj-1",
+            "project_id": "11111111-1111-1111-1111-111111111111",
             "conversation_id": None
         }
         response = self.client.post("/ask", json=chat_request, headers=headers)
@@ -329,7 +329,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["reply"], "The answer is here.")
-        self.assertEqual(data["conversation_id"], "conv-789")
+        self.assertEqual(data["conversation_id"], "77777777-7777-7777-7777-777777777777")
         self.assertEqual(data["remaining_questions"], 97) # 100 - 3
 
     @patch("backend.main.get_current_user")
@@ -345,13 +345,13 @@ class TestApi(unittest.TestCase):
         
         # Project ownership check
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
         
         headers = {"Authorization": "Bearer dummy-token"}
         chat_request = {
             "message": "Where is the scene shot?",
-            "project_id": "proj-1",
+            "project_id": "11111111-1111-1111-1111-111111111111",
             "conversation_id": None
         }
         response = self.client.post("/ask", json=chat_request, headers=headers)
@@ -368,7 +368,7 @@ class TestApi(unittest.TestCase):
 
         # Project ownership mock
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
 
         # Chunks query mock
@@ -381,7 +381,7 @@ class TestApi(unittest.TestCase):
         mock_db.table().select().eq().eq().eq().order().execute.return_value = mock_chunks_res
 
         headers = {"Authorization": "Bearer dummy-token"}
-        response = self.client.get("/documents/proj-1/page-text?filename=c.pdf&page_num=4", headers=headers)
+        response = self.client.get("/documents/11111111-1111-1111-1111-111111111111/page-text?filename=c.pdf&page_num=4", headers=headers)
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["filename"], "c.pdf")
@@ -398,14 +398,14 @@ class TestApi(unittest.TestCase):
 
         # Project ownership mock
         mock_proj_res = MagicMock()
-        mock_proj_res.data = [{"id": "proj-1"}]
+        mock_proj_res.data = [{"id": "11111111-1111-1111-1111-111111111111"}]
         mock_db.table().select().eq().eq().execute.return_value = mock_proj_res
 
         headers = {"Authorization": "Bearer dummy-token"}
-        response = self.client.delete("/projects/proj-1/messages", headers=headers)
+        response = self.client.delete("/projects/11111111-1111-1111-1111-111111111111/messages", headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["message"], "Chat history and memory cleared successfully.")
-        mock_clear_mem.assert_called_once_with("proj-1")
+        mock_clear_mem.assert_called_once_with("11111111-1111-1111-1111-111111111111")
         mock_db.table().delete().eq().execute.assert_called_once()
 
 if __name__ == "__main__":

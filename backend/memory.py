@@ -66,7 +66,10 @@ def _get_memory():
     """Retrieve or build the Mem0 client lazily."""
     global _memory
     if _memory is None:
-        _memory = _build_memory()
+        if config.USE_MEM0:
+            _memory = _build_memory()
+        else:
+            _memory = _NoopMemory()
     return _memory
 
 

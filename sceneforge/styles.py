@@ -16,7 +16,6 @@ APP_VERSION = "4.0"
 
 GLOBAL_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 
@@ -43,9 +42,55 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0, 240, 255, 0.55); }
 
-/* Hide Reflex watermark badge */
-a[href="https://reflex.dev"] {
+/* Hide Reflex watermark badge — multiple selectors for resilience */
+a[href="https://reflex.dev"],
+a[href*="reflex.dev"],
+[href="https://reflex.dev"] {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Connection status indicator */
+.connection-indicator {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px) saturate(1.2);
+    background: rgba(8, 12, 22, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.connection-indicator.online {
+    border-color: rgba(0, 255, 136, 0.3);
+    color: rgba(0, 255, 136, 0.9);
+}
+.connection-indicator.offline {
+    border-color: rgba(255, 0, 85, 0.4);
+    color: rgba(255, 0, 85, 0.9);
+}
+.connection-indicator.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+.connection-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
 }
 
 /* Text selection */
@@ -136,6 +181,11 @@ a[href="https://reflex.dev"] {
     outline: none !important;
 }
 
+/* Premium Input — ensure typed text clears the icon */
+.premium-input input {
+    padding-left: 8px !important;
+}
+
 /* Cyber Button Hover Glow */
 .cyber-button-hover:hover {
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.45);
@@ -201,5 +251,59 @@ a[href="https://reflex.dev"] {
 .dashed-new-project-card:hover .dashed-icon-holder {
     border-color: #00F0FF !important;
     background: rgba(0, 240, 255, 0.08) !important;
+}
+
+/* Quota progress bar fill */
+.quota-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00F0FF, #0072FF);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 2px;
+}
+
+/* Radix Dialog content dark theme override */
+.rt-DialogContent {
+    background: rgba(8, 12, 22, 0.96) !important;
+    border: 1px solid rgba(0, 240, 255, 0.15) !important;
+    backdrop-filter: blur(12px) saturate(1.4) !important;
+}
+
+/* Markdown content in chat messages */
+.rx-Markdown p { margin: 0 0 0.5em 0; }
+.rx-Markdown p:last-child { margin-bottom: 0; }
+.rx-Markdown code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: rgba(0, 240, 255, 0.08);
+    color: #00F0FF;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+.rx-Markdown pre {
+    background: rgba(4, 6, 12, 0.8);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+.rx-Markdown pre code {
+    background: transparent;
+    padding: 0;
+    color: #E2E8F0;
+}
+.rx-Markdown ul, .rx-Markdown ol {
+    padding-left: 1.4em;
+    margin: 4px 0;
+}
+.rx-Markdown li { margin: 2px 0; }
+.rx-Markdown strong { color: #ffffff; font-weight: 700; }
+.rx-Markdown em { color: rgba(226,232,240,0.8); }
+.rx-Markdown h1,.rx-Markdown h2,.rx-Markdown h3 {
+    color: #ffffff;
+    font-weight: 700;
+    margin: 10px 0 4px;
+    letter-spacing: -0.01em;
 }
 """

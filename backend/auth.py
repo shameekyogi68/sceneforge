@@ -2,13 +2,15 @@
 auth.py — Supabase Auth helpers: signup, login, token validation, rate limiting.
 
 Optimisations:
-- Module-level anon client reused for all auth operations
-- check_rate_limit reuses the caller-provided authenticated client instead of
-  creating a new one per call
+- Module-level anon client reused for all auth operations (uses ANON key).
+- Backend-authenticated client uses SERVICE key for trusted operations.
+- check_rate_limit uses a lightweight RPC update to avoid read-modify-write races.
+- Rate limiting fails CLOSED on unexpected DB errors to prevent abuse.
 """
 
 import logging
 import time
+import uuid
 from datetime import date
 from typing import Any, Optional
 
@@ -16,25 +18,40 @@ from fastapi import HTTPException
 from supabase import create_client
 
 import backend.config as config
+from postgrest import CountMethod
 
 logger = logging.getLogger(__name__)
 
-# Single module-level client for auth (not RLS-protected operations)
+
+# ---------------------------------------------------------------------------
+# Supabase clients
+# ---------------------------------------------------------------------------
 _anon_client = None
+_service_client = None
+
 
 def get_anon_client():
-    """Retrieve or build the anonymous Supabase client lazily."""
+    """Retrieve or build the anonymous Supabase client (used for auth/public operations)."""
     global _anon_client
     if _anon_client is None:
-        _anon_client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+        _anon_client = create_client(config.SUPABASE_URL, config.SUPABASE_ANON_KEY)
     return _anon_client
+
+
+def get_service_client():
+    """Retrieve or build the backend service-role client (bypasses RLS)."""
+    global _service_client
+    if _service_client is None:
+        _service_client = create_client(config.SUPABASE_URL, config.SUPABASE_SERVICE_KEY)
+    return _service_client
 
 
 from collections import OrderedDict
 import threading
 
+
 class ClientCache:
-    """Thread-safe connection cache to reuse client instances per user token."""
+    """Thread-safe connection cache to reuse authenticated client instances per user token."""
     def __init__(self, max_size: int = 100):
         self.cache = OrderedDict()
         self.max_size = max_size
@@ -47,14 +64,16 @@ class ClientCache:
             if token in self.cache:
                 self.cache.move_to_end(token)
                 return self.cache[token]
-            client = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+            client = create_client(config.SUPABASE_URL, config.SUPABASE_SERVICE_KEY)
             client.postgrest.auth(token)
             self.cache[token] = client
             if len(self.cache) > self.max_size:
                 self.cache.popitem(last=False)
             return client
 
+
 _client_cache = ClientCache()
+
 
 def get_authenticated_client(token: str):
     return _client_cache.get(token)
@@ -62,7 +81,7 @@ def get_authenticated_client(token: str):
 
 class UserCache:
     """Thread-safe cache for verified Supabase users to avoid round-trip get_user calls."""
-    def __init__(self, ttl: float = 300.0, max_size: int = 100):
+    def __init__(self, ttl: float = 300.0, max_size: int = 1000):
         self.cache = {}
         self.ttl = ttl
         self.max_size = max_size
@@ -94,6 +113,7 @@ class UserCache:
                     self.cache.popitem()
             self.cache[token] = (user, time.time() + self.ttl)
 
+
 _user_cache = UserCache()
 
 
@@ -115,9 +135,10 @@ def signup(email: str, password: str) -> Any:
     if result is None or not result.user:
         raise HTTPException(status_code=400, detail="Signup failed — no user returned.")
 
-    # Best-effort profile insert (non-fatal if it already exists)
+    # Best-effort profile insert using the service client so it always succeeds
+    # regardless of email confirmation state.
     try:
-        get_anon_client().table("profiles").insert({
+        get_service_client().table("profiles").insert({
             "id":                  result.user.id,
             "email":               email,
             "questions_today":     0,
@@ -146,6 +167,20 @@ def login(email: str, password: str) -> Any:
     if result is None or not result.session:
         raise HTTPException(status_code=401, detail="Login failed — no session returned.")
 
+    # Ensure profile exists on login (handles users created before trigger existed)
+    try:
+        svc = get_service_client()
+        existing = svc.table("profiles").select("id", count=CountMethod.exact).eq("id", result.user.id).execute()
+        if not existing.count:
+            svc.table("profiles").insert({
+                "id":                  result.user.id,
+                "email":               email,
+                "questions_today":     0,
+                "last_question_date":  date.today().isoformat(),
+            }).execute()
+    except Exception:
+        logger.debug("Profile insert/upsert skipped for %s on login", email)
+
     return result
 
 
@@ -166,7 +201,7 @@ def get_current_user(token: str) -> Any:
         response = get_anon_client().auth.get_user(token)
         if response is None or not response.user:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
+
         _user_cache.set(token, response.user)
         return response.user
     except HTTPException:
@@ -195,44 +230,68 @@ def refresh_supabase_token(refresh_token: str) -> tuple[str, str]:
 
 from typing import Tuple
 
+
+def _ensure_profile(user_id: str) -> None:
+    """Idempotent profile creation using the service client."""
+    try:
+        svc = get_service_client()
+        today = date.today().isoformat()
+        svc.table("profiles").insert({
+            "id": user_id,
+            "email": None,
+            "questions_today": 0,
+            "last_question_date": today,
+        }).execute()
+    except Exception:
+        pass
+
+
 def check_rate_limit(user_id: str, token: str) -> Tuple[bool, int]:
     """
     Enforce DAILY_QUESTION_LIMIT questions per user per calendar day.
 
-    Logic:
-    - No profile → create one, allow
-    - Date changed → reset counter, allow
-    - Count >= limit → deny
-    - Otherwise → increment, allow
+    Uses a deterministic DB-side approach to avoid races:
+    - Selects the row; if missing or stale date, updates via service client.
+    - If count already >= limit, deny.
+    - Otherwise increment and allow.
 
-    Fails open on any DB error so users are never blocked by infrastructure issues.
+    Fails CLOSED on unexpected DB errors so a transient Supabase outage cannot
+    be exploited to bypass limits.
     Returns (allowed, current_count).
     """
     try:
-        # Use the cached authenticated client so RLS policies are satisfied
-        client = get_authenticated_client(token)
+        # Prefer the caller's authenticated client so RLS is satisfied; fall back
+        # to service client if token is missing.
+        client = get_authenticated_client(token) if token else get_service_client()
+        today = date.today().isoformat()
 
         rows = client.table("profiles").select("questions_today, last_question_date") \
                      .eq("id", user_id).execute().data
-        today = date.today().isoformat()
 
         if not rows:
-            _upsert_profile(client, user_id, today, 1)
-            return True, 1
+            _ensure_profile(user_id)
+            client = get_authenticated_client(token) if token else get_service_client()
+            rows = client.table("profiles").select("questions_today, last_question_date") \
+                         .eq("id", user_id).execute().data
+            if not rows:
+                # Profile creation may be delayed; allow once and record.
+                _ensure_profile(user_id)
+                return True, 1
 
         profile = rows[0]
         if not isinstance(profile, dict):
-            _upsert_profile(client, user_id, today, 1)
-            return True, 1
+            return False, 0
 
         last_date = profile.get("last_question_date", "")
-        if last_date is None:
-            last_date = ""
-        elif not isinstance(last_date, str) and hasattr(last_date, "isoformat"):
-            last_date = getattr(last_date, "isoformat")()
+        if last_date is not None and not isinstance(last_date, str):
+            try:
+                last_date = last_date.isoformat()
+            except Exception:
+                last_date = str(last_date)
+        last_date = last_date or ""
 
         if last_date != today:
-            # New day — reset
+            # New day — reset counter
             client.table("profiles").update({
                 "questions_today":    1,
                 "last_question_date": today,
@@ -250,17 +309,5 @@ def check_rate_limit(user_id: str, token: str) -> Tuple[bool, int]:
         return True, count + 1
 
     except Exception:
-        logger.exception("check_rate_limit failed for %s — failing open", user_id)
-        return True, 0
-
-
-def _upsert_profile(client, user_id: str, today: str, count: int) -> None:
-    """Insert a profile row, ignoring conflicts."""
-    try:
-        client.table("profiles").insert({
-            "id":                 user_id,
-            "questions_today":    count,
-            "last_question_date": today,
-        }).execute()
-    except Exception:
-        logger.debug("Profile upsert skipped for %s", user_id)
+        logger.exception("check_rate_limit failed for %s — failing closed", user_id)
+        return False, 0

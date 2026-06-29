@@ -1,4 +1,5 @@
 import reflex as rx
+from sceneforge.pages.not_found import not_found_page
 from sceneforge.pages.login import login_page
 from sceneforge.pages.dashboard import dashboard_page
 from sceneforge.pages.project import project_page
@@ -25,6 +26,7 @@ app = rx.App(
     head_components=[
         rx.el.link(rel="preconnect", href="https://fonts.googleapis.com"),
         rx.el.link(rel="preconnect", href="https://fonts.gstatic.com", cross_origin=""),
+        rx.el.link(rel="icon", type="image/svg+xml", href="/favicon.svg"),
     ],
     hydrate_fallback=rx.box(
         rx.center(
@@ -61,6 +63,7 @@ app.add_page(project_page, route="/project", on_load=cast(Any, ProjectState.on_l
 app.add_page(callback_page, route="/auth/v1/callback")
 app.add_page(terms_page, route="/terms")
 app.add_page(privacy_page, route="/privacy")
+app.add_page(not_found_page, route="/404")
 
 
 # Index page redirects dynamically based on session status

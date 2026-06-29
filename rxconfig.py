@@ -1,13 +1,12 @@
 import os
 import reflex as rx
-from reflex.plugins import RadixThemesPlugin
-from reflex_base.plugins.sitemap import SitemapPlugin
+from reflex.plugins import RadixThemesPlugin, SitemapPlugin
 
 # In production (Reflex Cloud), API_URL must point to the same origin as the
 # app so the frontend build bakes the correct WebSocket host into env.json.
 # A wrong or missing value here causes the browser to connect to a dead host
 # and receive a 403.
-api_url = os.getenv("API_URL", "https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev")
+api_url = os.getenv("API_URL", "http://localhost:8000")
 
 cors_env = os.getenv("CORS_ALLOWED_ORIGINS", "")
 if cors_env == "*":
@@ -18,7 +17,6 @@ else:
     ] or [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://sceneforge-aqua-ocean.reflex.run",
     ]
 
 config = rx.Config(
@@ -28,4 +26,3 @@ config = rx.Config(
     plugins=[RadixThemesPlugin(), SitemapPlugin()],
     show_built_with_reflex=False,
 )
-

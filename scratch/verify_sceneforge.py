@@ -20,7 +20,7 @@ from backend.auth import login as auth_login, signup as auth_signup, get_current
 from backend.rag import answer_with_sources, process_and_store_pdf
 
 # Initialize Supabase Admin client to verify and clean up
-supabase = create_client(config.SUPABASE_URL, config.SUPABASE_KEY)
+supabase = create_client(config.SUPABASE_URL, config.SUPABASE_SERVICE_KEY)
 
 def generate_test_pdf(filename: str, content: str) -> str:
     """Create a simple test PDF with some text."""

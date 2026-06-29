@@ -1,4 +1,10 @@
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
+FROM python:3.11.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
 
 # Reflex FNM requires curl and unzip to install node automatically
@@ -17,16 +23,24 @@ COPY rxconfig.py .
 # Create persistent folders
 RUN mkdir -p uploads mem0
 
+# Run as a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
 # Expose Reflex ports
 EXPOSE 3000
 EXPOSE 8000
 
-# Pre-compile the frontend with the correct production API URL so env.json
-# bakes in the right WebSocket/HTTP backend host instead of localhost.
-# Without this, the browser gets a stale or localhost URL and the WebSocket
-# connection is rejected with a 403.
-ARG API_URL=https://b2d09cec-8f73-4370-b726-2907b4163a38.fly.dev
+# The production API_URL must be passed at build time so the static frontend
+# bakes the correct WebSocket/HTTP backend host. In Reflex Cloud / single-origin
+# deployments this should be the public origin of the app.
+ARG API_URL
 ENV API_URL=${API_URL}
-RUN reflex export --frontend-only || true
+RUN if [ -z "$API_URL" ]; then echo "WARNING: API_URL is not set; frontend will default to localhost."; fi
+RUN reflex export --frontend-only
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 CMD ["reflex", "run", "--env", "prod"]

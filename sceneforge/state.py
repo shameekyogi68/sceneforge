@@ -79,11 +79,19 @@ class State(rx.State):
     user_email: str = ""
     questions_today: int = 0
     router: Any = rx.State.router  # type: ignore
+    is_online: bool = True
 
     @rx.var
     def user_avatar_char(self) -> str:
         """Returns the first uppercase character of the user's email."""
         return self.user_email[0].upper() if self.user_email else "U"
+
+    def set_is_online(self, value: bool):
+        self.is_online = value
+
+    def check_connection(self):
+        """Poll browser online status; returns a JS call that updates is_online."""
+        return rx.call_script("navigator.onLine", callback=self.set_is_online)
 
     async def _api_request(
         self,
@@ -231,7 +239,7 @@ class AuthState(State):
 
             redirect_url = f"{site_url}/auth/v1/callback"
             auth_url = (
-                f"{config.SUPABASE_URL}/auth/v1/authorize"
+                f"{config.FRONTEND_SUPABASE_URL}/auth/v1/authorize"
                 f"?provider=google&redirect_to={redirect_url}"
             )
 
@@ -384,14 +392,14 @@ class DashboardState(State):
             if response.status_code == 200:
                 self.is_modal_open = False
                 self.new_project_name = ""
-                rx.toast.success(f"Project '{name}' created!")
+                yield rx.toast.success(f"Project '{name}' created!")
                 yield self.load_projects()
             else:
                 detail = response.json().get("detail", "Failed to create project")
-                rx.toast.error(f"Failed to create project: {detail}")
+                yield rx.toast.error(f"Failed to create project: {detail}")
         except Exception as e:
             logger.exception("Failed to create project")
-            rx.toast.error("An internal error occurred while creating project.")
+            yield rx.toast.error("An internal error occurred while creating project.")
 
     def confirm_delete_project(self, project_id: str, project_name: str):
         """Open delete confirmation modal and store project info."""
@@ -415,15 +423,15 @@ class DashboardState(State):
         try:
             response = await self._api_request("DELETE", f"/projects/{project_id}")
             if response.status_code == 200:
-                rx.toast.success(f"Project '{project_name}' deleted.")
+                yield rx.toast.success(f"Project '{project_name}' deleted.")
                 self.close_delete_confirm()
                 yield self.load_projects()
             else:
                 detail = response.json().get("detail", "Failed to delete project")
-                rx.toast.error(f"Failed to delete project: {detail}")
+                yield rx.toast.error(f"Failed to delete project: {detail}")
         except Exception as e:
             logger.exception("Failed to delete project")
-            rx.toast.error("An internal error occurred while deleting project.")
+            yield rx.toast.error("An internal error occurred while deleting project.")
 
     @rx.var(cache=True)
     def filtered_projects(self) -> List[Project]:
@@ -537,20 +545,23 @@ class ProjectState(State):
         """Check authentication and load project data using project_id from router."""
         auth_res = await self.check_auth()
         if auth_res:
-            return auth_res
+            yield auth_res
+            return
 
         router_params = self.router.page.params
         pid = router_params.get("project_id", "")
         if not pid:
-            return rx.redirect("/dashboard")
+            yield rx.redirect("/dashboard")
+            return
 
         self.project_id = pid
-        await self.load_project_details()
-        
+        async for update in self.load_project_details():
+            yield update
+
         # Check if any documents are in 'processing' state on load and start background polling
         any_processing = any(d["status"] == "processing" for d in self.documents)
         if any_processing:
-            return ProjectState.start_document_polling
+            yield ProjectState.start_document_polling
 
     async def load_project_details(self):
         """Query project details, document list, and chat logs from backend API in a single request."""
@@ -558,8 +569,9 @@ class ProjectState(State):
             # Load project details securely, including nested documents and messages
             response = await self._api_request("GET", f"/projects/{self.project_id}")
             if response.status_code != 200:
-                return rx.redirect("/dashboard")
-                
+                yield rx.redirect("/dashboard")
+                return
+
             project_data = response.json()
             self.project_name = project_data.get("name", "")
 
@@ -609,7 +621,7 @@ class ProjectState(State):
 
         except Exception as e:
             logger.exception("Failed to load project details")
-            rx.toast.error("Failed to load project details.")
+            yield rx.toast.error("Failed to load project details.")
 
     def confirm_delete_doc(self, doc_id: str):
         """Set doc_to_delete_id to trigger inline confirmation."""
@@ -626,20 +638,20 @@ class ProjectState(State):
             if response.status_code == 200:
                 self.doc_to_delete_id = ""
                 await self.load_documents()
-                rx.toast.success(f"Document '{filename}' deleted.")
+                yield rx.toast.success(f"Document '{filename}' deleted.")
             else:
                 detail = response.json().get("detail", "Failed to delete document")
-                rx.toast.error(f"Failed to delete document: {detail}")
+                yield rx.toast.error(f"Failed to delete document: {detail}")
         except Exception as e:
             logger.exception("Failed to delete document")
-            rx.toast.error("An internal error occurred while deleting document.")
+            yield rx.toast.error("An internal error occurred while deleting document.")
 
     async def handle_upload(self, files: List[rx.UploadFile]):
         """Accept PDF files from rx.upload, validate, and send to backend API."""
         # Verify document limit
         existing_docs_count = len(self.documents)
         if existing_docs_count + len(files) > config.MAX_FILES_PER_PROJECT:
-            rx.toast.error(f"Projects can contain at most {config.MAX_FILES_PER_PROJECT} documents.")
+            yield rx.toast.error(f"Maximum {config.MAX_FILES_PER_PROJECT} documents per project.")
             return
 
         has_uploaded_any = False
@@ -647,43 +659,43 @@ class ProjectState(State):
         for file in files:
             # 1. Extension check
             if not file.filename or not file.filename.lower().endswith(".pdf"):
-                rx.toast.error(f"File '{file.filename or 'Unnamed'}' is not a PDF.")
+                yield rx.toast.error(f"'{file.filename or 'Unnamed'}' is not a PDF file.")
                 continue
 
             # Read file contents
             contents = await file.read()
-            
+
             # 2. Magic bytes check
             if contents[:4] != b"%PDF":
-                rx.toast.error(f"File '{file.filename}' is not a valid PDF document.")
+                yield rx.toast.error(f"'{file.filename}' does not appear to be a valid PDF.")
                 continue
 
             # 3. Size check
             if len(contents) > config.MAX_FILE_SIZE_MB * 1024 * 1024:
-                rx.toast.error(f"File '{file.filename}' exceeds the {config.MAX_FILE_SIZE_MB} MB limit.")
+                yield rx.toast.error(f"'{file.filename}' exceeds the {config.MAX_FILE_SIZE_MB} MB limit.")
                 continue
 
             # Call FastAPI /upload endpoint using multipart form-data
             try:
                 files_payload = {"file": (file.filename, contents, "application/pdf")}
                 data_payload = {"project_id": self.project_id}
-                
+
                 response = await self._api_request(
                     "POST",
                     "/upload",
                     files=files_payload,
                     data=data_payload
                 )
-                
+
                 if response.status_code == 200:
-                    rx.toast.success(f"File '{file.filename}' uploaded. Processing in background...")
+                    yield rx.toast.success(f"'{file.filename}' uploaded — indexing in background.")
                     has_uploaded_any = True
                 else:
                     detail = response.json().get("detail", "Failed to process file")
-                    rx.toast.error(f"Failed to process '{file.filename}': {detail}")
+                    yield rx.toast.error(f"Failed to upload '{file.filename}': {detail}")
             except Exception as e:
                 logger.exception("Upload failed")
-                rx.toast.error(f"Failed to process '{file.filename}': Server error.")
+                yield rx.toast.error(f"Upload failed for '{file.filename}': server error.")
 
         if has_uploaded_any:
             await self.load_documents()
@@ -722,10 +734,15 @@ class ProjectState(State):
         message = self.input_message.strip()
         if not message:
             return
-        
+
+        # Client-side length guard (backend enforces 2000 char limit too)
+        if len(message) > 2000:
+            yield rx.toast.error("Message is too long. Please keep it under 2,000 characters.")
+            return
+
         self.is_sending = True
         self.input_message = ""
-        
+
         # Add user message to UI immediately for instant feedback
         self.chat_history.append(ChatMessage(role="user", content=message, sources=[]))
         yield ProjectState.scroll_to_bottom
@@ -883,14 +900,13 @@ class ProjectState(State):
             if response.status_code == 200:
                 self.chat_history = []
                 self.conversation_id = ""
-                rx.toast.success("Chat history cleared.")
+                yield rx.toast.success("Chat history cleared.")
             else:
                 detail = response.json().get("detail", "Failed to clear chat history.")
-                rx.toast.error(f"Error: {detail}")
+                yield rx.toast.error(f"Error: {detail}")
         except Exception as e:
             logger.exception("Failed to clear chat")
-            rx.toast.error("An error occurred while clearing chat.")
-        yield
+            yield rx.toast.error("An error occurred while clearing chat.")
 
     async def share_project(self):
         """Share project link by copying to clipboard and triggering a floating success notification."""

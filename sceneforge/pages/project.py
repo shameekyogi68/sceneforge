@@ -376,13 +376,9 @@ def render_chat_message(msg: Any) -> rx.Component:
             ),
             # Source pills with conditional header
             rx.cond(
-                cast(Any, msg.sources).length() > 0,
+                (cast(Any, msg.sources).length() > 0) & ~is_not_found,
                 rx.vstack(
-                    rx.cond(
-                        is_not_found,
-                        rx.text("RELEVANT SOURCES INSPECTED (NO MATCH FOUND)", class_name="hud-text", font_size="0.58rem", color="rgba(255,255,255,0.35)", font_weight="700", margin_bottom="6px"),
-                        rx.text("CITED SOURCES", class_name="hud-text", font_size="0.58rem", color="#00F0FF", font_weight="700", margin_bottom="6px")
-                    ),
+                    rx.text("CITED SOURCES", class_name="hud-text", font_size="0.58rem", color="#00F0FF", font_weight="700", margin_bottom="6px"),
                     rx.flex(
                         rx.foreach(msg.sources, render_source_pill),
                         flex_wrap="wrap",
@@ -584,7 +580,7 @@ def chat_area() -> rx.Component:
                     cursor="pointer",
                     box_shadow="0 0 10px rgba(0, 240, 255, 0.2)",
                     _hover={"box_shadow": "0 0 16px rgba(0, 240, 255, 0.4)"},
-                    on_click=cast(Any, lambda: cast(Any, ProjectState).clear_chat),
+                    on_click=cast(Any, ProjectState.clear_chat),
                 ),
                 align="center",
                 spacing="3",
@@ -972,7 +968,7 @@ def project_page() -> rx.Component:
 
         # Main Layout container
         rx.hstack(
-            sidebar_nav("project", ProjectState.user_avatar_char, ProjectState.user_email, ProjectState.questions_today, ProjectState.logout),
+            sidebar_nav("project", ProjectState.user_avatar_char, ProjectState.user_email, ProjectState.questions_today, ProjectState.logout, ProjectState.is_online),
             # Workspace splitscreen
             rx.hstack(
                 chat_area(),

@@ -197,29 +197,6 @@ def process_and_store_pdf(
 # Vector search  (FR: F7)
 # ---------------------------------------------------------------------------
 
-def generate_hyde_response(question: str) -> str:
-    """
-    Generate a hypothetical document answer (HyDE) for query expansion.
-    Fails open (returns empty string) on any configuration or network error.
-    """
-    if config.GEMINI_API_KEY == "dummy_key":
-        return ""
-    try:
-        client = _get_genai_client()
-        prompt = (
-            f"Write a short, hypothetical sentence or paragraph answering this film-research question: '{question}'\n"
-            f"Write a plausible factual answer matching standard research style."
-        )
-        response = client.models.generate_content(
-            model=config.GEMINI_MODEL,
-            contents=prompt,
-        )
-        return response.text or ""
-    except Exception as exc:
-        logger.warning("Failed to generate HyDE expansion: %s", exc)
-        return ""
-
-
 def search_documents(
     question: str,
     project_id: str,

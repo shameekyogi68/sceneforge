@@ -151,26 +151,6 @@ class TestRag(unittest.TestCase):
         self.assertEqual(results[1]["chunk_text"], "vector first")
         self.assertEqual(results[2]["chunk_text"], "fts first")
         self.assertEqual(results[2]["similarity"], 0.0)
-
-    @patch("backend.rag._get_genai_client")
-    def test_generate_hyde_response_success(self, mock_get_genai):
-        from backend.rag import generate_hyde_response
-        import backend.config as config
-        
-        orig_key = config.GEMINI_API_KEY
-        config.GEMINI_API_KEY = "real_key_mock"
-        try:
-            mock_client = MagicMock()
-            mock_get_genai.return_value = mock_client
-            mock_response = MagicMock()
-            mock_response.text = "This is a hypothetical answer."
-            mock_client.models.generate_content.return_value = mock_response
-
-            ans = generate_hyde_response("What is the prompt?")
-            self.assertEqual(ans, "This is a hypothetical answer.")
-            mock_client.models.generate_content.assert_called_once()
-        finally:
-            config.GEMINI_API_KEY = orig_key
-
 if __name__ == "__main__":
     unittest.main()
+

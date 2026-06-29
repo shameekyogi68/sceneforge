@@ -811,6 +811,10 @@ class ProjectState(State):
         self.input_message = text
         return self.send_message()
 
+    def do_nothing(self):
+        """No-op event handler."""
+        pass
+
     def set_is_preview_modal_open(self, val: bool):
         self.is_preview_modal_open = val
 

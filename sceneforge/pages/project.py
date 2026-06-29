@@ -655,10 +655,11 @@ def chat_area() -> rx.Component:
                         },
                         rows="1",
                         _placeholder={"color": MUTED_COLOR},
-                        on_key_down=lambda e: rx.cond(
-                            (e.key == "Enter") & ~e.shift_key,
-                            ProjectState.send_message
-                        ).prevent_default,
+                        on_key_down=lambda key, key_info: rx.cond(
+                            (key == "Enter") & ~key_info["shift_key"],
+                            ProjectState.send_message.prevent_default,
+                            ProjectState.do_nothing,
+                        ),
                     ),
                     # Send button
                     rx.button(

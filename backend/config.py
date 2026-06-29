@@ -21,6 +21,8 @@ load_dotenv()
 def _require(name: str) -> str:
     value = os.getenv(name, "").strip()
     if not value:
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            return "placeholder-for-build"
         raise RuntimeError(f"Missing required environment variable: {name}")
     return value
 
@@ -32,11 +34,17 @@ SUPABASE_URL: str = _require("SUPABASE_URL")
 # explicit SERVICE_KEY is not provided. In production prefer SUPABASE_SERVICE_KEY.
 SUPABASE_SERVICE_KEY: str = os.getenv("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_KEY", "")).strip()
 if not SUPABASE_SERVICE_KEY:
-    raise RuntimeError("Missing required environment variable: SUPABASE_SERVICE_KEY (or SUPABASE_KEY for backwards compatibility)")
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        SUPABASE_SERVICE_KEY = "placeholder-for-build"
+    else:
+        raise RuntimeError("Missing required environment variable: SUPABASE_SERVICE_KEY (or SUPABASE_KEY for backwards compatibility)")
 
 SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", SUPABASE_SERVICE_KEY).strip()
 if not SUPABASE_ANON_KEY:
-    raise RuntimeError("Missing required environment variable: SUPABASE_ANON_KEY")
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        SUPABASE_ANON_KEY = "placeholder-for-build"
+    else:
+        raise RuntimeError("Missing required environment variable: SUPABASE_ANON_KEY")
 
 # google-generativeai SDK prefers GOOGLE_API_KEY over GEMINI_API_KEY when both
 # are set. Normalise so the correct key is always used.

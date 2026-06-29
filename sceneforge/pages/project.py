@@ -359,7 +359,7 @@ def render_chat_message(msg: Any) -> rx.Component:
         rx.vstack(
             rx.cond(
                 ~is_user,
-                rx.text("STRUCTURAL INTELLIGENCE SYNTHESIS", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700", margin_bottom="6px"),
+                rx.text("ScriptIQ Assistant", class_name="hud-text", font_size="0.65rem", color="#00F0FF", font_weight="700", margin_bottom="6px"),
                 rx.fragment(),
             ),
             rx.box(
@@ -368,11 +368,11 @@ def render_chat_message(msg: Any) -> rx.Component:
                     style={
                         "font_size": "0.91rem",
                         "line_height": "1.65",
-                        "color": rx.cond(is_user, "#ffffff", TEXT_COLOR),
+                        "color": rx.cond(is_user, "#ffffff", "rgba(255, 255, 255, 0.92)"),
                         "font_family": FONT_FAMILY,
                     },
                 ),
-                border_left=rx.cond(is_user, "none", "2px solid #00F0FF"),
+                border_left=rx.cond(is_user, "none", "3px solid rgba(0, 240, 255, 0.65)"),
                 padding_left=rx.cond(is_user, "0", "16px"),
                 margin_left=rx.cond(is_user, "0", "4px"),
                 width="100%",
@@ -404,9 +404,9 @@ def render_chat_message(msg: Any) -> rx.Component:
         ),
         padding="16px 20px",
         border_radius="12px",
-        background=rx.cond(is_user, "rgba(0, 240, 255, 0.08)", "rgba(8, 12, 22, 0.6)"),
-        border=rx.cond(is_user, "1px solid rgba(0, 240, 255, 0.25)", "1px solid rgba(255, 255, 255, 0.04)"),
-        box_shadow=rx.cond(is_user, "0 0 15px rgba(0, 240, 255, 0.1)", "none"),
+        background=rx.cond(is_user, "rgba(0, 240, 255, 0.05)", "rgba(255, 255, 255, 0.02)"),
+        border=rx.cond(is_user, "1px solid rgba(0, 240, 255, 0.15)", "1px solid rgba(255, 255, 255, 0.04)"),
+        box_shadow=rx.cond(is_user, "0 4px 15px rgba(0, 240, 255, 0.05)", "0 4px 20px rgba(0, 0, 0, 0.15)"),
         max_width="85%",
     )
 
@@ -639,6 +639,8 @@ def chat_area() -> rx.Component:
                         placeholder="Ask about research or outline screenplay sections...",
                         value=ProjectState.input_message,
                         on_change=cast(Any, ProjectState.set_input_message),
+                        debounce_timeout=100,
+                        force_notify_by_enter=True,
                         background="transparent",
                         border="none",
                         outline="none",

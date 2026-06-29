@@ -112,25 +112,6 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
         
         # Bottom controls
         rx.vstack(
-            # Connection status indicator
-            rx.box(
-                rx.hstack(
-                    rx.box(class_name="connection-dot"),
-                    rx.text(
-                        rx.cond(is_online, "online", "offline"),
-                        class_name="hud-text",
-                        font_size="0.55rem",
-                    ),
-                    spacing="2",
-                    align_items="center",
-                ),
-                class_name=rx.cond(
-                    is_online,
-                    "connection-indicator online",
-                    "connection-indicator offline",
-                ),
-                on_mount=State.check_connection,
-            ),
             # Logout
             rx.tooltip(
                 rx.box(

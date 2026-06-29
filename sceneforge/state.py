@@ -91,7 +91,7 @@ class State(rx.State):
 
     def check_connection(self):
         """Poll browser online status; returns a JS call that updates is_online."""
-        return rx.call_script("navigator.onLine", callback=self.set_is_online)
+        return rx.call_script("navigator.onLine", callback=cast(Any, self.set_is_online))
 
     async def _api_request(
         self,

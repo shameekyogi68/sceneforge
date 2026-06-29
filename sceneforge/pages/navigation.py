@@ -28,6 +28,7 @@ def app_icon(size: str = "42px", icon_size: str = "18px") -> rx.Component:
     )
 
 def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_email: rx.Var[str] | str, questions_today: rx.Var[int] | int, on_logout: Any, is_online: rx.Var[bool] | bool = True) -> rx.Component:
+    questions_today_var = rx.Var.create(questions_today)
     def sidebar_button(icon_svg: str, route: str, tooltip: str, is_active: bool) -> rx.Component:
         # Hover indicator logic
         border_left = rx.cond(is_active, "3px solid #00F0FF", "3px solid transparent")
@@ -173,13 +174,13 @@ def sidebar_nav(active_route: str, user_avatar_char: rx.Var[str] | str, user_ema
                         rx.hstack(
                             rx.text("DAILY QUERIES", class_name="hud-text", font_size="0.6rem", color="rgba(255,255,255,0.4)"),
                             rx.spacer(),
-                            rx.text(questions_today.to(str) + "/100 used", font_size="0.65rem", color="#00F0FF", font_weight="700", font_family="JetBrains Mono, monospace"),
+                            rx.text(questions_today_var.to(str) + "/100 used", font_size="0.65rem", color="#00F0FF", font_weight="700", font_family="JetBrains Mono, monospace"),
                             width="100%",
                         ),
                         # Quota progress bar
                         rx.box(
                             rx.box(
-                                width=rx.cond(questions_today > 100, "100%", questions_today.to(str) + "%"),
+                                width=rx.cond(cast(Any, questions_today_var) > 100, "100%", questions_today_var.to(str) + "%"),
                                 height="100%",
                                 background="linear-gradient(90deg, #00F0FF, #0072FF)",
                                 border_radius="2px",
